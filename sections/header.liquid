@@ -181,7 +181,7 @@
 
 <header-component
   id="header-component"
-  class="{{ class }}"
+  class="{{ class }}{% unless section.settings.show_account_icon %} header--hide-account{% endunless %}"
   {% if transparent %}
     transparent="{{ transparent }}"
   {% endif %}
@@ -612,11 +612,16 @@
     }
   }
 
-  /* The primary nav sits on the white row, so it takes the heading colour
-     rather than body grey, and hovers to the scheme's primary (maroon)
-     per the Header/Nav Link component note. */
+  /* The nav's resting colour is set in `menu-font-styles.liquid`, not here:
+     Horizon writes --menu-top-level-font-color into an inline style attribute,
+     which no stylesheet rule can outrank.
+
+     This undoes the other half of it. Horizon fades every sibling link once one
+     is the current page, and on this page "Shop Parts and Accessories" always
+     is — leaving four dim links beside one solid one. Figma's Header/Nav Link
+     has only a default and a hover state, so hold them all at full strength. */
   .header__row--bottom .menu-list {
-    --menu-top-level-font-color: var(--color-foreground-heading);
+    --opacity-subdued-text: 1;
   }
 
   .header__row--bottom .menu-list__link:hover .menu-list__link-title,
@@ -629,6 +634,12 @@
   .header-actions__action:has(.sp-cart) {
     padding: 0;
     background: transparent;
+  }
+
+  /* Figma's header carries no account icon. The setting brings it back for a
+     client who later turns on customer accounts. */
+  .header--hide-account .header-actions__action.account-button {
+    display: none;
   }
 
 {% endstylesheet %}
@@ -726,6 +737,13 @@
     {
       "type": "paragraph",
       "content": "t:content.manage_customer_accounts"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account_icon",
+      "label": "Show account icon",
+      "info": "Off in the approved design. Turn it on to give signed-in customers a link to their account from the header.",
+      "default": false
     },
     {
       "type": "header",

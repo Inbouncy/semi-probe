@@ -35,6 +35,9 @@
      #de8b24, uppercase, weight 600), so it restyles with the scheme. */
   .sp-header-cta {
     padding: 12px 22px;
+    /* Figma 211:56 sets the label on a 20px line, which is what makes the pill
+       44px tall; Horizon's button line-height would leave it at 38px. */
+    line-height: 20px;
     white-space: nowrap;
   }
 

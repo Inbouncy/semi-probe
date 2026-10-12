@@ -18,7 +18,7 @@
   data-testid="cart-icon"
 >
   <span
-    class="sp-cart__icon svg-wrapper"
+    class="sp-cart__icon"
     aria-hidden="true"
   >
     {{ 'icon-cart.svg' | inline_asset_content }}
@@ -45,12 +45,13 @@
 </cart-icon>
 
 {% stylesheet %}
-  /* Figma 212:25 — white box, 2px radius, 8px padding, 4px gap. The bag icon
-     is 14x17 and the label is 13/18 SemiBold uppercase with 0.65px tracking. */
+  /* Figma 212:25 — a 95x34 white box: 2px radius, 8px inset, 4px gap, a 14x17
+     bag icon and a 13/18 SemiBold uppercase label with 0.65px tracking. */
   .sp-cart {
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    min-height: 34px;
     padding: 8px;
     border-radius: 2px;
     background-color: #ffffff;
