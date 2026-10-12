@@ -32,6 +32,218 @@
   </div>
 </div>
 
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     SemiProbe footer — Figma 213:28 (desktop), 213:97 (tablet),
+     213:165 (mobile).
+
+     The footer's content is not here: the logo, the blurb, the address,
+     the copyright, the social destinations and all four link lists are
+     block settings and menus, editable from the Theme Editor.
+
+     What lives here is only what those settings cannot express — the side
+     insets (the footer section has no padding-inline setting), the fixed
+     column widths, the direction changes between breakpoints, and the
+     colours, weights and letter case the menu block does not expose.
+
+     Horizon writes the text blocks' type into inline custom properties,
+     so these rules set the CSS property itself rather than the variable;
+     that is why they read `color: …` and not `--color: …`.
+     ──────────────────────────────────────────────────────────────────── */
+
+  /* Side insets: 24 / 48 / 80 across the three frames. */
+  .sp-footer > .section-content-wrapper {
+    padding-inline: 24px;
+  }
+
+  /* ── Company column ──────────────────────────────────────────────── */
+
+  /* 212 x 34 (Figma 213:31). Horizon derives --logo-width inline from the
+     block's height setting, which steps in 8px and so cannot reach 34. */
+  .sp-footer .logo-block {
+    --logo-width: 212px !important;
+  }
+
+  .sp-footer [class*="__blurb"] p {
+    line-height: 20px;
+  }
+
+  /* The design sets the address in Mulish Medium 500. The theme loads 200,
+     300, 600 and 700, and a request for 500 resolves to 600 anyway, so the
+     subheading slot is used deliberately rather than adding a fifth face
+     for two lines of text. */
+  .sp-footer [class*="__address"] p {
+    line-height: 22px;
+  }
+
+  .sp-footer .icon-block svg {
+    transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .sp-footer .icon-block a:hover svg,
+  .sp-footer .icon-block a:focus-visible svg {
+    color: var(--color-primary-button-background);
+  }
+
+  /* ── Link columns ────────────────────────────────────────────────── */
+
+  /* Figma 213:47 — Bold, uppercase, on the orange accent. The scheme's
+     primary-button background is that orange, so it stays editable. */
+  .sp-footer .menu__heading {
+    color: var(--color-primary-button-background);
+    font-family: var(--font-accent--family);
+    font-weight: var(--font-accent--weight);
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+  }
+
+  /* Figma 211:35 — Light, uppercase, white, hovering to orange. The list is
+     a plain block list in Horizon, so the 10px rhythm is set here: 20px of
+     line plus 10px of gap is the design's 30px step. */
+  .sp-footer .menu .list-unstyled {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sp-footer .menu .list-unstyled a {
+    display: inline-block;
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-weight: var(--font-body--weight);
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .sp-footer .menu .list-unstyled a:hover,
+  .sp-footer .menu .list-unstyled a:focus-visible {
+    color: var(--color-primary-button-background);
+  }
+
+  /* ── Legal bar ───────────────────────────────────────────────────── */
+
+  .sp-footer .divider__line {
+    background-color: var(--color-border);
+  }
+
+  .sp-footer [class*="__copyright"] p {
+    color: #b0afaf;
+    line-height: 19px;
+    white-space: nowrap;
+  }
+
+  /* The legal menu is the one inside the group that carries the divider.
+     Horizon stacks menu links; these two sit side by side, in title case,
+     and hover to white rather than orange (Figma 211:45). */
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu {
+    flex: 0 0 auto;
+  }
+
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled {
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a {
+    color: #b0afaf;
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 12px;
+    line-height: 19px;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a:hover,
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a:focus-visible {
+    color: var(--color-foreground);
+  }
+
+  /* ── Tablet: the company block goes full width above the three columns,
+        which share the row equally (Figma 213:98 / 213:113). ─────────── */
+  @media screen and (width >= 750px) {
+    .sp-footer > .section-content-wrapper {
+      padding-inline: 48px;
+      gap: 34px;
+    }
+
+    /* Main stacks, so its two halves sit one above the other. */
+    .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
+      flex-direction: column;
+      gap: 34px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu) > .group-block-content {
+      gap: 36px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu) .menu {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  /* ── Desktop: four columns on one row (Figma 213:29). ─────────────── */
+  @media screen and (width >= 1300px) {
+    .sp-footer > .section-content-wrapper {
+      padding-inline: 80px;
+      gap: 62px;
+    }
+
+    .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
+      flex-direction: row;
+      gap: 70px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .logo-block) {
+      flex: 0 0 240px;
+      max-width: 240px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu) > .group-block-content {
+      gap: 70px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu) .menu {
+      flex: 0 0 240px;
+    }
+  }
+
+  /* ── Mobile: everything stacks. The blocks' own vertical_on_mobile does
+        the flipping; only the rhythm and the centred legal bar are set
+        here (Figma 213:166 / 213:181 / 213:226). ───────────────────── */
+  @media screen and (width < 750px) {
+    .sp-footer > .section-content-wrapper {
+      gap: 28px;
+    }
+
+    .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
+      gap: 28px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu) > .group-block-content {
+      gap: 24px;
+    }
+
+    .sp-footer [class*="__copyright"] p {
+      white-space: normal;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled {
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .divider) .menu {
+      align-self: stretch;
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.footer",
