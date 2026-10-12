@@ -81,6 +81,21 @@
     transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
   }
 
+  /* Figma 211:15 draws Facebook as a filled rounded square; Horizon ships the
+     circular mark. snippets/icon.liquid is 133KB, so rather than fork it for
+     one glyph the shape is masked in. The mask paints with currentColor, so
+     the hover to orange still works, and LinkedIn is left alone because
+     Horizon's glyph already matches the design. */
+  .sp-footer .icon-block svg[class*="__facebook"] {
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="black" d="M22.12 1H1.88C1.39325 1 1 1.39325 1 1.88V22.12C1 22.6068 1.39325 23 1.88 23H22.12C22.6068 23 23 22.6068 23 22.12V1.88C23 1.39325 22.6068 1 22.12 1ZM19.579 7.42125H17.8218C16.444 7.42125 16.1773 8.07575 16.1773 9.03825V11.1585H19.4662L19.0373 14.4777H16.1773V23H12.748V14.4805H9.87975V11.1585H12.748V8.711C12.748 5.87025 14.4832 4.322 17.0187 4.322C18.2342 4.322 19.2765 4.41275 19.5818 4.454V7.42125H19.579Z"/></svg>") center / contain no-repeat;
+  }
+
+  .sp-footer .icon-block svg[class*="__facebook"] > * {
+    display: none;
+  }
+
+
   .sp-footer .icon-block a:hover svg,
   .sp-footer .icon-block a:focus-visible svg {
     color: var(--color-primary-button-background);
@@ -104,6 +119,7 @@
      the span's own — setting it on the summary alone leaves it at 22.4px and
      every column 2.4px too tall. */
   .sp-footer .menu__heading__default {
+    color: var(--color-primary-button-background);
     line-height: 20px;
   }
 
@@ -155,6 +171,7 @@
      and hover to white rather than orange (Figma 211:45). */
   .sp-footer .group-block:has(> .group-block-content > .divider) .menu {
     flex: 0 0 auto;
+    width: fit-content;
   }
 
   .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled {
