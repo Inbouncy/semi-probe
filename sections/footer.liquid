@@ -32,6 +32,26 @@
   </div>
 </div>
 
+{%- liquid
+  # The design sets the address and the legal links in Mulish Medium 500, which
+  # is not one of the four weights the theme's font slots load. If Shopify's
+  # library has the variant, pull it in for just those two places; if it does
+  # not, nothing is emitted and they keep the subheading weight below.
+  assign font_500 = settings.type_body_font | font_modify: 'weight', '500'
+-%}
+
+{%- if font_500 != blank -%}
+  <style>
+    {{ font_500 | font_face: font_display: 'swap' }}
+
+    .sp-footer [class*="__address"] p,
+    .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a {
+      font-family: {{ font_500.family }}, {{ font_500.fallback_families }};
+      font-weight: 500;
+    }
+  </style>
+{%- endif -%}
+
 {% stylesheet %}
   /* ────────────────────────────────────────────────────────────────────
      SemiProbe footer — Figma 213:28 (desktop), 213:97 (tablet),
@@ -292,7 +312,14 @@
       gap: 24px;
     }
 
+    /* The whole legal bar is centred here, not just the links (Figma 213:226).
+       The block's own width is fit-content, which leaves nothing to centre in. */
+    .sp-footer [class*="__copyright"] {
+      width: 100%;
+    }
+
     .sp-footer [class*="__copyright"] p {
+      text-align: center;
       white-space: normal;
     }
 
