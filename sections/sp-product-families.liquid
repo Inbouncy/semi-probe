@@ -112,6 +112,14 @@
       gap: 25px 20px;
     }
   }
+
+  /* The design is drawn at 1440. Above that the content holds its width rather
+     than stretching, so the cards and columns keep the proportions they were
+     designed with; the section's background stays full-bleed. */
+  .sp-families > .section-content-wrapper {
+    max-width: 1440px;
+    margin-inline: auto;
+  }
 {% endstylesheet %}
 
 {% schema %}

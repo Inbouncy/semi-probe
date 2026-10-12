@@ -67,7 +67,6 @@
      where the button sits wherever the description leaves it. */
   .sp-family {
     display: flex;
-    min-height: 420px;
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
@@ -88,9 +87,13 @@
   .sp-family__image {
     display: block;
     width: 100%;
-    height: 145px;
+    /* The design's box is 306x145 here, 419x145 at tablet and 269x150 at
+       desktop. Held as a ratio rather than a height so the box grows with the
+       card instead of getting ever wider and cropping harder — which is what
+       went wrong on a large monitor. */
+    aspect-ratio: 306 / 145;
     border-radius: 4px;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .sp-family__title,
@@ -156,18 +159,14 @@
   }
 
   @media screen and (width >= 750px) {
-    .sp-family {
-      min-height: 410px;
+    .sp-family__image {
+      aspect-ratio: 419 / 145;
     }
   }
 
   @media screen and (width >= 1300px) {
-    .sp-family {
-      min-height: 450px;
-    }
-
     .sp-family__image {
-      height: 150px;
+      aspect-ratio: 269 / 150;
     }
   }
 {% endstylesheet %}
