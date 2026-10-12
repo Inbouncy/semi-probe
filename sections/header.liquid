@@ -642,6 +642,14 @@
     display: none;
   }
 
+  /* Horizon pulls header-actions 14.4px to the left so that bare icon buttons
+     optically align with the row's edge. The cart here is a filled box with
+     its own padding, so that offset is wrong twice over: it is not needed, and
+     it swallows the 14px Figma leaves between the search field and the cart. */
+  .header__row--top .header__column--right > header-actions {
+    margin-inline-start: 0;
+  }
+
 {% endstylesheet %}
 
 {% schema %}

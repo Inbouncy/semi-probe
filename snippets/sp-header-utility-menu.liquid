@@ -45,6 +45,10 @@
     display: flex;
     align-items: center;
     gap: 25px;
+    /* The links are inline-block, so each item's line box would otherwise take
+       the inherited 1.6 ratio and make the row 22.4px instead of the design's
+       20 — enough to shift it off Figma's 20px baseline inside the 60px bar. */
+    line-height: 20px;
     margin: 0;
     padding: 0;
     list-style: none;
