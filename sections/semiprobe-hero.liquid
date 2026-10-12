@@ -1,0 +1,506 @@
+{%- doc -%}
+  The homepage hero — Figma 68:3027 (desktop), 76:35 (tablet), 78:35 (mobile).
+
+  A thin block container, like `sections/footer.liquid`: everything in it is a
+  native block, so the client edits the eyebrow, headline, body copy, the
+  configuration count, both button labels and links, and the photograph from
+  the Theme Editor. The stylesheet below carries only what the block settings
+  cannot express.
+
+  It is its own section rather than Horizon's generic `section` because that
+  file is 39KB shared by every custom section, and the hero's geometry has to
+  live somewhere it cannot affect the rest of the theme.
+{%- enddoc -%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="
+    section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} sp-hero
+    {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
+  "
+>
+  {% render 'background-media',
+    background_media: section.settings.background_media,
+    background_video: section.settings.video,
+    background_video_position: section.settings.video_position,
+    background_image: section.settings.background_image,
+    background_image_position: section.settings.background_image_position
+  %}
+
+  <div
+    class="
+      spacing-style
+      layout-panel-flex
+      layout-panel-flex--{{ section.settings.content_direction }}
+      section-content-wrapper
+      {% if section.settings.vertical_on_mobile %} mobile-column{% endif %}
+    "
+    style="
+      {% render 'layout-panel-style', settings: section.settings %}
+      {% render 'spacing-style', settings: section.settings %}
+    "
+  >
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     SemiProbe hero — Figma 68:3027 (desktop), 76:35 (tablet),
+     78:35 (mobile).
+
+     The three frames are not one layout scaled: the headline steps
+     50/60 → 42/50 → 34/40, the body steps 16/28 → 15/24, the image box
+     changes aspect at every width, and the buttons go full-width and
+     stack on mobile. Each band below is one frame.
+
+     Content is all block settings. What lives here is the side insets
+     (the section has no padding-inline setting), the per-frame type
+     sizes the text block's rem list cannot reach — 50px is 3.125rem,
+     and the list jumps 3 → 3.5 — the column and image dimensions, and
+     the eyebrow colour, which is not one of the three the text block
+     offers.
+
+     Horizon writes the text blocks' type into inline custom properties,
+     so these rules set the CSS property itself, not the variable.
+     ──────────────────────────────────────────────────────────────────── */
+
+  /* ── Mobile first (Figma 78:35) ──────────────────────────────────── */
+  .sp-hero > .section-content-wrapper {
+    padding-block: 40px 48px;
+    padding-inline: 24px;
+  }
+
+  /* The row stacks here via the block's own vertical_on_mobile. */
+  .sp-hero .group-block:has(> .group-block-content > .image-block) > .group-block-content {
+    gap: 28px;
+  }
+
+  .sp-hero [class*="__eyebrow"] p {
+    color: #b0afaf;
+    line-height: 18px;
+  }
+
+  .sp-hero [class*="__heading"] :is(h1, h2, p) {
+    font-size: 34px;
+    line-height: 40px;
+  }
+
+  .sp-hero [class*="__body"] p {
+    font-size: 15px;
+    line-height: 24px;
+  }
+
+  .sp-hero [class*="__stat"] p {
+    line-height: 22px;
+  }
+
+  /* Buttons span the column and stack (Figma 219:461 / 219:463). */
+  .sp-hero .group-block:has(> .group-block-content > a) > .group-block-content {
+    gap: 10px;
+  }
+
+  .sp-hero .image-block__image {
+    width: 100%;
+    height: 240px;
+    aspect-ratio: auto;
+  }
+
+  /* ── Tablet (Figma 76:35) ────────────────────────────────────────── */
+  @media screen and (width >= 750px) {
+    .sp-hero > .section-content-wrapper {
+      padding-block: 56px 64px;
+      padding-inline: 48px;
+    }
+
+    .sp-hero .group-block:has(> .group-block-content > .image-block) > .group-block-content {
+      gap: 32px;
+    }
+
+    /* 500px of content beside a 396x320 image. */
+    .sp-hero .group-block:has(> .group-block-content > a) {
+      flex: 0 0 auto;
+    }
+
+    .sp-hero .group-block:has(> .group-block-content > .image-block) > .group-block-content > .group-block {
+      flex: 0 0 500px;
+      max-width: 500px;
+    }
+
+    .sp-hero .image-block {
+      flex: 0 0 396px;
+    }
+
+    .sp-hero .image-block__image {
+      width: 396px;
+      height: 320px;
+    }
+
+    .sp-hero [class*="__heading"] :is(h1, h2, p) {
+      font-size: 42px;
+      line-height: 50px;
+    }
+
+    .sp-hero [class*="__body"] p {
+      font-size: 16px;
+      line-height: 28px;
+    }
+
+    .sp-hero .group-block:has(> .group-block-content > a) > .group-block-content {
+      gap: 14px;
+    }
+  }
+
+  /* ── Desktop (Figma 68:3027) ─────────────────────────────────────── */
+  @media screen and (width >= 1300px) {
+    .sp-hero > .section-content-wrapper {
+      padding-block: 72px 82px;
+      padding-inline: 80px;
+    }
+
+    .sp-hero .group-block:has(> .group-block-content > .image-block) > .group-block-content {
+      gap: 64px;
+    }
+
+    .sp-hero .group-block:has(> .group-block-content > .image-block) > .group-block-content > .group-block {
+      flex: 0 0 690px;
+      max-width: 690px;
+    }
+
+    .sp-hero .image-block {
+      flex: 0 0 520px;
+    }
+
+    .sp-hero .image-block__image {
+      width: 520px;
+      height: 360px;
+    }
+
+    /* 50px is 3.125rem; the text block's size list jumps 3rem to 3.5rem. */
+    .sp-hero [class*="__heading"] :is(h1, h2, p) {
+      font-size: 50px;
+      line-height: 60px;
+    }
+
+    /* The headline and body are narrower than the column they sit in
+       (660 and 620 of 690), which is what sets their wrap. */
+    .sp-hero [class*="__heading"] :is(h1, h2, p) {
+      max-width: 660px;
+    }
+
+    .sp-hero [class*="__body"] p {
+      max-width: 620px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "SemiProbe hero",
+  "class": "section-wrapper",
+  "tag": "section",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "t:settings.vertical_on_mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ section.settings.vertical_alignment == 'flex-end' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'column' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:options.full_screen"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "background_media",
+      "label": "t:settings.background_media",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "video_position",
+      "label": "t:settings.video_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "t:settings.image_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "fit",
+          "label": "t:options.fit"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "SemiProbe hero",
+      "category": "Storytelling"
+    }
+  ]
+}
+{% endschema %}
