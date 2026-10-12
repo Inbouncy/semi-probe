@@ -23,9 +23,8 @@ Homepage build from the approved Figma design into the SemiProbe Shopify storefr
 
 ### Known environment limits
 
-- `www.figma.com` and `semiprobe.myshopify.com` are **denied by the container network policy**. Figma asset downloads and storefront render verification are not possible from inside a session until that policy is widened. Figma MCP tools still work (they route through the MCP proxy); only direct HTTP to those hosts is blocked.
-- Consequence: **visual QA must be performed by a human on the preview URL.** Do not claim a section renders correctly without a human confirming it.
-- `fonts.googleapis.com` is reachable.
+- Network access is set to **Limited**, with `www.figma.com` and `semiprobe.myshopify.com` allowed. Figma asset downloads work. `fonts.googleapis.com` is reachable.
+- **The storefront is password-protected** (`onlineStore.passwordProtection.enabled = true`), so requests to the preview URL redirect to `/password`. Render verification requires a **Shopify theme share-preview link**, which bypasses the storefront password and is revocable. Without one, visual QA must be done by a human and no section may be reported as rendering correctly on Claude's word alone.
 
 ## Store/theme boundary
 
