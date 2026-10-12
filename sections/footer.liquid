@@ -289,8 +289,11 @@
       gap: 18px;
     }
 
+    /* Centred on its own row here (Figma 213:228), which needs the menu to
+       span the width — the desktop rule shrink-wraps it to sit on the right. */
     .sp-footer .group-block:has(> .group-block-content > .divider) .menu {
       align-self: stretch;
+      width: 100%;
     }
   }
 {% endstylesheet %}
