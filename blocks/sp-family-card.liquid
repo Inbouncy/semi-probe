@@ -62,14 +62,20 @@
 
 {% stylesheet %}
   /* Figma 68:3047 — white card, 1px #ccc hairline, 8px radius, 18px padding,
-     14px rhythm. Fixed heights of 450 / 410 / 420 across the frames so every
-     card in a row ends level; content stays top-aligned, as in the design,
-     where the button sits wherever the description leaves it. */
+     14px rhythm.
+
+     Every card in the design is the same height — 420 on mobile, 410 at
+     tablet, 450 at desktop — whether its description runs to two lines or
+     four, and the content stays top-aligned, so the slack falls below the
+     button rather than stretching the gaps. Held as a min-height, not a
+     height, so a longer description the client types grows the card instead
+     of spilling out of it. */
   .sp-family {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
+    min-height: 420px;
     /* 17px against the design's 18: a Figma stroke does not consume layout,
        so its 18px inset leaves 269px of content inside a 305px card. With a
        1px CSS border inside the box, 17px of padding gives both — the same
@@ -159,12 +165,20 @@
   }
 
   @media screen and (width >= 750px) {
+    .sp-family {
+      min-height: 410px;
+    }
+
     .sp-family__image {
       aspect-ratio: 419 / 145;
     }
   }
 
   @media screen and (width >= 1300px) {
+    .sp-family {
+      min-height: 450px;
+    }
+
     .sp-family__image {
       aspect-ratio: 269 / 150;
     }

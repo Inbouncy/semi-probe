@@ -111,6 +111,14 @@
       /* 25px between rows, 20px between columns. */
       gap: 25px 20px;
     }
+
+    /* Figma leaves 28px under the heading but only 20px under the subhead at
+       this frame alone (its subhead sits in a node clipped to 20px, so the
+       28px line box overhangs it). One gap value cannot say both, so the grid
+       is pulled back the 8px difference. */
+    .sp-families .group-block:has(> .group-block-content > .sp-family) {
+      margin-block-start: -8px;
+    }
   }
 
   /* The design is drawn at 1440. Above that the content holds its width rather
