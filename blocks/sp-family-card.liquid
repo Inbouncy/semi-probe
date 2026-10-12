@@ -108,7 +108,13 @@
     margin: 0;
   }
 
+  /* The design lays the title out as a 20px-tall box while its line height is
+     30, so the glyphs overhang it by 5px top and bottom and everything below
+     sits 10px higher than a plain 30px line would put it. The negative margins
+     reproduce exactly that: the text keeps its 30px line box, and the count,
+     description, rule and button land where the design draws them. */
   .sp-family__title {
+    margin-block: -5px;
     color: var(--color-foreground-heading);
     font-family: var(--font-subheading--family);
     font-weight: var(--font-subheading--weight);
@@ -181,6 +187,14 @@
 
     .sp-family__image {
       aspect-ratio: 269 / 150;
+    }
+
+    /* At this frame the design gives all eight descriptions the same 107px
+       region, so the rule and button sit at one height across the row however
+       long the copy is. A floor rather than a fixed height, so a description
+       the client lengthens still grows the card. */
+    .sp-family__desc {
+      min-height: 107px;
     }
   }
 {% endstylesheet %}
