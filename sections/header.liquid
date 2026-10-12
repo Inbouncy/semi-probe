@@ -681,6 +681,13 @@
     .header__row--bottom .header__column--right {
       gap: 0;
     }
+
+    /* Horizon floors the menu button at 60px, since in its own layout that
+       button alone carries the height of the single mobile row. Here the row
+       has its own 56px, so the floor only made it 4px too tall. */
+    .header__row--bottom .header__drawer {
+      min-height: 0;
+    }
   }
 
   /* The menu button is a 40px square at both widths that show it
