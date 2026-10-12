@@ -317,15 +317,19 @@
     }
 
     /* The whole legal bar is centred here, not just the links (Figma 213:226).
-       Two things are needed: the block is fit-content, so there is nothing to
-       centre in; and the block is a flex container whose paragraph is sized to
-       its own text, so text-align alone has no room to work either. */
+       Three things stood in the way: the block is fit-content, so there was
+       nothing to centre in; its paragraph carries its own fit-content width,
+       so it hugged the text; and the block is a *column* flex container, where
+       justify-content runs down the page rather than across it. Widening the
+       paragraph is what actually does the work — the align-items is there so
+       the box agrees with it. */
     .sp-footer [class*="__copyright"] {
       width: 100%;
-      justify-content: center;
+      align-items: center;
     }
 
     .sp-footer [class*="__copyright"] p {
+      width: 100%;
       text-align: center;
       white-space: normal;
     }
