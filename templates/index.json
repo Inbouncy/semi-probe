@@ -363,7 +363,7 @@
       "type": "sp-product-families",
       "name": "Product families",
       "blocks": {
-        "pf__heading": {
+        "heading": {
           "type": "text",
           "name": "Heading",
           "settings": {
@@ -388,7 +388,7 @@
             "padding-inline-end": 0
           }
         },
-        "pf__subhead": {
+        "subhead": {
           "type": "text",
           "name": "Subheading",
           "settings": {
@@ -413,7 +413,7 @@
             "padding-inline-end": 0
           }
         },
-        "pf__grid": {
+        "grid": {
           "type": "group",
           "name": "Product grid",
           "settings": {
@@ -451,8 +451,114 @@
             "padding-inline-start": 0,
             "padding-inline-end": 0
           },
-          "blocks": {},
-          "block_order": []
+          "blocks": {
+            "manual": {
+              "type": "sp-family-card",
+              "name": "Manual Manipulators",
+              "settings": {
+                "image": "shopify://shop_images/3_coax_arm_1.jpg",
+                "title": "Manual Manipulators",
+                "configurations": "21 configurations",
+                "description": "Micrometer-driven X, Y and Z probe positioning, in MA-8005, MA-9000, MA-9100 and MA-8500 series with magnetic, vacuum or bolt-down bases.",
+                "link": "/products/manual-manipulators",
+                "button_label": "View Product"
+              }
+            },
+            "programmable": {
+              "type": "sp-family-card",
+              "name": "Programmable Manipulators",
+              "settings": {
+                "image": "shopify://shop_images/manipulator_joystick.jpg",
+                "title": "Programmable Manipulators",
+                "configurations": "6 configurations",
+                "description": "Motorized probe positioning supplied complete with controller, joystick, cables and power supply. Available with 4-axis and 8-axis controllers.",
+                "link": "/products/programmable-manipulators",
+                "button_label": "View Product"
+              }
+            },
+            "arms": {
+              "type": "sp-family-card",
+              "name": "Probe Arms",
+              "settings": {
+                "image": "shopify://shop_images/3_coaxarm.jpg",
+                "title": "Probe Arms",
+                "configurations": "6 configurations",
+                "description": "Connect the manipulator to the probe tip. Coaxial and triaxial in short and long versions, plus high frequency arms in West/East and North/South orientations.",
+                "link": "/products/probe-arms",
+                "button_label": "View Product"
+              }
+            },
+            "chucks": {
+              "type": "sp-family-card",
+              "name": "Wafer Chucks",
+              "settings": {
+                "image": "shopify://shop_images/StandardWaferChuck.jpg",
+                "title": "Wafer Chucks",
+                "configurations": "10 configurations",
+                "description": "Non-thermal vacuum chucks that hold die, partial wafers and whole wafers. Standard concentric-ring and high frequency vacuum-hole patterns.",
+                "link": "/products/wafer-chucks",
+                "button_label": "View Product"
+              }
+            },
+            "tips": {
+              "type": "sp-family-card",
+              "name": "Probe Tips",
+              "settings": {
+                "image": "shopify://shop_images/product-pic-2-1.webp",
+                "title": "Probe Tips",
+                "configurations": "8 configurations",
+                "description": "Solid tungsten tips with consistent geometry for repeatable contact, for DC and low-frequency probing. Sold by the box.",
+                "link": "/products/probe-tips",
+                "button_label": "View Product"
+              }
+            },
+            "holders": {
+              "type": "sp-family-card",
+              "name": "Packaged Part Holders",
+              "settings": {
+                "image": "shopify://shop_images/Packaged_Part_Holders.png",
+                "title": "Packaged Part Holders",
+                "configurations": "2 configurations",
+                "description": "Single-leadscrew jaws that clamp packaged parts, die, substrates and printed circuit boards. Will also hold a wafer chuck.",
+                "link": "/products/packaged-part-holders",
+                "button_label": "View Product"
+              }
+            },
+            "pumps": {
+              "type": "sp-family-card",
+              "name": "Vacuum Pumps",
+              "settings": {
+                "image": "shopify://shop_images/Vacuum_Pump_-_115_V.png",
+                "title": "Vacuum Pumps",
+                "configurations": "2 configurations",
+                "description": "Quiet, small-footprint pumps that supply vacuum to chucks and vacuum-based manipulators. 115 V and 230 V versions.",
+                "link": "/products/vacuum-pumps",
+                "button_label": "View Product"
+              }
+            },
+            "compressors": {
+              "type": "sp-family-card",
+              "name": "Air Compressors",
+              "settings": {
+                "image": "shopify://shop_images/Air_Compressor_-_115_V.png",
+                "title": "Air Compressors",
+                "configurations": "2 configurations",
+                "description": "Compact compressors for floating a vibration isolation table or raising a pneumatic microscope lift. 115 V and 230 V versions.",
+                "link": "/products/air-compressors",
+                "button_label": "View Product"
+              }
+            }
+          },
+          "block_order": [
+            "manual",
+            "programmable",
+            "arms",
+            "chucks",
+            "tips",
+            "holders",
+            "pumps",
+            "compressors"
+          ]
         }
       },
       "settings": {
@@ -474,9 +580,9 @@
         "padding-block-end": 88
       },
       "block_order": [
-        "pf__heading",
-        "pf__subhead",
-        "pf__grid"
+        "heading",
+        "subhead",
+        "grid"
       ]
     }
   },
