@@ -195,7 +195,7 @@
                       "settings": {
                         "icon": "facebook",
                         "width": 24,
-                        "link": "",
+                        "link": "https://semiprobe.com/",
                         "open_in_new_tab": true
                       }
                     },
@@ -205,7 +205,7 @@
                       "settings": {
                         "icon": "linkedin",
                         "width": 24,
-                        "link": "",
+                        "link": "https://semiprobe.com/",
                         "open_in_new_tab": true
                       }
                     }

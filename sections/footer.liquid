@@ -81,23 +81,35 @@
     transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
   }
 
-  /* Figma 211:15 draws Facebook as a filled rounded square; Horizon ships the
-     circular mark. snippets/icon.liquid is 133KB, so rather than fork it for
-     one glyph the shape is masked in. The mask paints with currentColor, so
-     the hover to orange still works, and LinkedIn is left alone because
-     Horizon's glyph already matches the design. */
-  .sp-footer .icon-block svg[class*="__facebook"] {
+  /* Both social glyphs come from the design (Figma 211:15 and 211:18), masked
+     in rather than forking snippets/icon.liquid, which is 133KB. Masking only
+     Facebook was a mistake: Horizon draws its glyphs on a 20px grid, so the
+     two marks ended up different sizes. Taking both from the same 24px source
+     makes them identical.
+
+     The mask paints with currentColor, so the hover to orange still works. */
+  .sp-footer .icon-block svg[class*="__facebook"],
+  .sp-footer .icon-block svg[class*="__linkedin"] {
     background-color: currentColor;
+  }
+
+  .sp-footer .icon-block svg[class*="__facebook"] {
     mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20fill%3D%27black%27%20d%3D%27M22.12%201H1.88C1.39325%201%201%201.39325%201%201.88V22.12C1%2022.6068%201.39325%2023%201.88%2023H22.12C22.6068%2023%2023%2022.6068%2023%2022.12V1.88C23%201.39325%2022.6068%201%2022.12%201ZM19.579%207.42125H17.8218C16.444%207.42125%2016.1773%208.07575%2016.1773%209.03825V11.1585H19.4662L19.0373%2014.4777H16.1773V23H12.748V14.4805H9.87975V11.1585H12.748V8.711C12.748%205.87025%2014.4832%204.322%2017.0187%204.322C18.2342%204.322%2019.2765%204.41275%2019.5818%204.454V7.42125H19.579Z%27%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
   }
 
-  .sp-footer .icon-block svg[class*="__facebook"] > * {
+  .sp-footer .icon-block svg[class*="__linkedin"] {
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20fill%3D%27black%27%20fill-rule%3D%27evenodd%27%20d%3D%27M1%202.838C1.00053%202.3507%201.19435%201.8835%201.53892%201.53892C1.8835%201.19435%202.35069%201.00053%202.838%201H21.16C21.4016%200.999608%2021.6409%201.04687%2021.8641%201.13907C22.0874%201.23127%2022.2903%201.36661%2022.4612%201.53734C22.6322%201.70807%2022.7677%201.91083%2022.8602%202.13401C22.9526%202.3572%2023.0001%202.59643%2023%202.838V21.16C23%2021.6478%2022.8063%2022.1157%2022.4614%2022.4607C22.1166%2022.8058%2021.6488%2022.9997%2021.161%2023H2.838C2.35052%2022.9995%201.88318%2022.8055%201.53857%2022.4607C1.19396%2022.1159%201.00026%2021.6485%201%2021.161V2.838ZM9.708%209.388H12.687V10.884C13.117%2010.024%2014.217%209.25%2015.87%209.25C19.039%209.25%2019.79%2010.963%2019.79%2014.106V19.928H16.583V14.822C16.583%2013.032%2016.153%2012.022%2015.061%2012.022C13.546%2012.022%2012.916%2013.111%2012.916%2014.822V19.928H9.708V9.388ZM4.208%2019.791H7.416V9.25H4.208V19.791ZM7.875%205.812C7.88105%206.08668%207.83217%206.35979%207.73124%206.61532C7.63031%206.87084%207.47935%207.10364%207.28723%207.30003C7.09511%207.49643%206.8657%207.65248%206.61245%207.75901C6.35921%207.86554%206.08724%207.92042%205.8125%207.92042C5.53776%207.92042%205.26579%207.86554%205.01255%207.75901C4.7593%207.65248%204.52989%207.49643%204.33777%207.30003C4.14565%207.10364%203.99469%206.87084%203.89376%206.61532C3.79283%206.35979%203.74395%206.08668%203.75%205.812C3.76187%205.27286%203.98439%204.75979%204.36989%204.38269C4.75539%204.00558%205.27322%203.79442%205.8125%203.79442C6.35178%203.79442%206.86961%204.00558%207.25511%204.38269C7.64061%204.75979%207.86313%205.27286%207.875%205.812Z%27%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  }
+
+  .sp-footer .icon-block svg[class*="__facebook"] > *,
+  .sp-footer .icon-block svg[class*="__linkedin"] > * {
     display: none;
   }
 
 
   .sp-footer .icon-block a:hover svg,
-  .sp-footer .icon-block a:focus-visible svg {
+  .sp-footer .icon-block a:focus-visible svg,
+  .sp-footer .icon-block:hover svg {
     color: var(--color-primary-button-background);
   }
 
