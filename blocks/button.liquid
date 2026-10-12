@@ -10,6 +10,23 @@
   dark colour schemes.
 {% endcomment %}
 {% stylesheet %}
+  /* The design's button box is one size everywhere it appears — Button/Primary
+     (218:381), Button/Secondary (218:397), Button/Outline (218:403) and the
+     header's Pill CTA (211:55) are all 44px tall: a 20px line inside 12px and
+     22px of padding. Horizon's own variables are 16px and 24px with the
+     inherited 1.6 line, which renders 54.4px.
+
+     This sits on .button rather than in a section so that every button in the
+     theme shares the design's geometry, and it redefines the variables rather
+     than the padding so Horizon's own rule still does the applying. */
+  .button,
+  .button-secondary {
+    --button-padding-block: 12px;
+    --button-padding-inline: 22px;
+
+    line-height: 20px;
+  }
+
   .button-outline {
     display: inline-flex;
     align-items: center;
