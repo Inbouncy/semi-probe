@@ -351,6 +351,6 @@
     "button_text_case_primary": "uppercase",
     "button_text_case_secondary": "uppercase",
     "logo": "shopify://shop_images/semiprobe-logo.png",
-    "logo_inverse": "shopify://shop_images/semiprobe-logo.png"
+    "logo_inverse": "shopify://shop_images/semiprobe-logo-inverse.png"
   }
 }
