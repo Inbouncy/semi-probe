@@ -2,9 +2,13 @@
   One product family card — Figma 68:3047.
 
   Purpose-built rather than assembled from group/text/image/button blocks for
-  two reasons. Shopify allows 50 blocks per section and eight cards built that
-  way came to 59, which the platform rejects. And it reads better in the Theme
-  Editor: one card with five fields, instead of six nested blocks to open.
+  two reasons. Shopify allows 50 blocks per section, and eight cards built that
+  way came to 59. And it reads better in the Theme Editor: one card with five
+  fields, rather than six nested blocks to open.
+
+  The wrapper below is the card. A block whose schema sets `tag: null` gets no
+  wrapper from Shopify, so — as Horizon's own group, text and image blocks do —
+  it renders its own and carries `shopify_attributes` for the editor.
 {%- enddoc -%}
 
 {%- liquid
@@ -12,7 +16,8 @@
   assign label = block.settings.button_label | default: 'View Product'
 -%}
 
-<div class="sp-family__media">
+<div class="sp-family" {{ block.shopify_attributes }}>
+  <div class="sp-family__media">
     {%- if img -%}
       {{
         img
@@ -40,28 +45,26 @@
     <p class="sp-family__desc">{{ block.settings.description }}</p>
   {%- endif -%}
 
-  <span
-    class="sp-family__rule"
-    aria-hidden="true"
-  ></span>
+  <span class="sp-family__rule" aria-hidden="true"></span>
 
-<a
-  class="button-secondary sp-family__cta"
-  {% if block.settings.link == blank %}
-    role="link"
-    aria-disabled="true"
-  {% else %}
-    href="{{ block.settings.link }}"
-  {% endif %}
->
-  {{- label -}}
-</a>
+  <a
+    class="button-secondary sp-family__cta"
+    {% if block.settings.link == blank %}
+      role="link"
+      aria-disabled="true"
+    {% else %}
+      href="{{ block.settings.link }}"
+    {% endif %}
+  >
+    {{- label -}}
+  </a>
+</div>
 
 {% stylesheet %}
-  /* Figma 68:3047 — white card, 1px #ccc hairline, 8px radius, 18px padding
-     and a 14px rhythm. Fixed heights of 450 / 410 / 420 across the frames, so
-     every card in a row ends level; content stays top-aligned, as it is in the
-     design, where the button sits wherever the description leaves it. */
+  /* Figma 68:3047 — white card, 1px #ccc hairline, 8px radius, 18px padding,
+     14px rhythm. Fixed heights of 450 / 410 / 420 across the frames so every
+     card in a row ends level; content stays top-aligned, as in the design,
+     where the button sits wherever the description leaves it. */
   .sp-family {
     display: flex;
     min-height: 420px;
@@ -208,7 +211,6 @@
     {
       "name": "Product family"
     }
-  ],
-  "class": "sp-family"
+  ]
 }
 {% endschema %}
