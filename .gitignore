@@ -1,0 +1,19 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Shopify CLI
+.shopify/
+*.theme-check.log
+
+# Node (only if tooling is added later)
+node_modules/
+npm-debug.log*
+
+# Never commit credentials or theme access tokens
+.env
+.env.*
+shopify.theme.toml
