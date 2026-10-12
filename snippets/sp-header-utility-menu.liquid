@@ -73,8 +73,11 @@
   }
 
   /* Tablet and below: the utility links collapse out of the bar and are
-     reachable from the mobile drawer instead (Figma 212:46 / 212:90). */
-  @media screen and (width < 1100px) {
+     reachable from the drawer instead (Figma 212:48 and 212:91 both hide
+     them). They go at the same width as the primary nav — 766px of links
+     plus the search field and cart needs 1223px, so holding them any
+     longer would overlap. */
+  @media screen and (width < 1300px) {
     .sp-utility-menu {
       display: none;
     }

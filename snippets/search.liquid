@@ -114,8 +114,16 @@
     appearance: none;
   }
 
-  /* Mobile: the field spans the bar rather than sitting at a fixed 288px
-     (Figma 212:90 puts search and cart together in the dark row). */
+  /* Tablet trims the field to 250px (Figma 212:62). */
+  @media screen and (750px <= width < 1300px) {
+    .sp-search {
+      width: 250px;
+    }
+  }
+
+  /* Mobile: the field spans its column rather than sitting at a fixed width.
+     Figma 212:92 puts it at 255px, which is what the column measures once the
+     cart and the 16px insets are taken out of 390. */
   @media screen and (width < 750px) {
     .sp-search {
       width: 100%;

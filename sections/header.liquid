@@ -1,10 +1,10 @@
 
 
 {% liquid
-  assign order = 'utility_menu,logo,menu,localization,search,mobile_search,cta,actions'
+  assign order = 'utility_menu,logo,menu,localization,search,mobile_search,cta,actions,mobile_menu'
 
   if shop.customer_accounts_enabled
-    assign order = 'utility_menu,mobile_search,logo,menu,localization,search,cta,actions'
+    assign order = 'utility_menu,mobile_search,logo,menu,localization,search,cta,actions,mobile_menu'
   endif
 
   assign rows = 'top,bottom' | split: ','
@@ -80,9 +80,9 @@
 
   if section.settings.search_position == 'left'
     if shop.customer_accounts_enabled
-      assign order = 'utility_menu,mobile_search,logo,search,menu,localization,cta,actions'
+      assign order = 'utility_menu,mobile_search,logo,search,menu,localization,cta,actions,mobile_menu'
     else
-      assign order = 'utility_menu,logo,search,menu,localization,mobile_search,cta,actions'
+      assign order = 'utility_menu,logo,search,menu,localization,mobile_search,cta,actions,mobile_menu'
     endif
   endif
   capture search
@@ -198,7 +198,7 @@
 
       case row
         when 'top'
-          assign first = mobile_menu
+          assign first = ''
 
           if bottom_row_blocks.size > 0 and section.settings.divider_size == 'page-width'
             assign class = class | append: ' divider--page-width'
@@ -236,7 +236,8 @@
         search: search,
         mobile_search: mobile_search,
         utility_menu: utility_menu,
-        cta: cta
+        cta: cta,
+        mobile_menu: mobile_menu
       %}
     {% endcapture %}
 
@@ -583,12 +584,21 @@
       margin-top: calc(var(--header-height) * -1);
     }
   }
-  /* ────────────────────────────────────────────────────────────────────
-     SemiProbe header geometry — Figma 212:5.
-     Full-bleed rows with 30px insets: a 60px dark utility bar above a 74px
-     white nav row. Gaps are the design's own: 39px logo-to-nav, 14px
-     search-to-cart.
+  /* ─────────────────────────────────────────────────────────────────────
+     SemiProbe header geometry.
+
+     The design gives three headers, and they are not the same layout: the
+     primary nav and the utility links only exist on the widest one, and the
+     narrowest one reflows into two differently sized rows. Each band below is
+     one of Figma's breakpoints.
+
+     The switch from nav to menu button sits at 1300px rather than at Figma's
+     1024px frame: the nav needs 1293px to clear the CTA, so anything narrower
+     would collide before the menu button took over.
      ──────────────────────────────────────────────────────────────────── */
+
+  /* Desktop and tablet share their rows: a 60px dark bar over a 74px nav row,
+     inset 30px (Figma 212:5 and 212:46). */
   @media screen and (width >= 750px) {
     .header__row .header__columns {
       padding-inline: 30px;
@@ -606,10 +616,78 @@
       gap: 39px;
     }
 
-    .header__row--top .header__column--right,
-    .header__row--bottom .header__column--right {
+    .header__row--top .header__column--right {
       gap: 14px;
     }
+
+    /* 16px between the CTA and the menu button on tablet (Figma 212:84). */
+    .header__row--bottom .header__column--right {
+      gap: 16px;
+    }
+  }
+
+  /* Tablet — Figma 212:46 hides the primary nav (212:73) and the utility links
+     (212:48), and puts the menu button beside the CTA (212:87). */
+  @media screen and (750px <= width < 1300px) {
+    .header__row--bottom .header-menu {
+      display: none;
+    }
+
+    /* The button carries Horizon's `desktop:hidden`, which is !important, so
+       overriding it needs both the extra class and the flag. */
+    .header__row--bottom .header__drawer.desktop\:hidden {
+      display: flex !important;
+    }
+
+    /* 220 x 35.6 in the design; the height alone gets there, because the
+       intrinsic ratio supplies the width. */
+    .header-logo img {
+      width: auto;
+      height: 35.6px;
+    }
+  }
+
+  /* Mobile — Figma 212:90. Horizon folds the header into one five-column row
+     (menu button, logo centred, icons) and hides the second row outright. The
+     design instead keeps two rows of its own heights: search and cart over
+     logo and menu button. So restore a plain left/right pair — which also
+     makes Horizon's grid-area rules inert, since the columns are boxes again
+     rather than `display: contents`. */
+  @media screen and (width < 750px) {
+    .header__row--bottom.mobile\:hidden {
+      display: block !important;
+    }
+
+    .header__columns {
+      grid-template-areas: 'left right';
+      --header-template-columns: 1fr auto;
+      column-gap: 8px;
+      padding-inline: 16px;
+    }
+
+    .header__column {
+      display: flex;
+    }
+
+    .header__row--top .header__columns {
+      min-height: 54px;
+    }
+
+    .header__row--bottom .header__columns {
+      min-height: 56px;
+    }
+
+    /* The CTA is absent here, so the button is the only thing on the right. */
+    .header__row--bottom .header__column--right {
+      gap: 0;
+    }
+  }
+
+  /* The menu button is a 40px square at both widths that show it
+     (Figma 211:61). */
+  .header__row--bottom .header__drawer .header__icon--menu {
+    width: 40px;
+    height: 40px;
   }
 
   /* The nav's resting colour is set in `menu-font-styles.liquid`, not here:
@@ -1130,6 +1208,27 @@
         }
       ],
       "default": "bottom"
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_row",
+      "label": "Menu button row",
+      "options": [
+        { "value": "top", "label": "t:options.top" },
+        { "value": "bottom", "label": "t:options.bottom" }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_position",
+      "label": "Menu button position",
+      "options": [
+        { "value": "left", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "right", "label": "t:options.right" }
+      ],
+      "default": "right"
     },
     {
       "type": "select",

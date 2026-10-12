@@ -20,7 +20,7 @@
           "settings": {
             "hide_logo_on_home_page": false,
             "custom_height": 45,
-            "custom_height_mobile": 32,
+            "custom_height_mobile": 28,
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
@@ -89,6 +89,8 @@
         "utility_menu_position": "left",
         "cta_label": "Request a Discovery Call",
         "cta_link": "/pages/contact",
+        "mobile_menu_row": "bottom",
+        "mobile_menu_position": "right",
         "cta_row": "bottom",
         "cta_position": "right",
         "logo_row": "bottom"
