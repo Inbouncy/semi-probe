@@ -53,6 +53,7 @@
 
   /* Side insets: 24 / 48 / 80 across the three frames. */
   .sp-footer > .section-content-wrapper {
+    padding-block: 48px 24px;
     padding-inline: 24px;
   }
 
@@ -90,6 +91,7 @@
   /* Figma 213:47 — Bold, uppercase, on the orange accent. The scheme's
      primary-button background is that orange, so it stays editable. */
   .sp-footer .menu__heading {
+    padding-block: 0;
     color: var(--color-primary-button-background);
     font-family: var(--font-accent--family);
     font-weight: var(--font-accent--weight);
@@ -172,8 +174,15 @@
         which share the row equally (Figma 213:98 / 213:113). ─────────── */
   @media screen and (width >= 750px) {
     .sp-footer > .section-content-wrapper {
+      padding-block: 52px 28px;
       padding-inline: 48px;
       gap: 34px;
+    }
+
+    /* Stacked, so both halves span the full width and the three columns
+       share the row equally. */
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) {
+      width: 100%;
     }
 
     /* Main stacks, so its two halves sit one above the other. */
@@ -195,8 +204,13 @@
   /* ── Desktop: four columns on one row (Figma 213:29). ─────────────── */
   @media screen and (width >= 1300px) {
     .sp-footer > .section-content-wrapper {
+      padding-block: 80px 54px;
       padding-inline: 80px;
       gap: 62px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) {
+      width: fit-content;
     }
 
     .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
@@ -228,6 +242,10 @@
 
     .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
       gap: 28px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) {
+      width: 100%;
     }
 
     .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) > .group-block-content {
