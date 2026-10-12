@@ -109,12 +109,13 @@
   }
 
   /* The design lays the title out as a 20px-tall box while its line height is
-     30, so the glyphs overhang it by 5px top and bottom and everything below
-     sits 10px higher than a plain 30px line would put it. The negative margins
-     reproduce exactly that: the text keeps its 30px line box, and the count,
-     description, rule and button land where the design draws them. */
+     30: the 30px line box starts at the top of that box and overhangs it by
+     10px at the bottom, and the count, description, rule and button are then
+     placed off the 20px. So the overhang is taken off the bottom only — a
+     margin split over both edges would sit the glyphs 5px high, which is what
+     the rendered titles showed against the design. */
   .sp-family__title {
-    margin-block: -5px;
+    margin-block-end: -10px;
     color: var(--color-foreground-heading);
     font-family: var(--font-subheading--family);
     font-weight: var(--font-subheading--weight);
