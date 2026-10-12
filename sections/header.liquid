@@ -583,6 +583,54 @@
       margin-top: calc(var(--header-height) * -1);
     }
   }
+  /* ────────────────────────────────────────────────────────────────────
+     SemiProbe header geometry — Figma 212:5.
+     Full-bleed rows with 30px insets: a 60px dark utility bar above a 74px
+     white nav row. Gaps are the design's own: 39px logo-to-nav, 14px
+     search-to-cart.
+     ──────────────────────────────────────────────────────────────────── */
+  @media screen and (width >= 750px) {
+    .header__row .header__columns {
+      padding-inline: 30px;
+    }
+
+    .header__row--top .header__columns {
+      min-height: 60px;
+    }
+
+    .header__row--bottom .header__columns {
+      min-height: 74px;
+    }
+
+    .header__row--bottom .header__column--left {
+      gap: 39px;
+    }
+
+    .header__row--top .header__column--right,
+    .header__row--bottom .header__column--right {
+      gap: 14px;
+    }
+  }
+
+  /* The primary nav sits on the white row, so it takes the heading colour
+     rather than body grey, and hovers to the scheme's primary (maroon)
+     per the Header/Nav Link component note. */
+  .header__row--bottom .menu-list {
+    --menu-top-level-font-color: var(--color-foreground-heading);
+  }
+
+  .header__row--bottom .menu-list__link:hover .menu-list__link-title,
+  .header__row--bottom .menu-list__link:focus-visible .menu-list__link-title {
+    color: var(--color-primary);
+  }
+
+  /* The cart box supplies its own padding and white background, so strip
+     the trigger button's. */
+  .header-actions__action:has(.sp-cart) {
+    padding: 0;
+    background: transparent;
+  }
+
 {% endstylesheet %}
 
 {% schema %}

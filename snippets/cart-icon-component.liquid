@@ -1,0 +1,100 @@
+{%- doc -%}
+  Renders the cart trigger's contents: bag icon plus a "Cart (n)" label.
+
+  SemiProbe override. Horizon renders an icon with a floating count bubble;
+  the design (Figma 212:25) shows a white box containing the bag icon and the
+  literal text "CART (0)". This is the smallest place to make that change —
+  `cart-drawer.liquid` keeps its own trigger button and drawer behaviour, so
+  the cart still opens exactly as before.
+
+  The count is read from `cart.item_count`, so it stays live.
+{%- enddoc -%}
+
+<cart-icon
+  class="
+    header-actions__cart-icon sp-cart
+    {% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}
+  "
+  data-testid="cart-icon"
+>
+  <span
+    class="sp-cart__icon svg-wrapper"
+    aria-hidden="true"
+  >
+    {{ 'icon-cart.svg' | inline_asset_content }}
+  </span>
+
+  <span
+    class="sp-cart__label"
+    aria-hidden="true"
+  >
+    Cart ({{ cart.item_count }})
+  </span>
+
+  {%- comment -%}
+    The visible label is aria-hidden because the trigger button in
+    cart-drawer.liquid already carries a full aria-label with the item count.
+    A live region keeps assistive tech informed when the count changes.
+  {%- endcomment -%}
+  <span
+    class="visually-hidden"
+    aria-live="polite"
+  >
+    {{ 'accessibility.cart_count' | t }}: {{ cart.item_count }}
+  </span>
+</cart-icon>
+
+{% stylesheet %}
+  /* Figma 212:25 — white box, 2px radius, 8px padding, 4px gap. The bag icon
+     is 14x17 and the label is 13/18 SemiBold uppercase with 0.65px tracking. */
+  .sp-cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    border-radius: 2px;
+    background-color: #ffffff;
+  }
+
+  .sp-cart__icon {
+    display: flex;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 17px;
+  }
+
+  .sp-cart__icon svg {
+    width: 14px;
+    height: 17px;
+    color: #23252c;
+  }
+
+  .sp-cart__label {
+    color: #23252c;
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 13px;
+    line-height: 18px;
+    letter-spacing: 0.65px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* The box replaces the floating bubble, so suppress the bubble and the
+     donut mask Horizon cuts out of the icon to make room for it. */
+  .sp-cart .cart-bubble {
+    display: none;
+  }
+
+  .sp-cart.header-actions__cart-icon--has-cart svg {
+    mask: none;
+  }
+
+  /* Mobile keeps the icon but drops the word, so the dark bar still fits
+     search alongside it (Figma 212:90). */
+  @media screen and (width < 750px) {
+    .sp-cart__label {
+      display: none;
+    }
+  }
+{% endstylesheet %}
