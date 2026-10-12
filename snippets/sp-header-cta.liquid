@@ -1,0 +1,48 @@
+{%- doc -%}
+  Renders the header's pill call-to-action ("Request a Discovery Call").
+
+  Horizon's header schema has no button slot, so `sections/header.liquid`
+  captures this and passes it to `header-row` as the `cta` slot.
+
+  It reuses the theme's native `.button` class, so its colour, radius, weight
+  and text case all come from the active colour scheme's primary-button tokens
+  rather than being hardcoded here.
+
+  @param {string} label - Button text. Renders nothing when blank.
+  @param {string} link - Destination URL.
+
+  @example
+  {% render 'sp-header-cta', label: section.settings.cta_label, link: section.settings.cta_link %}
+{%- enddoc -%}
+
+{%- if label != blank -%}
+  <a
+    class="button sp-header-cta"
+    {% if link == blank %}
+      role="link"
+      aria-disabled="true"
+    {% else %}
+      href="{{ link }}"
+    {% endif %}
+  >
+    {{- label -}}
+  </a>
+{%- endif -%}
+
+{% stylesheet %}
+  /* Pill CTA — Figma 211:59. Padding and radius are the design's; every colour
+     comes from the scheme's primary-button tokens (orange #e59a2a, hover
+     #de8b24, uppercase, weight 600), so it restyles with the scheme. */
+  .sp-header-cta {
+    padding: 12px 22px;
+    white-space: nowrap;
+  }
+
+  /* Tablet and below: the CTA stays, the nav collapses beside it
+     (Figma 212:46 — "hides them and adds the hamburger beside the CTA"). */
+  @media screen and (width < 750px) {
+    .sp-header-cta {
+      display: none;
+    }
+  }
+{% endstylesheet %}

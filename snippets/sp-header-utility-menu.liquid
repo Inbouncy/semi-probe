@@ -1,0 +1,78 @@
+{%- doc -%}
+  Renders the utility link row that sits in the header's dark top row.
+
+  Horizon's header supports exactly one menu (`_header-menu`), but the SemiProbe
+  design needs a second, independent row of company links above the primary nav.
+  This snippet supplies that row; `sections/header.liquid` captures it and passes
+  it to `header-row` as the `utility_menu` slot.
+
+  @param {object} menu - A linklist object, from `section.settings.utility_menu`.
+
+  @example
+  {% render 'sp-header-utility-menu', menu: section.settings.utility_menu %}
+{%- enddoc -%}
+
+{%- if menu != blank and menu.links.size > 0 -%}
+  <nav
+    class="sp-utility-menu"
+    aria-label="Company and resources"
+  >
+    <ul
+      class="sp-utility-menu__list"
+      role="list"
+    >
+      {%- for link in menu.links -%}
+        <li class="sp-utility-menu__item">
+          <a
+            class="sp-utility-menu__link"
+            href="{{ link.url }}"
+            {%- if link.current %}
+              aria-current="page"
+            {% endif -%}
+          >
+            {{- link.title -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  /* Utility row — Figma 212:6. Labels are Mulish SemiBold 14/20, uppercase,
+     white on the dark bar, hovering to the orange accent. */
+  .sp-utility-menu__list {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sp-utility-menu__link {
+    display: inline-block;
+    color: var(--color-foreground);
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .sp-utility-menu__link:hover,
+  .sp-utility-menu__link:focus-visible {
+    color: var(--color-primary);
+  }
+
+  /* Tablet and below: the utility links collapse out of the bar and are
+     reachable from the mobile drawer instead (Figma 212:46 / 212:90). */
+  @media screen and (width < 1100px) {
+    .sp-utility-menu {
+      display: none;
+    }
+  }
+{% endstylesheet %}
