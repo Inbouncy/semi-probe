@@ -13,6 +13,13 @@
   {% render 'search', style: 'modal', class: 'desktop:hidden' %}
 {%- enddoc -%}
 
+{%- liquid
+  # Horizon renders this snippet twice — once per breakpoint — so the field
+  # needs an id unique to each instance or the <label for> is ambiguous.
+  assign instance = class | default: 'default' | handleize
+  assign input_id = 'sp-search-input-' | append: instance
+-%}
+
 {% unless style == 'none' %}
   <form
     class="sp-search{% if class != blank %} {{ class | strip }}{% endif %}"
@@ -22,7 +29,7 @@
   >
     <label
       class="visually-hidden"
-      for="sp-search-input"
+      for="{{ input_id }}"
     >
       {{ 'actions.search' | t }}
     </label>
@@ -33,7 +40,7 @@
       {{- 'icon-search.svg' | inline_asset_content -}}
     </span>
     <input
-      id="sp-search-input"
+      id="{{ input_id }}"
       class="sp-search__input"
       type="search"
       name="q"
