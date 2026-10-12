@@ -49,16 +49,9 @@
   /* ────────────────────────────────────────────────────────────────────
      Product Families — Figma 68:3042 / 76:50 / 78:50.
 
-     The grid regroups at every width (4 x 305 → 2 x 455 → 1 x 342) and
-     the cards have their own fixed heights (450 / 410 / 420), so the
-     three bands below are the three frames.
-
-     Content is all block settings; the card's white fill, 1px #ccc
-     border and 8px radius come from the group block's own border
-     settings, and the hairline above each button is a divider block.
-     What lives here is the grid itself, the per-frame type sizes the
-     text block's rem list cannot reach, the image heights, and the
-     button's trailing arrow.
+     The cards style themselves (blocks/sp-family-card.liquid). What is
+     here is the section's own frame: the insets, the heading pair, and
+     the grid that regroups 4 x 305 → 2 x 455 → 1 x 342.
      ──────────────────────────────────────────────────────────────────── */
 
   /* ── Mobile first (Figma 78:50) ──────────────────────────────────── */
@@ -77,69 +70,11 @@
     line-height: 28px;
   }
 
-  /* One column of cards. The grid replaces the group block's flex row. */
-  .sp-families .group-block:has(> .group-block-content > .group-block) > .group-block-content {
+  /* The grid replaces the wrapping group's flex row. */
+  .sp-families .group-block:has(> .group-block-content > .sp-family) > .group-block-content {
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
-  }
-
-  .sp-families [class*="__card"] {
-    min-height: 420px;
-  }
-
-  /* 22px is not on the text block's size list (20 then 24). */
-  .sp-families [class*="__title"] p {
-    font-size: 22px;
-    line-height: 30px;
-  }
-
-  .sp-families [class*="__count"] p {
-    line-height: 18px;
-  }
-
-  .sp-families [class*="__desc"] p {
-    line-height: 22px;
-  }
-
-  .sp-families .image-block__image {
-    width: 100%;
-    height: 145px;
-    aspect-ratio: auto;
-  }
-
-  /* The divider sits hard against the button's 14px gap, so it needs no
-     margin of its own; it takes --color-border, which is the design's #ccc. */
-  .sp-families .divider__line {
-    background-color: var(--color-border);
-  }
-
-  /* Figma 218:387 — the secondary button carries a 12px trailing chevron,
-     8px after the label. Horizon's button is a grid with no icon slot, so
-     the arrow is drawn as a masked pseudo-element that paints with
-     currentColor and therefore follows the label through hover. */
-  .sp-families .button-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .sp-families .button-secondary::after {
-    content: "";
-    flex: 0 0 auto;
-    width: 12px;
-    height: 12px;
-    background-color: currentColor;
-    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2013%2013%27%3E%3Cpath%20d%3D%27M1%205.6672H10.3344M5.6672%201L10.3344%205.6672L5.6672%2010.3344%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
-  }
-
-  /* Figma 219:465 drops the arrow on mobile — the button measures 154px
-     there against 174 at the wider frames, which is exactly the arrow and
-     its gap. */
-  @media screen and (width < 750px) {
-    .sp-families .button-secondary::after {
-      display: none;
-    }
   }
 
   /* ── Tablet (Figma 76:50) ────────────────────────────────────────── */
@@ -155,13 +90,9 @@
       line-height: 50px;
     }
 
-    .sp-families .group-block:has(> .group-block-content > .group-block) > .group-block-content {
+    .sp-families .group-block:has(> .group-block-content > .sp-family) > .group-block-content {
       grid-template-columns: repeat(2, 1fr);
       gap: 18px;
-    }
-
-    .sp-families [class*="__card"] {
-      min-height: 410px;
     }
   }
 
@@ -172,18 +103,10 @@
       padding-inline: 80px;
     }
 
-    .sp-families .group-block:has(> .group-block-content > .group-block) > .group-block-content {
+    .sp-families .group-block:has(> .group-block-content > .sp-family) > .group-block-content {
       grid-template-columns: repeat(4, 1fr);
       /* 25px between rows, 20px between columns. */
       gap: 25px 20px;
-    }
-
-    .sp-families [class*="__card"] {
-      min-height: 450px;
-    }
-
-    .sp-families .image-block__image {
-      height: 150px;
     }
   }
 {% endstylesheet %}

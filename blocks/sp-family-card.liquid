@@ -1,0 +1,214 @@
+{%- doc -%}
+  One product family card — Figma 68:3047.
+
+  Purpose-built rather than assembled from group/text/image/button blocks for
+  two reasons. Shopify allows 50 blocks per section and eight cards built that
+  way came to 59, which the platform rejects. And it reads better in the Theme
+  Editor: one card with five fields, instead of six nested blocks to open.
+{%- enddoc -%}
+
+{%- liquid
+  assign img = block.settings.image
+  assign label = block.settings.button_label | default: 'View Product'
+-%}
+
+<div class="sp-family__media">
+    {%- if img -%}
+      {{
+        img
+        | image_url: width: 838
+        | image_tag:
+          widths: '269, 306, 419, 538, 612, 838',
+          sizes: '(min-width: 1300px) 269px, (min-width: 750px) 419px, calc(100vw - 84px)',
+          class: 'sp-family__image',
+          alt: block.settings.title
+      }}
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'sp-family__image placeholder-svg' }}
+    {%- endif -%}
+  </div>
+
+  {%- if block.settings.title != blank -%}
+    <p class="sp-family__title">{{ block.settings.title }}</p>
+  {%- endif -%}
+
+  {%- if block.settings.configurations != blank -%}
+    <p class="sp-family__count">{{ block.settings.configurations }}</p>
+  {%- endif -%}
+
+  {%- if block.settings.description != blank -%}
+    <p class="sp-family__desc">{{ block.settings.description }}</p>
+  {%- endif -%}
+
+  <span
+    class="sp-family__rule"
+    aria-hidden="true"
+  ></span>
+
+<a
+  class="button-secondary sp-family__cta"
+  {% if block.settings.link == blank %}
+    role="link"
+    aria-disabled="true"
+  {% else %}
+    href="{{ block.settings.link }}"
+  {% endif %}
+>
+  {{- label -}}
+</a>
+
+{% stylesheet %}
+  /* Figma 68:3047 — white card, 1px #ccc hairline, 8px radius, 18px padding
+     and a 14px rhythm. Fixed heights of 450 / 410 / 420 across the frames, so
+     every card in a row ends level; content stays top-aligned, as it is in the
+     design, where the button sits wherever the description leaves it. */
+  .sp-family {
+    display: flex;
+    min-height: 420px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-background);
+  }
+
+  .sp-family__media {
+    width: 100%;
+  }
+
+  .sp-family__image {
+    display: block;
+    width: 100%;
+    height: 145px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+
+  .sp-family__title,
+  .sp-family__count,
+  .sp-family__desc {
+    margin: 0;
+  }
+
+  .sp-family__title {
+    color: var(--color-foreground-heading);
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .sp-family__count {
+    color: #b0afaf;
+    font-family: var(--font-accent--family);
+    font-weight: var(--font-accent--weight);
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .sp-family__desc {
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-weight: var(--font-body--weight);
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .sp-family__rule {
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-border);
+  }
+
+  /* Figma 218:387 — a 12px chevron 8px after the label. Horizon's button is a
+     grid with no icon slot, so the arrow is a masked pseudo-element; it paints
+     with currentColor and so follows the label through hover. */
+  .sp-family__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sp-family__cta::after {
+    content: "";
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2013%2013%27%3E%3Cpath%20d%3D%27M1%205.6672H10.3344M5.6672%201L10.3344%205.6672L5.6672%2010.3344%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  }
+
+  /* Figma 219:465 drops the arrow on mobile: the button is 154px there
+     against 174 at the wider frames, which is exactly the arrow and its gap. */
+  @media screen and (width < 750px) {
+    .sp-family__cta::after {
+      display: none;
+    }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-family {
+      min-height: 410px;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-family {
+      min-height: 450px;
+    }
+
+    .sp-family__image {
+      height: 150px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product family",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photo"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Family name",
+      "default": "Product family"
+    },
+    {
+      "type": "text",
+      "id": "configurations",
+      "label": "Configuration count",
+      "info": "Shown under the name, e.g. \"21 configurations\"."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "View Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product family"
+    }
+  ],
+  "class": "sp-family"
+}
+{% endschema %}
