@@ -90,9 +90,12 @@
         "cta_label": "Request a Discovery Call",
         "cta_link": "/pages/contact",
         "cta_row": "bottom",
-        "cta_position": "right"
+        "cta_position": "right",
+        "logo_row": "bottom"
       }
     }
   },
-  "order": ["header_section"]
+  "order": [
+    "header_section"
+  ]
 }
