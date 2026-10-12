@@ -100,6 +100,13 @@
     text-transform: uppercase;
   }
 
+  /* The heading text sits in a `display: contents` span, so the line box is
+     the span's own — setting it on the summary alone leaves it at 22.4px and
+     every column 2.4px too tall. */
+  .sp-footer .menu__heading__default {
+    line-height: 20px;
+  }
+
   /* Figma 211:35 — Light, uppercase, white, hovering to orange. The list is
      a plain block list in Horizon, so the 10px rhythm is set here: 20px of
      line plus 10px of gap is the design's 30px step. */
