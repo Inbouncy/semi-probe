@@ -107,6 +107,11 @@
     gap: 10px;
   }
 
+  .sp-footer .menu .list-unstyled > li {
+    margin: 0;
+    line-height: 20px;
+  }
+
   .sp-footer .menu .list-unstyled a {
     display: inline-block;
     color: var(--color-foreground);
@@ -177,11 +182,11 @@
       gap: 34px;
     }
 
-    .sp-footer .group-block:has(> .group-block-content > .menu) > .group-block-content {
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) > .group-block-content {
       gap: 36px;
     }
 
-    .sp-footer .group-block:has(> .group-block-content > .menu) .menu {
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) .menu {
       flex: 1 1 0;
       min-width: 0;
     }
@@ -204,11 +209,11 @@
       max-width: 240px;
     }
 
-    .sp-footer .group-block:has(> .group-block-content > .menu) > .group-block-content {
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) > .group-block-content {
       gap: 70px;
     }
 
-    .sp-footer .group-block:has(> .group-block-content > .menu) .menu {
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) .menu {
       flex: 0 0 240px;
     }
   }
@@ -225,7 +230,7 @@
       gap: 28px;
     }
 
-    .sp-footer .group-block:has(> .group-block-content > .menu) > .group-block-content {
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) > .group-block-content {
       gap: 24px;
     }
 
