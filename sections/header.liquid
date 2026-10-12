@@ -690,11 +690,19 @@
     }
   }
 
-  /* The menu button is a 40px square at both widths that show it
-     (Figma 211:61). */
+  /* The menu button is a 40px square at both widths that show it, holding a
+     24px glyph (Figma 211:61). Horizon's own padding is 16px, which would
+     squeeze the icon down to 8px. */
   .header__row--bottom .header__drawer .header__icon--menu {
     width: 40px;
     height: 40px;
+    padding: 8px;
+  }
+
+  .header__row--bottom .header__drawer .header-drawer-icon,
+  .header__row--bottom .header__drawer .header-drawer-icon svg {
+    width: 24px;
+    height: 24px;
   }
 
   /* The nav's resting colour is set in `menu-font-styles.liquid`, not here:
