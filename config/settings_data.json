@@ -349,6 +349,8 @@
     "type_size_h1": "48",
     "button_font_weight_primary": "600",
     "button_text_case_primary": "uppercase",
-    "button_text_case_secondary": "uppercase"
+    "button_text_case_secondary": "uppercase",
+    "logo": "shopify://shop_images/semiprobe-logo.png",
+    "logo_inverse": "shopify://shop_images/semiprobe-logo.png"
   }
 }
