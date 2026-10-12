@@ -74,6 +74,9 @@
   .sp-families .group-block:has(> .group-block-content > .sp-family) > .group-block-content {
     display: grid;
     grid-template-columns: 1fr;
+    /* Stretch, so a row is always level even when a title wraps to two lines —
+       the group's own vertical alignment would leave the cards ragged. */
+    align-items: stretch;
     gap: 16px;
   }
 

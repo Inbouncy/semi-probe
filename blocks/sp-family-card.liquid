@@ -71,7 +71,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
-    padding: 18px;
+    /* 17px against the design's 18: a Figma stroke does not consume layout,
+       so its 18px inset leaves 269px of content inside a 305px card. With a
+       1px CSS border inside the box, 17px of padding gives both — the same
+       18px visual inset and the same 269px for the text to wrap in. */
+    padding: 17px;
     border: 1px solid var(--color-border);
     border-radius: 8px;
     background-color: var(--color-background);
