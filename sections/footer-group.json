@@ -209,9 +209,19 @@
                         "open_in_new_tab": true
                       }
                     }
-                  }
+                  },
+                  "block_order": [
+                    "facebook",
+                    "linkedin"
+                  ]
                 }
-              }
+              },
+              "block_order": [
+                "logo",
+                "blurb",
+                "address",
+                "social"
+              ]
             },
             "links": {
               "type": "group",
@@ -312,9 +322,18 @@
                     "padding-inline-end": 0
                   }
                 }
-              }
+              },
+              "block_order": [
+                "shop",
+                "company",
+                "support"
+              ]
             }
-          }
+          },
+          "block_order": [
+            "company",
+            "links"
+          ]
         },
         "legal": {
           "type": "group",
@@ -450,9 +469,17 @@
                     "padding-inline-end": 0
                   }
                 }
-              }
+              },
+              "block_order": [
+                "copyright",
+                "legal_menu"
+              ]
             }
-          }
+          },
+          "block_order": [
+            "divider",
+            "bar"
+          ]
         }
       },
       "block_order": [
