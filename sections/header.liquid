@@ -43,6 +43,15 @@
     endif
   endif
 
+  # SemiProbe: the header's destinations are not settled yet, so every link in
+  # it -- the primary nav, its dropdowns and this button -- is held back behind
+  # one setting. The stored URL is kept and simply not rendered, so turning
+  # `nav_links_active` on restores all of them at once.
+  assign cta_link = ''
+  if section.settings.nav_links_active
+    assign cta_link = section.settings.cta_link
+  endif
+
   capture logo
     content_for 'block', type: '_header-logo', id: 'header-logo'
   endcapture
@@ -68,7 +77,7 @@
   # it as the drawer's sibling instead, pinned to the open panel in CSS. Either
   # way exactly one copy exists: the splice clears drawer_cta when it fires.
   capture drawer_cta
-    render 'sp-header-cta', label: section.settings.cta_label, link: section.settings.cta_link, in_drawer: true
+    render 'sp-header-cta', label: section.settings.cta_label, link: cta_link, in_drawer: true
   endcapture
 
   if drawer_cta != blank and mobile_menu contains '</nav>'
@@ -96,7 +105,7 @@
   endcapture
 
   capture cta
-    render 'sp-header-cta', label: section.settings.cta_label, link: section.settings.cta_link
+    render 'sp-header-cta', label: section.settings.cta_label, link: cta_link
   endcapture
 
   if shop.customer_accounts_enabled
@@ -854,6 +863,62 @@
     box-shadow: var(--sp-edge-hairline), var(--sp-edge-shadow);
   }
 
+  /* ─────────────────────────────────────────────────────────────────────
+     The primary nav's dropdowns.
+
+     Horizon's submenu is a full-bleed mega menu pinned to the header's whole
+     width. The design's is a narrow dark card under its own parent item with a
+     caret pointing back up at it, so the parent becomes the positioning
+     context and the card centres on it. The card itself is styled in
+     snippets/sp-header-submenu.liquid.
+
+     It opens on hover and on focus-within in CSS rather than relying on
+     Horizon's header-menu.js, so it works before that script runs, with
+     JavaScript unavailable, and for anyone arriving by keyboard.
+     ──────────────────────────────────────────────────────────────────── */
+  .header__row--bottom .menu-list__list-item {
+    position: relative;
+    /* The item fills the row's height so the card can hang from the row's
+       bottom edge rather than from the middle of the text. */
+    display: flex;
+    align-items: stretch;
+  }
+
+  .header__row--bottom .menu-list__list-item > .menu-list__link {
+    display: flex;
+    align-items: center;
+  }
+
+  .header__row--bottom .sp-submenu {
+    inset-inline-start: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 160ms ease,
+      visibility 160ms;
+  }
+
+  .header__row--bottom .menu-list__list-item:hover > .sp-submenu,
+  .header__row--bottom .menu-list__list-item:focus-within > .sp-submenu {
+    opacity: 1;
+    visibility: visible;
+    --submenu-content-opacity: 1;
+  }
+
+  /* A top-level item with no href is a placeholder until the client supplies
+     links. It still hovers and still takes focus; it is just not a target. */
+  .header__row--bottom .menu-list__link[aria-disabled="true"] {
+    cursor: default;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header__row--bottom .sp-submenu {
+      transition: none;
+    }
+  }
+
 {% endstylesheet %}
 
 {% schema %}
@@ -1151,6 +1216,13 @@
       "step": 0.5,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "nav_links_active",
+      "label": "Navigation links active",
+      "info": "Off while the menu's destinations are still being decided: the nav, its dropdowns and the call-to-action button all render without links, but keep their styling and hover. Turn on to restore every link from the menu and the button setting.",
+      "default": false
     },
     {
       "type": "select",
