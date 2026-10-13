@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "product_area": {
+      "type": "sp-product-area",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "column_gap": 24
+      }
+    }
+  },
+  "order": ["product_area"]
+}
