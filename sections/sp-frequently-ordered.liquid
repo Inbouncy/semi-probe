@@ -133,13 +133,14 @@
     letter-spacing: -0.36px;
   }
 
+  /* The badge sits 12px above the featured card's top edge. The design
+     lets it overlap the gap below the heading rather than pushing the row
+     down, which is what kept this section 16px taller than its frame. */
   .sp-accessories__grid {
     display: grid;
     grid-template-columns: 1fr;
-    /* The badge sits above the featured card's top edge, so the row needs
-       room for it rather than clipping it against the section's padding. */
     gap: 24px;
-    margin: 12px 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
