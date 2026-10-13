@@ -44,6 +44,17 @@
     white-space: nowrap;
   }
 
+  /* Horizon dims any .button carrying aria-disabled to half opacity and gives
+     it a not-allowed cursor. Here the attribute means "this link has no
+     destination yet", not "this control is unavailable", so the button keeps
+     its own appearance and hover while the header's links are held back.
+     Measured at rest, it was rendering at opacity 0.5. The third class is to
+     outrank Horizon's rule, which is otherwise the same weight. */
+  .button.sp-header-cta[aria-disabled="true"] {
+    opacity: 1;
+    cursor: default;
+  }
+
   /* Tablet: the CTA stays in the header, the nav collapses beside it
      (Figma 212:46 — "hides them and adds the hamburger beside the CTA").
      Below 750px the header has no room for it, so the copy inside the drawer
