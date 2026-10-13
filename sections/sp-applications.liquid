@@ -79,10 +79,12 @@
     text-transform: uppercase;
   }
 
-  /* Applications */
+  /* Applications. The design sets this one 36/44 Light where the other
+     section headings are 40/50 ExtraLight; carried onto the page's own scale
+     so every section heading reads the same. */
   .sp-apps [class*="__heading"] :is(h1, h2, p) {
     color: #0e1017;
-    font-weight: 300;
+    font-weight: 200;
     font-size: 32px;
     line-height: 40px;
   }
@@ -158,8 +160,8 @@
     }
 
     .sp-apps [class*="__heading"] :is(h1, h2, p) {
-      font-size: 36px;
-      line-height: 44px;
+      font-size: 40px;
+      line-height: 50px;
     }
 
     .sp-apps .group-block:has(> .group-block-content > .sp-app-card) > .group-block-content {
