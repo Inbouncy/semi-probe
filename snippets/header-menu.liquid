@@ -7,11 +7,21 @@
      its destinations exist. They keep their classes, refs and hover, and keep
      keyboard focus through tabindex, so nothing else about the menu changes.
 
-  2. The dropdown renders snippets/sp-header-submenu.liquid instead of
-     Horizon's `mega-menu`. The design's dropdown is a narrow dark panel of
-     plain links under its parent, not a full-width mega menu of product and
-     collection cards -- and with the block's style set to `text`, none of the
-     mega menu's content types are reachable regardless.
+  2. The dropdown is snippets/sp-header-submenu.liquid, rendered on its own
+     rather than inside Horizon's `menu-list__submenu` wrapper. The design's
+     dropdown is a narrow dark card of plain links under its parent, not a
+     full-width mega menu of product and collection cards -- and with the
+     block's style set to `text`, none of the mega menu's content types are
+     reachable regardless.
+
+     The wrapper is gone, not just restyled, because Horizon's mega menu is a
+     full-width backdrop: reusing its element painted a white band the height
+     of the card right across the page, hiding the section behind it. Its
+     element also carried a grid, a width, a visibility, an opacity and
+     padding that all had to be fought one at a time. The card owns its own
+     markup now and inherits none of it. The JS hooks go with it --
+     aria-controls, aria-haspopup, aria-expanded and ref="submenu[]" -- since
+     this dropdown opens in CSS and header-menu.js has nothing left to drive.
 
   Everything else is Horizon's own and is left alone.
 {% endcomment %}
@@ -62,24 +72,12 @@
           tabindex="0"
         {% endif %}
         class="menu-list__link{% if link.active and links_active %} menu-list__link--active{% endif %}"
-        {%- if link.links != blank -%}
-          aria-controls="submenu-{{ forloop.index }}"
-          aria-haspopup="true"
-          aria-expanded="false"
-        {%- endif -%}
         ref="menuitem"
       >
         <span class="menu-list__link-title">{{- link.title -}}</span>
       </a>
       {%- if link.links != blank -%}
-        <div class="menu-list__submenu sp-submenu{{ color_scheme_classes }}" ref="submenu[]">
-          <div
-            id="submenu-{{ forloop.index }}"
-            class="menu-list__submenu-inner"
-          >
-            {% render 'sp-header-submenu', parent_link: link, links_active: links_active %}
-          </div>
-        </div>
+        {% render 'sp-header-submenu', parent_link: link, links_active: links_active %}
       {%- endif -%}
     </li>
   {% endfor %}

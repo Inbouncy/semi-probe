@@ -7,50 +7,51 @@
   cards, and none of the mega menu's content types are reachable anyway while
   the menu block's style is `text`.
 
-  The panel's own box is styled here too, through the `sp-submenu` class that
-  snippets/header-menu.liquid adds beside Horizon's `menu-list__submenu`.
+  The card renders its own wrapper and carries none of Horizon's submenu
+  classes. Reusing `menu-list__submenu` meant inheriting a full-width mega-menu
+  backdrop, which painted a white band the height of the card right across the
+  page and hid the section behind it, plus a grid, a width, a visibility, an
+  opacity and padding that each had to be overridden. Placement is in
+  sections/header.liquid; everything else is here.
 
   @param {object} parent_link - The linklist item whose children to render.
   @param {boolean} links_active - When false, children render with no href, so
     they are inert but still hover and still take keyboard focus.
 {%- enddoc -%}
 
-<ul class="sp-submenu__list list-unstyled">
-  {%- for child in parent_link.links -%}
-    <li class="sp-submenu__item">
-      <a
-        class="sp-submenu__link"
-        {% if links_active %}
-          href="{{ child.url }}"
-        {% else %}
-          role="link"
-          aria-disabled="true"
-          tabindex="0"
-        {% endif %}
-      >
-        {{- child.title -}}
-      </a>
-    </li>
-  {%- endfor -%}
-</ul>
+<div class="sp-submenu">
+  <ul class="sp-submenu__list list-unstyled">
+    {%- for child in parent_link.links -%}
+      <li class="sp-submenu__item">
+        <a
+          class="sp-submenu__link"
+          {% if links_active %}
+            href="{{ child.url }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+            tabindex="0"
+          {% endif %}
+        >
+          {{- child.title -}}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
 
 {% stylesheet %}
-  /* ── The panel ─────────────────────────────────────────────────────────
-     A narrow dark card under its parent item rather than Horizon's
-     full-bleed mega menu. Horizon already positions .menu-list__submenu
-     absolutely and drives its visibility, so this re-anchors it to the parent
-     item and takes over the box; the parent <li> is given a positioning
-     context in sections/header.liquid. */
-  .menu-list__submenu.sp-submenu {
+  /* ── The card ──────────────────────────────────────────────────────────
+     A narrow dark card under its parent item. sections/header.liquid places
+     it and opens it; this file is its appearance. */
+  .sp-submenu {
     width: max-content;
     min-width: 230px;
     max-width: 320px;
-    padding-inline: 0;
     background-color: #23252c;
   }
 
-  /* The caret that points back up at the parent item. 12 x 8, sitting on the
-     panel's top edge and centred on the item above it. */
+  /* The caret that points back up at the parent item. */
   .sp-submenu::after {
     content: "";
     position: absolute;
@@ -67,16 +68,16 @@
     display: flex;
     flex-direction: column;
     margin: 0;
-    padding: 22px 0;
+    padding: 18px 0;
     list-style: none;
   }
 
   /* ── The links ─────────────────────────────────────────────────────────
      Set like the primary nav above them -- same family, weight, size and
-     uppercase -- so the dropdown reads as part of the same menu.
+     uppercase -- so the card reads as part of the same menu.
 
      The resting grey and the white on hover are the main site's own, and they
-     are what the dark panel allows: the primary nav hovers to the brand maroon
+     are what the dark card allows: the primary nav hovers to the brand maroon
      (#661320), which against #23252c measures 1.22:1 and would be unreadable.
      White is 15.3:1 and the resting grey 5.8:1. */
   .sp-submenu__link {

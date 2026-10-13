@@ -903,10 +903,9 @@
      between the item and the row stretches, so that 10px is added here rather
      than chased through five levels of height: 100%.
 
-     The selector carries both classes because Horizon's own submenu rule sets
-     left: 0 at the weight of a single class and won on source order, which put
-     the card off to one side of its parent. */
-  .header__row--bottom .menu-list__submenu.sp-submenu {
+     The card is this theme's own element and carries none of Horizon's
+     submenu classes, so nothing here is fighting an inherited rule. */
+  .header__row--bottom .sp-submenu {
     position: absolute;
     z-index: var(--layer-header-menu, 20);
     top: calc(100% + var(--sp-submenu-drop));
@@ -919,11 +918,10 @@
       visibility 160ms;
   }
 
-  .header__row--bottom .menu-list__list-item:hover > .menu-list__submenu.sp-submenu,
-  .header__row--bottom .menu-list__list-item:focus-within > .menu-list__submenu.sp-submenu {
+  .header__row--bottom .menu-list__list-item:hover > .sp-submenu,
+  .header__row--bottom .menu-list__list-item:focus-within > .sp-submenu {
     opacity: 1;
     visibility: visible;
-    --submenu-content-opacity: 1;
   }
 
   /* A top-level item with no href is a placeholder until the client supplies
@@ -933,7 +931,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .header__row--bottom .menu-list__submenu.sp-submenu {
+    .header__row--bottom .sp-submenu {
       transition: none;
     }
   }
