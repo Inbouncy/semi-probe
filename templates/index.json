@@ -731,11 +731,316 @@
         "padding-block-start": 88,
         "padding-block-end": 88
       }
+    },
+    "semiprobe_apps": {
+      "type": "sp-applications",
+      "blocks": {
+        "eyebrow": {
+          "type": "text",
+          "name": "Eyebrow",
+          "settings": {
+            "text": "<p>Lab Disciplines</p>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "left",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          }
+        },
+        "heading": {
+          "type": "text",
+          "name": "Heading",
+          "settings": {
+            "text": "<h2>Applications</h2>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "left",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "2.25rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          }
+        },
+        "subhead": {
+          "type": "text",
+          "name": "Subheading",
+          "settings": {
+            "text": "<p>Where the SemiProbe accessory range is used.</p>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "left",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          }
+        },
+        "grid": {
+          "type": "group",
+          "name": "Applications grid",
+          "settings": {
+            "link": "",
+            "open_in_new_tab": false,
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 20,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "a1": {
+              "type": "sp-application-card",
+              "name": "DC Characterization & Parametric Test",
+              "settings": {
+                "image": "shopify://shop_images/sp-app-dc-characterization.jpg",
+                "title": "DC Characterization & Parametric Test",
+                "body": "DC and low-frequency probing. Coaxial arms handle general purpose DC and AC measurement; triaxial arms are used where low noise and low level signals matter.",
+                "related_label": "Related hardware",
+                "related": "Manual Manipulators • Coaxial & Triaxial Probe Arms • Tungsten Probe Tips"
+              }
+            },
+            "a2": {
+              "type": "sp-application-card",
+              "name": "High Frequency & Microwave",
+              "settings": {
+                "image": "shopify://shop_images/sp-app-high-frequency.jpg",
+                "title": "High Frequency & Microwave",
+                "body": "HF probing on MA-9000, MA-9100 and MA-8500 manipulators. HF arms come in West/East and North/South orientations and accept industry-standard probes from Cascade and GGB.",
+                "related_label": "Related hardware",
+                "related": "Manual & Programmable Manipulators • HF Probe Arms • High Frequency Wafer Chucks"
+              }
+            },
+            "a3": {
+              "type": "sp-application-card",
+              "name": "Optoelectronics",
+              "settings": {
+                "image": "shopify://shop_images/sp-app-optoelectronics.jpg",
+                "title": "Optoelectronics",
+                "body": "OPTO applications across the manipulator and probe arm range. Manipulators position optical fibers, detectors and cameras as well as probe tips. Fiber optic arms mount to the standard HF arms and are available by enquiry.",
+                "related_label": "Related hardware",
+                "related": "Manual & Programmable Manipulators • HF Probe Arms"
+              }
+            },
+            "a4": {
+              "type": "sp-application-card",
+              "name": "Wafer, Partial Wafer & Die Probing",
+              "settings": {
+                "image": "shopify://shop_images/sp-app-wafer-probing.jpg",
+                "title": "Wafer, Partial Wafer & Die Probing",
+                "body": "Holding the device under test by vacuum - die, partial wafers and whole wafers. Standard chucks use a concentric vacuum ring pattern under continuous vacuum, from 50 mm to 300 mm.",
+                "related_label": "Related hardware",
+                "related": "Standard Wafer Chucks • Vacuum Pumps"
+              }
+            },
+            "a5": {
+              "type": "sp-application-card",
+              "name": "Thin Wafers & III-V Materials",
+              "settings": {
+                "image": "shopify://shop_images/sp-app-thin-wafers.jpg",
+                "title": "Thin Wafers & III-V Materials",
+                "body": "High frequency chucks use a vacuum hole pattern instead of concentric rings, and are primarily used with thin wafers and III-V materials. Each includes two auxiliary chucks under independent vacuum control.",
+                "related_label": "Related hardware",
+                "related": "High Frequency Wafer Chucks • Vacuum Pumps"
+              }
+            },
+            "a6": {
+              "type": "sp-application-card",
+              "name": "Packaged Devices, Substrates & PCBs",
+              "settings": {
+                "image": "shopify://shop_images/sp-app-packaged-devices.jpg",
+                "title": "Packaged Devices, Substrates & PCBs",
+                "body": "Testing packaged parts, die, substrates and printed circuit boards. A single leadscrew opens and closes grooved-rail jaws, which will also hold a wafer chuck.",
+                "related_label": "Related hardware",
+                "related": "Packaged Part Holders • Wafer Chucks"
+              }
+            }
+          },
+          "block_order": [
+            "a1",
+            "a2",
+            "a3",
+            "a4",
+            "a5",
+            "a6"
+          ]
+        },
+        "callout": {
+          "type": "group",
+          "name": "Bottom callout",
+          "settings": {
+            "link": "",
+            "open_in_new_tab": false,
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 16,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "words": {
+              "type": "text",
+              "name": "Words",
+              "settings": {
+                "text": "<p>SemiProbe also supports high voltage and high current probing with arms available by enquiry</p>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "left",
+                "type_preset": "custom",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground-heading)",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "cta": {
+              "type": "button",
+              "settings": {
+                "label": "Explore The APPLICATIONs",
+                "link": "/collections/all",
+                "open_in_new_tab": false,
+                "style_class": "button-secondary",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "custom",
+                "custom_width_mobile": 100
+              },
+              "name": "Explore applications"
+            }
+          },
+          "block_order": [
+            "words",
+            "cta"
+          ]
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "heading",
+        "subhead",
+        "grid",
+        "callout"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 28,
+        "section_width": "full-width",
+        "section_height": "",
+        "color_scheme": "scheme-1",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "padding-block-start": 88,
+        "padding-block-end": 88
+      }
     }
   },
   "order": [
     "semiprobe_hero",
     "semiprobe_families",
-    "semiprobe_why"
+    "semiprobe_why",
+    "semiprobe_apps"
   ]
 }
