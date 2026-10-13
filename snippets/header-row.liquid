@@ -82,6 +82,19 @@
               {{ cta }}
             {% when 'mobile_menu' %}
               {{ mobile_menu }}
+              {%- comment -%}
+                The drawer's CTA is emitted as the drawer's sibling, in the
+                same header column, and no wrapper is introduced around
+                either: the stylesheet in snippets/sp-header-cta.liquid finds
+                it from this column with `:has()` on the drawer's own
+                <details>, and shows it only while the drawer is open.
+
+                Horizon's drawer takes no content from the theme — its block is
+                rendered through `content_for`, whose output Shopify defers —
+                so the button is pinned to the open panel rather than flowed
+                inside it.
+              {%- endcomment -%}
+              {{ drawer_cta }}
           {% endcase %}
         {% endunless %}
       {% endfor %}

@@ -55,18 +55,67 @@
     }
   }
 
-  @media screen and (width >= 750px) {
-    .sp-header-cta--drawer {
-      display: none;
+  /* ── The drawer's copy ────────────────────────────────────────────────────
+     Horizon's drawer is a private block rendered through `content_for`, and
+     Shopify defers that output, so there is no markup for the theme to put a
+     button inside. This copy is rendered as the drawer's sibling in the same
+     header column — see snippets/header-row.liquid — and pinned to the open
+     panel, which is itself fixed to the viewport. No wrapper is introduced
+     around either, so the header's own flex layout is untouched.
+
+     Pinning to the bottom is also how the drawer wants it: the links run from
+     the top, so the action sits under them and stays reachable with a thumb
+     however long the menu grows or how far it is scrolled.
+
+     Everything here is this theme's own file, so a future Horizon drawer can
+     move the button but cannot take the navigation with it. */
+  .sp-header-cta--drawer {
+    display: none;
+  }
+
+  @media screen and (width < 750px) {
+    /* `[open]` rather than `.menu-open`: Horizon drops .menu-open first and
+       only removes `open` once the panel has slid out, so keying the box on
+       `open` and the slide on .menu-open lets the button travel with the
+       drawer in both directions instead of vanishing as it closes. */
+    .header__column:has(.menu-drawer-container[open]) .sp-header-cta--drawer {
+      display: flex;
+      position: fixed;
+      /* One layer above the panel, which is on --layer-menu-drawer. */
+      z-index: calc(var(--layer-menu-drawer) + 1);
+      /* The panel's own geometry: 95vw capped at 500px, inset by the same
+         --drawer-padding the menu links use, so the button lines up with the
+         link text above it rather than with the panel edge. */
+      inset-inline-start: var(--drawer-padding);
+      inset-block-end: max(var(--padding-xl), var(--safe-area-inset-bottom));
+      width: calc(min(var(--drawer-width), var(--drawer-max-width)) - 2 * var(--drawer-padding));
+      justify-content: center;
+      transform: translateX(-100%);
+      opacity: 0;
+      transition:
+        transform var(--drawer-animation-speed) ease,
+        opacity var(--drawer-animation-speed) ease;
+    }
+
+    [dir="rtl"] .header__column:has(.menu-drawer-container[open]) .sp-header-cta--drawer {
+      transform: translateX(100%);
+    }
+
+    .header__column:has(.menu-drawer-container.menu-open) .sp-header-cta--drawer {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    /* The last menu link would otherwise scroll under the pinned button. */
+    .header__column:has(.menu-drawer-container[open]) .menu-drawer__utility-links {
+      margin-block-end: calc(var(--padding-xl) + 44px + var(--padding-md, 1rem));
     }
   }
 
-  /* In the drawer it is a full-width button under the menu rather than a pill
-     beside it, so it reads as the drawer's action and gives a proper target. */
-  .sp-header-cta--drawer {
-    display: flex;
-    justify-content: center;
-    margin-block: var(--margin-md) 0;
-    margin-inline: var(--padding-xl);
+  @media (prefers-reduced-motion: reduce) {
+    .header__column:has(.menu-drawer-container[open]) .sp-header-cta--drawer {
+      transition: none;
+    }
   }
+
 {% endstylesheet %}
