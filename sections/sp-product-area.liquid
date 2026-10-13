@@ -1502,13 +1502,20 @@
     text-underline-offset: 2px;
   }
 
-  .sp-buy__contact a:hover,
-  .sp-buy__contact a:focus-visible {
+  /* Horizon colours rich-text link hovers through a broad
+     :is(p:not(.h1, ...) a:where(...), .rte ...):hover rule which outweighs
+     a two-class selector, so the orange here never applied - the link went
+     to the theme's darkened maroon instead. Confirmed against the matched
+     rules rather than guessed. These carry the extra weight they need; an
+     !important would win too, but it would also be the first on the page
+     and the next override would have to escalate again. */
+  .sp-pdp .sp-buy .sp-buy__contact a:hover,
+  .sp-pdp .sp-buy .sp-buy__contact a:focus-visible {
     color: var(--sp-amber-dark);
   }
 
-  .sp-buy__contact a:not([href^="tel:"]):hover,
-  .sp-buy__contact a:not([href^="tel:"]):focus-visible {
+  .sp-pdp .sp-buy .sp-buy__contact a:not([href^="tel:"]):hover,
+  .sp-pdp .sp-buy .sp-buy__contact a:not([href^="tel:"]):focus-visible {
     text-decoration-color: transparent;
   }
 
