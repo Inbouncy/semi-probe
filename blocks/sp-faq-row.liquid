@@ -40,6 +40,37 @@
   .sp-faq-row {
     border: 1px solid var(--color-border);
     background-color: var(--color-background);
+    /* Lets the closed-to-open height interpolate: without it `auto` is not an
+       animatable value and the row would still snap open. Inherited, so it
+       reaches ::details-content below. */
+    interpolate-size: allow-keywords;
+  }
+
+  /* The row opens and closes over 320ms rather than at a jump. ::details-content
+     is the box the browser puts the answer in, so this animates the real
+     disclosure rather than a wrapper of our own, and `allow-discrete` carries
+     content-visibility across the same curve so the text does not pop in at the
+     start or vanish at the end.
+
+     Browsers without ::details-content fall back to assets/sp-faq.js, which
+     does the same thing on the answer's own height; the two never both run. */
+  .sp-faq-row::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 320ms cubic-bezier(0.2, 0.6, 0.2, 1),
+      content-visibility 320ms;
+    transition-behavior: allow-discrete;
+  }
+
+  .sp-faq-row[open]::details-content {
+    block-size: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-faq-row::details-content {
+      transition: none;
+    }
   }
 
   .sp-faq-row__q {

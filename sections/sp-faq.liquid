@@ -10,6 +10,12 @@
   by a colour scheme so the client can change it.
 {%- enddoc -%}
 
+{%- comment -%}
+  Only the browsers without ::details-content need this; it checks for the
+  pseudo-element and bails out where the stylesheet already animates the rows.
+{%- endcomment -%}
+<script src="{{ 'sp-faq.js' | asset_url }}" defer></script>
+
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
   class="
