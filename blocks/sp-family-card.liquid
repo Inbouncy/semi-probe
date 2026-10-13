@@ -16,7 +16,10 @@
   assign label = block.settings.button_label | default: 'View Product'
 -%}
 
-<div class="sp-family" {{ block.shopify_attributes }}>
+<div
+  class="sp-family{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}"
+  {{ block.shopify_attributes }}
+>
   <div class="sp-family__media">
     {%- if img -%}
       {{
@@ -202,6 +205,18 @@
     .sp-family__desc {
       min-height: 107px;
     }
+
+    /* Every title on one line, which is what the design draws and what keeps
+       the row at 450. Only this frame needs it: the card holds 269px here
+       against 419 at tablet and 306 on mobile, where 22px already fits the
+       longest name. At 20px that name measures 268.5 — half a pixel of room,
+       too fine to trust across browsers — so a hair of negative tracking buys
+       5px of headroom at 0.2px per character, which is not perceptible. The
+       line box stays 30px, so nothing below the title moves. */
+    .sp-family__title {
+      font-size: 20px;
+      letter-spacing: -0.01em;
+    }
   }
 {% endstylesheet %}
 
@@ -210,6 +225,19 @@
   "name": "Product family",
   "tag": null,
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
     {
       "type": "image_picker",
       "id": "image",
