@@ -48,6 +48,7 @@
       alt=""
       width="{{ icon_w }}"
       height="{{ icon_h }}"
+      style="width: {{ icon_w }}px; height: {{ icon_h }}px;"
       loading="lazy"
     >
   </span>
@@ -108,8 +109,13 @@
     background-color: #ffdada;
   }
 
+  /* The size is written inline per glyph, from the file's own root width and
+     height. It has to win over the theme's base `img` rules, which otherwise
+     stretch the artwork to fill the tile. */
   .sp-why-card__icon {
     display: block;
+    max-width: none;
+    object-fit: contain;
   }
 
   /* The design draws this rule the same amber in all four cards, whichever
