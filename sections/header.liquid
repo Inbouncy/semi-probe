@@ -66,10 +66,7 @@
   # Horizon restructures the drawer, the button moves but the navigation is
   # untouched.
   capture drawer_cta
-    render 'sp-header-cta',
-      label: section.settings.cta_label,
-      link: section.settings.cta_link,
-      in_drawer: true
+    render 'sp-header-cta', label: section.settings.cta_label, link: section.settings.cta_link, in_drawer: true
   endcapture
 
   capture navigation_bar
