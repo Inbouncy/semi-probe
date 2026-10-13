@@ -277,10 +277,15 @@
       setText('price', variant.price);
       setText('sku', variant.sku);
 
+      /* Only an explicit false means sold out. This product does not track
+         inventory, so every variant is purchasable; if the flag ever went
+         missing, defaulting to purchasable loses a sale far less often than
+         defaulting to SOLD OUT does. */
       if (addButton) {
-        addButton.disabled = !variant.available;
+        var soldOut = variant.available === false;
+        addButton.disabled = soldOut;
         if (addText) {
-          addText.textContent = variant.available ? cfg.cartLabel : cfg.soldOutLabel;
+          addText.textContent = soldOut ? cfg.soldOutLabel : cfg.cartLabel;
         }
       }
 

@@ -50,6 +50,36 @@
   assign gap = section.settings.column_gap
 -%}
 
+{%- comment -%}
+  Gallery order. The client sets the running order here rather than in the
+  catalogue, because reordering a product's media changes the product itself
+  and so changes the page it is selling from today. Positions are the
+  catalogue's own 1-based order; anything left out keeps its place at the end,
+  so the strip can never lose an image.
+{%- endcomment -%}
+{%- liquid
+  assign order_csv = ','
+  assign order_tokens = section.settings.image_order | split: ','
+  for token in order_tokens
+    assign n = token | strip | times: 1
+    if n >= 1 and n <= p.images.size
+      assign marker = n | prepend: ',' | append: ','
+      unless order_csv contains marker
+        assign order_csv = order_csv | append: n | append: ','
+      endunless
+    endif
+  endfor
+  for img in p.images
+    assign marker = forloop.index | prepend: ',' | append: ','
+    unless order_csv contains marker
+      assign order_csv = order_csv | append: forloop.index | append: ','
+    endunless
+  endfor
+  assign gallery_order = order_csv | remove_first: ',' | split: ','
+  assign hero_index = gallery_order[0] | times: 1 | minus: 1
+  assign hero_image = p.images[hero_index]
+-%}
+
 {%- comment -%} Resolve the variant the page loaded on. {%- endcomment -%}
 {%- liquid
   assign current = p.selected_or_first_available_variant
@@ -153,20 +183,19 @@
             {%- comment -%} Inspection viewport — Figma 15:58 {%- endcomment -%}
             <div class="sp-gallery__viewport">
               <div class="sp-gallery__hero">
-                {%- assign first_image = p.images | first -%}
-                {%- if first_image != blank -%}
+                {%- if hero_image != blank -%}
                   <img
                     data-sp-hero
-                    src="{{ first_image | image_url: width: 1200 }}"
+                    src="{{ hero_image | image_url: width: 1200 }}"
                     srcset="
-                      {{ first_image | image_url: width: 400 }} 400w,
-                      {{ first_image | image_url: width: 800 }} 800w,
-                      {{ first_image | image_url: width: 1200 }} 1200w
+                      {{ hero_image | image_url: width: 400 }} 400w,
+                      {{ hero_image | image_url: width: 800 }} 800w,
+                      {{ hero_image | image_url: width: 1200 }} 1200w
                     "
                     sizes="(min-width: 1100px) 56vw, 92vw"
-                    width="{{ first_image.width }}"
-                    height="{{ first_image.height }}"
-                    alt="{{ first_image.alt | default: p.title | escape }}"
+                    width="{{ hero_image.width }}"
+                    height="{{ hero_image.height }}"
+                    alt="{{ hero_image.alt | default: p.title | escape }}"
                     loading="eager"
                     fetchpriority="high"
                     decoding="async"
@@ -202,7 +231,11 @@
 
                 <div class="sp-gallery__window" data-sp-window>
                   <ul class="sp-gallery__row" data-sp-row role="list">
-                    {%- for img in p.images -%}
+                    {%- for pos in gallery_order -%}
+                      {%- liquid
+                        assign idx = pos | times: 1 | minus: 1
+                        assign img = p.images[idx]
+                      -%}
                       <li class="sp-gallery__item">
                         <button
                           type="button"
@@ -1516,6 +1549,13 @@
     { "type": "text", "id": "inspection_label", "label": "Inspection label", "default": "OPTICAL INSPECTION · 100 TPI MICROMETER STAGE" },
     { "type": "text", "id": "fig_label", "label": "Figure label", "default": "FIG 1.0 · SUB-MICRON RESOLUTION" },
     { "type": "text", "id": "zoom_badge", "label": "Zoom badge", "default": "INSPECTION 4X ENLARGEMENT" },
+    {
+      "type": "text",
+      "id": "image_order",
+      "label": "Image order",
+      "info": "Positions from the product's own image order, separated by commas. The first one is the large image on load. Anything left out keeps its place at the end. Leave blank to use the catalogue's order. Changing this changes only this page, never the product.",
+      "default": "2,1,3,4,5,6,7,8,9"
+    },
     { "type": "checkbox", "id": "autorotate", "label": "Slide the thumbnails automatically", "default": true },
     { "type": "range", "id": "rotate_seconds", "label": "Seconds between slides", "min": 2, "max": 10, "step": 1, "unit": "s", "default": 3 },
     { "type": "text", "id": "prev_label", "label": "Previous button label (for screen readers)", "default": "Previous images" },
@@ -1575,28 +1615,28 @@
       "id": "variant_map",
       "label": "Variant map",
       "info": "SKU | Model key | Base key | Arm key. One line per variant. A SKU missing from this list still sells, through the catch-all dropdown.",
-      "default": "A-MAN-MA-8005-M-C-S | MA-8005 | MAG | CS\nA-MAN-MA-8005-V-C-S | MA-8005 | VAC | CS\nA-MAN-MA-8005-M-T-S | MA-8005 | MAG | TS\nA-MAN-MA-8005-V-T-S | MA-8005 | VAC | TS\nA-MAN-MA-9000-80-M-C-L | MA-9000 | MAG | CL\nA-MAN-MA-9000-80-V-C-L | MA-9000 | VAC | CL\nA-MAN-MA-9000-80-M-T-L | MA-9000 | MAG | TL\nA-MAN-MA-9000-80-V-T-L | MA-9000 | VAC | TL\nA-MAN-MA-9000-80-M-HFWE | MA-9000 | MAG | WE\nA-MAN-MA-9000-80-M-HFNS | MA-9000 | MAG | NS\nA-MAN-MA-9100-M-C-L | MA-9100 | MAG | CL\nA-MAN-MA-9100-V-C-L | MA-9100 | VAC | CL\nA-MAN-MA-9100-M-T-L | MA-9100 | MAG | TL\nA-MAN-MA-9100-V-T-L | MA-9100 | VAC | TL\nA-MAN-MA-9100-M-HFWE | MA-9100 | MAG | WE\nA-MAN-MA-9100-M-HFNS | MA-9100 | MAG | NS\nA-MAN-MA-8500-MB-HF-WE | MA-8500 | MAG | WE\nA-MAN-MA-8500-MB-HF-NS | MA-8500 | MAG | NS\nA-MAN-MA-8500-BD-HF-WE | MA-8500 | BD | WE\nA-MAN-MA-8500-BD-HF-NS | MA-8500 | BD | NS\nA-MAN-MA8500-EMWE-BD-0001 | MA-8500 | FEM | WE"
+      "default": "A-MAN-MA-8005-M-C-S | MA-8005 | MAG | CS\nA-MAN-MA-8005-V-C-S | MA-8005 | VAC | CS\nA-MAN-MA-8005-M-T-S | MA-8005 | MAG | TS\nA-MAN-MA-8005-V-T-S | MA-8005 | VAC | TS\nA-MAN-MA-9000-80-M-C-L | MA-9000 | MAG | CL\nA-MAN-MA-9000-80-V-C-L | MA-9000 | VAC | CL\nA-MAN-MA-9000-80-M-T-L | MA-9000 | MAG | TL\nA-MAN-MA-9000-80-V-T-L | MA-9000 | VAC | TL\nA-MAN-MA-9000-80-M-HFWE | MA-9000 | MAG | WE\nA-MAN-MA-9000-80-M-HFNS | MA-9000 | MAG | NS\nA-MAN-MA-9100-M-C-L | MA-9100 | MAG | CL\nA-MAN-MA-9100-V-C-L | MA-9100 | VAC | CL\nA-MAN-MA-9100-M-T-L | MA-9100 | MAG | TL\nA-MAN-MA-9100-V-T-L | MA-9100 | VAC | TL\nA-MAN-MA-9100-M-HFWE | MA-9100 | MAG | WE\nA-MAN-MA-9100-M-HFNS | MA-9100 | MAG | NS\nA-MAN-MA-8500-MB-HF-WE | MA-8500 | MAG | WE\nA-MAN-MA-8500-MB-HF-NS | MA-8500 | MAG | NS\nA-MAN-MA-8500-BD-HF-WE | MA-8500 | BLT | WE\nA-MAN-MA-8500-BD-HF-NS | MA-8500 | BLT | NS\nA-MAN-MA8500-EMWE-BD-0001 | MA-8500 | FEM | WE"
     },
     {
       "type": "textarea",
       "id": "model_table",
       "label": "Model series table",
-      "info": "Key | Dropdown label | Helper text | TPI | Resolution | Travel. Only the MA-9100 row is taken from the design; the other three need the client's figures.",
-      "default": "MA-8005 | MA-8005 (40 TPI, 1 µm resolution, 13mm Travel) | general-purpose 40 TPI | 40 TPI | 1 µm | 13 x 13 x 13 mm\nMA-9000 | MA-9000 (80 TPI, 0.5 µm resolution, 13mm Travel) | high resolution 80 TPI | 80 TPI | 0.5 µm | 13 x 13 x 13 mm\nMA-9100 | MA-9100 (100 TPI, 0.35 µm resolution, 13mm Travel) | ultra-high resolution 100 TPI | 100 TPI | 0.35 µm | 13 x 13 x 13 mm\nMA-8500 | MA-8500 (High-frequency platform) | high-frequency platform | HF | 0.35 µm | 13 x 13 x 13 mm"
+      "info": "Key | Dropdown label | Helper text | TPI | Resolution | Travel. The labels and the TPI, resolution and travel figures are the design's own, from the Compare Models matrix. Only the helper text is written here rather than drawn.",
+      "default": "MA-8005 | MA-8005 (40 TPI, 5.0 µm resolution, 10mm Travel) | general-purpose 40 TPI | 40 TPI | 5 µm | 10 x 10 x 10 mm\nMA-9000 | MA-9000 (80 TPI, 1.0 µm resolution, 13mm Travel) | high resolution 80 TPI | 80 TPI | 1 µm | 13 x 13 x 13 mm\nMA-9100 | MA-9100 (100 TPI, 0.35 µm resolution, 13mm Travel) | ultra-high resolution 100 TPI | 100 TPI | 0.35 µm | 13 x 13 x 13 mm\nMA-8500 | MA-8500 (80 TPI, High-Frequency / Bolt-down) | high-frequency RF platform | 80 TPI | 1 µm | 13 x 13 x 13 mm"
     },
     {
       "type": "textarea",
       "id": "base_table",
       "label": "Mounting base table",
-      "info": "Key | Dropdown label | Helper text. Only the Magnetic row is taken from the design.",
-      "default": "MAG | Magnetic (High-field toggle switch) | ferromagnetic platen clamp\nVAC | Vacuum (Platen vacuum hold-down) | platen vacuum hold-down\nBD | Bolt Down (Fixed mechanical mount) | fixed mechanical mount\nFEM | Bolt Down + Frequency Extender Module | extended-frequency bolt down"
+      "info": "Key | Dropdown label | Helper text. The labels are the design's own, from the Base Menu. Only the helper text is written here rather than drawn.",
+      "default": "MAG | Magnetic (High-field toggle switch) | ferromagnetic platen clamp\nVAC | Vacuum (Direct laboratory house suction) | house vacuum hold-down\nBLT | Bolt-down (MA-8500 only) | fixed mechanical mount\nFEM | Bolt-down with Frequency Extender Module (MA-8500 only) | extended-frequency bolt-down"
     },
     {
       "type": "textarea",
       "id": "arm_table",
       "label": "Probe arm table",
-      "info": "Key | Dropdown label | Helper text. Only the Triaxial – Long row is taken from the design.",
-      "default": "CS | Coaxial – Short | coaxial short-reach\nTS | Triaxial – Short | low-noise 3-lug triax\nCL | Coaxial – Long | coaxial long-reach\nTL | Triaxial – Long | low-noise 3-lug triax\nWE | West/East HF Probe Arm | high-frequency W/E\nNS | North/South HF Probe Arm | high-frequency N/S"
+      "info": "Key | Dropdown label | Helper text. The labels and their order are the design's own, from the Arm Menu. Only the helper text is written here rather than drawn.",
+      "default": "CS | Coaxial – Short (MA-8005 only) | coaxial short-reach\nCL | Coaxial – Long | coaxial long-reach\nTS | Triaxial – Short (MA-8005 only) | low-noise 3-lug triax\nTL | Triaxial – Long | low-noise 3-lug triax\nWE | HF – West/East (Magnetic base only) | high-frequency west/east\nNS | HF – North/South (Magnetic base only) | high-frequency north/south"
     }
   ],
   "presets": [{ "name": "Product area" }]
