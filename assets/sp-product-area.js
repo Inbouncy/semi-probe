@@ -37,6 +37,7 @@
     var offset = 0;
     var timer = null;
     var hovering = false;
+    var taken = false;
     var period = parseInt(root.getAttribute('data-rotate-ms'), 10) || 3000;
     var wantsRotation = root.getAttribute('data-autorotate') === 'true';
 
@@ -59,7 +60,13 @@
       if (next) next.disabled = offset >= max;
     }
 
+    /* An arrow or a swipe is the visitor steering. Hover-pause covers a
+       mouse, but a touch visitor has no hover, so the window would slide
+       out from under them three seconds later. Once they steer, the
+       automatic advance stands down for good. */
     function slide(delta) {
+      taken = true;
+      stop();
       offset += delta;
       apply();
     }
@@ -74,6 +81,7 @@
     function canRotate() {
       return (
         wantsRotation &&
+        !taken &&
         !reduceMotion.matches &&
         !hovering &&
         !document.hidden &&
@@ -87,6 +95,7 @@
     }
 
     function start() {
+      if (taken) return;
       if (timer === null) timer = window.setInterval(tick, period);
     }
 
