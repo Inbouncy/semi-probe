@@ -147,24 +147,116 @@
       pre.src = wanted;
     }
 
-    /* Touch has no hover, and a magnification you cannot leave is a trap,
-       so the lens is for a real pointer only. */
-    if (viewport && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      viewport.addEventListener('pointerenter', function () {
-        loadZoomSource();
-        viewport.classList.add('is-zooming');
+    /* The lens. A mouse opens it by hovering; a finger opens it by pressing
+       and holding, which is what a touch visitor already expects and the
+       only way the badge's promise means anything on a phone. */
+    var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    function aimAt(clientX, clientY) {
+      var box = viewport.getBoundingClientRect();
+      if (!box.width || !box.height) return;
+      var x = ((clientX - box.left) / box.width) * 100;
+      var y = ((clientY - box.top) / box.height) * 100;
+      hero.style.transformOrigin = x.toFixed(2) + '% ' + y.toFixed(2) + '%';
+    }
+
+    function openLens() {
+      loadZoomSource();
+      viewport.classList.add('is-zooming');
+    }
+
+    function closeLens() {
+      viewport.classList.remove('is-zooming');
+      hero.style.transformOrigin = '';
+    }
+
+    if (viewport) {
+      if (finePointer) {
+        viewport.addEventListener('pointerenter', openLens);
+        viewport.addEventListener('pointerleave', closeLens);
+        viewport.addEventListener('pointermove', function (event) {
+          aimAt(event.clientX, event.clientY);
+        });
+      }
+
+      /* Press and hold. The hold has to outlast a flick, or the lens would
+         swallow every scroll that begins on the photograph; and the finger
+         has to stay roughly still, or an early drag cancels it. Once open,
+         the finger drags the magnified view around and lifting closes it. */
+      var HOLD_MS = 220;
+      var SLOP_PX = 10;
+      var holdTimer = null;
+      var pressAt = null;
+      var held = false;
+
+      function cancelHold() {
+        if (holdTimer !== null) {
+          window.clearTimeout(holdTimer);
+          holdTimer = null;
+        }
+        pressAt = null;
+      }
+
+      viewport.addEventListener('pointerdown', function (event) {
+        if (event.pointerType === 'mouse') return;
+        cancelHold();
+        pressAt = { x: event.clientX, y: event.clientY, id: event.pointerId };
+        holdTimer = window.setTimeout(function () {
+          holdTimer = null;
+          if (!pressAt) return;
+          held = true;
+          try {
+            viewport.setPointerCapture(pressAt.id);
+          } catch (error) {
+            /* capture is a convenience, not a requirement */
+          }
+          openLens();
+          aimAt(pressAt.x, pressAt.y);
+        }, HOLD_MS);
       });
-      viewport.addEventListener('pointerleave', function () {
-        viewport.classList.remove('is-zooming');
-        hero.style.transformOrigin = '';
+
+      viewport.addEventListener(
+        'pointermove',
+        function (event) {
+          if (event.pointerType === 'mouse') return;
+          if (!held) {
+            if (!pressAt) return;
+            var dx = event.clientX - pressAt.x;
+            var dy = event.clientY - pressAt.y;
+            if (Math.sqrt(dx * dx + dy * dy) > SLOP_PX) cancelHold();
+            return;
+          }
+          /* The lens is open, so this drag aims it rather than scrolling. */
+          event.preventDefault();
+          aimAt(event.clientX, event.clientY);
+        },
+        { passive: false }
+      );
+
+      function endPress(event) {
+        if (event && event.pointerType === 'mouse') return;
+        cancelHold();
+        if (held) {
+          held = false;
+          closeLens();
+        }
+      }
+
+      viewport.addEventListener('pointerup', endPress);
+      viewport.addEventListener('pointercancel', endPress);
+
+      /* A long press on an image otherwise raises the save/share sheet. */
+      viewport.addEventListener('contextmenu', function (event) {
+        if (held) event.preventDefault();
       });
-      viewport.addEventListener('pointermove', function (event) {
-        var box = viewport.getBoundingClientRect();
-        if (!box.width || !box.height) return;
-        var x = ((event.clientX - box.left) / box.width) * 100;
-        var y = ((event.clientY - box.top) / box.height) * 100;
-        hero.style.transformOrigin = x.toFixed(2) + '% ' + y.toFixed(2) + '%';
-      });
+
+      /* Without hover there is nothing to discover the lens by, so the badge
+         says how to open it. */
+      if (!finePointer) {
+        var badge = root.querySelector('[data-sp-badge]');
+        var touchLabel = badge && badge.getAttribute('data-touch-label');
+        if (badge && touchLabel) badge.textContent = touchLabel;
+      }
     }
 
     thumbs.forEach(function (button) {

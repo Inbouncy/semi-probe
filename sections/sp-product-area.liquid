@@ -220,7 +220,11 @@
                   <svg class="sp-gallery__badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
                     <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14m2.5-4h-2v2H9v-2H7V9h2V7h1v2h2z"/>
                   </svg>
-                  <span class="sp-gallery__badge-text">{{ section.settings.zoom_badge }}</span>
+                  <span
+                    class="sp-gallery__badge-text"
+                    data-sp-badge
+                    data-touch-label="{{ section.settings.zoom_badge_touch | escape }}"
+                  >{{ section.settings.zoom_badge }}</span>
                 </div>
               {%- endif -%}
             </div>
@@ -845,12 +849,23 @@
      Figma's own note on this component says 105%, which reads as a hover
      affordance rather than the 4x the badge inside it advertises. The badge
      is the stronger promise and the one a visitor acts on. */
+  .sp-gallery__viewport.is-zooming .sp-gallery__hero img {
+    transform: scale(var(--sp-zoom, 4));
+  }
+
+  /* While a finger holds the lens open the page must not scroll out from
+     under it, and iOS must not offer to save the photograph instead. Both
+     are scoped to the engaged state, so an ordinary swipe over the image
+     still scrolls the page. */
+  .sp-gallery__viewport.is-zooming {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
   @media (hover: hover) and (pointer: fine) {
     .sp-gallery__viewport { cursor: zoom-in; }
-
-    .sp-gallery__viewport.is-zooming .sp-gallery__hero img {
-      transform: scale(var(--sp-zoom, 4));
-    }
   }
 
   .sp-gallery__badge {
@@ -1357,10 +1372,12 @@
   }
 
   /* ── Actions — Figma 22:120 ──────────────────────────────────────── */
+  /* Figma sets these 4px apart, which reads as one control split in two.
+     10px separates them without loosening the group. */
   .sp-buy__actions {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 10px;
     padding-top: 4px;
   }
 
@@ -1581,7 +1598,14 @@
     { "type": "header", "content": "Gallery" },
     { "type": "text", "id": "inspection_label", "label": "Inspection label", "default": "OPTICAL INSPECTION · 100 TPI MICROMETER STAGE" },
     { "type": "text", "id": "fig_label", "label": "Figure label", "default": "FIG 1.0 · SUB-MICRON RESOLUTION" },
-    { "type": "text", "id": "zoom_badge", "label": "Zoom badge", "default": "INSPECTION 4X ENLARGEMENT" },
+    { "type": "text", "id": "zoom_badge", "label": "Zoom badge (mouse)", "default": "INSPECTION 4X ENLARGEMENT" },
+    {
+      "type": "text",
+      "id": "zoom_badge_touch",
+      "label": "Zoom badge (touch)",
+      "info": "Shown instead on phones and tablets, where there is no hover to discover. Leave blank to show the same text on both.",
+      "default": "PRESS & HOLD TO INSPECT · 4X"
+    },
     {
       "type": "text",
       "id": "image_order",
@@ -1635,8 +1659,8 @@
 
     { "type": "header", "content": "Buy box — buttons" },
     { "type": "text", "id": "cart_label", "label": "Add to cart label", "default": "ADD TO CART" },
-    { "type": "text", "id": "quote_label", "label": "Quote button label", "default": "REQUEST A FORMAL QUOTE" },
-    { "type": "url", "id": "quote_url", "label": "Quote button link", "info": "Leave blank to hold the button back until the destination exists." },
+    { "type": "text", "id": "quote_label", "label": "Second button label", "default": "DOWNLOAD THE SPECIFICATION PDF" },
+    { "type": "url", "id": "quote_url", "label": "Second button link", "info": "The specification PDF. Upload it under Content > Files, then pick it here. Leave blank to hold the button back until the file exists." },
     { "type": "checkbox", "id": "update_url", "label": "Update the page address when a configuration is picked", "default": true },
 
     { "type": "header", "content": "Buy box — purchase confidence" },
