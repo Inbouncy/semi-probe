@@ -109,8 +109,11 @@
     gap: 16px;
   }
 
-  /* ── The bottom callout ──────────────────────────────────────────── */
-  .sp-apps [class*="__callout"] > .group-block-content {
+  /* ── The bottom callout ────────────────────────────────────────────
+     Hooked off the sentence inside it rather than its own block key: Shopify
+     writes a block's key into the class of a text or button block but not of
+     a group, so the group is identified by what it contains. */
+  .sp-apps .group-block:has(> .group-block-content > [class*="__words"]) > .group-block-content {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -121,7 +124,7 @@
     background-color: #efefef;
   }
 
-  .sp-apps [class*="__callout"] [class*="__words"] p {
+  .sp-apps [class*="__words"] p {
     color: #0e1017;
     font-weight: 300;
     font-size: 15px;
@@ -145,7 +148,7 @@
       gap: 18px;
     }
 
-    .sp-apps [class*="__callout"] > .group-block-content {
+    .sp-apps .group-block:has(> .group-block-content > [class*="__words"]) > .group-block-content {
       padding: 24px;
     }
   }
@@ -163,7 +166,7 @@
     }
 
     /* The callout turns into a row, the words left and the button right. */
-    .sp-apps [class*="__callout"] > .group-block-content {
+    .sp-apps .group-block:has(> .group-block-content > [class*="__words"]) > .group-block-content {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
