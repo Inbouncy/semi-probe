@@ -80,11 +80,24 @@
     color: #23252c;
   }
 
+  /* The background is restated on :hover and :focus because the theme's base
+     `input:hover { background-color: var(--color-input-hover-background) }` is
+     an element-plus-pseudo-class rule, which outranks a single class and would
+     otherwise win. On the dark top bar that token resolves to a charcoal
+     (rgb(49, 52, 61)), so pointing at the field filled it with the bar's own
+     colour and it stayed filled through focus and typing. The design gives the
+     field no hover state at all, so all three keep it clear and the white comes
+     from .sp-search below. */
+  .sp-search__input,
+  .sp-search__input:hover,
+  .sp-search__input:focus {
+    background: transparent;
+  }
+
   .sp-search__input {
     width: 100%;
     min-width: 0;
     border: 0;
-    background: transparent;
     color: #23252c;
     font-family: var(--font-body--family);
     font-size: 13px;

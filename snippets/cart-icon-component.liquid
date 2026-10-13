@@ -64,7 +64,20 @@
     height: 17px;
   }
 
-  .sp-cart__icon svg {
+  /* Scoped through .header-actions__action so it outranks the theme's
+     `.header-actions__action svg { width: var(--icon-size-md); height: var(
+     --icon-size-md) }`, which is two classes to this rule's one and was
+     winning. The width still came out at 14 because the icon span is a 14px
+     flex container that squashed it, but the height stayed at the theme's
+     22px and, having a definite cross size, sat flush with the span's top
+     rather than centred -- putting the bag 2.63px below the cap height of
+     CART beside it, which is the "not on the same line" this fixes. At 17px
+     the glyph's ink centres on that cap band to within 0.13px.
+
+     The asset's viewBox is square, so the glyph letterboxes to 14x14 inside
+     the design's 14x17 box rather than stretching. That is the same ink it
+     drew before; only its position changes. */
+  .header-actions__action .sp-cart .sp-cart__icon svg {
     width: 14px;
     height: 17px;
     color: #23252c;
