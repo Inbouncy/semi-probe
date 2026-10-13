@@ -172,6 +172,14 @@
       justify-content: space-between;
       gap: 24px;
     }
+
+    /* The button keeps its own width in that row and sets on one line, as the
+       design draws it; without this the sentence takes the space and the label
+       breaks over two lines. */
+    .sp-apps a[class*="__cta"] {
+      flex: none;
+      white-space: nowrap;
+    }
   }
 
   /* The design is drawn at 1440. Above that the content holds its width rather
