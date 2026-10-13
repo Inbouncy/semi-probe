@@ -4,9 +4,12 @@
       "type": "sp-product-area",
       "settings": {
         "color_scheme": "scheme-1",
-        "column_gap": 24
+        "column_gap": 24,
+        "section_width": "full-width"
       }
     }
   },
-  "order": ["product_area"]
+  "order": [
+    "product_area"
+  ]
 }

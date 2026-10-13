@@ -72,7 +72,7 @@
 -%}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div class="section section--page-width color-{{ section.settings.color_scheme }} sp-pdp">
+<div class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} sp-pdp">
   <div
     class="sp-pdp__inner"
     style="--sp-pdp-gap: {{ gap }}px;"
@@ -652,7 +652,13 @@
      The insets match the header, the homepage sections and the footer so
      the PDP lines up with them. The Figma's own 1280 frame uses a flat 32px
      inset; following it here would misalign this page against every other
-     one, which is the inconsistency we already fixed in the header. */
+     one, which is the inconsistency we already fixed in the header.
+
+     The section runs full-bleed, as every homepage section does, and the
+     max-width and the insets live here. Letting Horizon's page-width
+     modifier do it instead would centre a 1360px box first and then inset
+     inside that, putting this page's content 40px further in than the
+     header's at 1440. */
   .sp-pdp__inner {
     max-width: 1440px;
     margin-inline: auto;
@@ -1437,6 +1443,16 @@
   "class": "section-wrapper",
   "settings": [
     { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "page-width", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
+      ],
+      "default": "full-width"
+    },
     { "type": "range", "id": "column_gap", "label": "Gap between the columns", "min": 16, "max": 48, "step": 4, "unit": "px", "default": 24 },
 
     { "type": "header", "content": "Gallery" },
