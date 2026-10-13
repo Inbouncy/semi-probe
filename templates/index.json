@@ -1035,12 +1035,171 @@
         "padding-block-start": 88,
         "padding-block-end": 88
       }
+    },
+    "semiprobe_faq": {
+      "type": "sp-faq",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Heading",
+          "settings": {
+            "text": "<h2>Frequently Asked Questions</h2>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "left",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "2.5rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          }
+        },
+        "rows": {
+          "type": "group",
+          "name": "Questions",
+          "settings": {
+            "link": "",
+            "open_in_new_tab": false,
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 20,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "q1": {
+              "type": "sp-faq-row",
+              "name": "How do I choose the right product?",
+              "settings": {
+                "question": "How do I choose the right product?",
+                "answer": "<p>Start from the eight product families above and narrow by what you are probing and how you are holding it — manipulators and probe arms position the contact, chucks and holders hold the device under test, and pumps and compressors supply them. If you are not sure, <a href=\"/pages/contact\">tell us about your application</a> and we will point you at the right family.</p>"
+              }
+            },
+            "q2": {
+              "type": "sp-faq-row",
+              "name": "How do configurations and variants work?",
+              "settings": {
+                "question": "How do configurations and variants work?",
+                "answer": "<p>Each family is offered in a number of configurations, listed on that family's page as variants — 57 across the eight families. A configuration fixes the things that have to match your station, such as series, base type, orientation or size.</p>"
+              }
+            },
+            "q3": {
+              "type": "sp-faq-row",
+              "name": "How do I know which probe arm fits my manipulator?",
+              "settings": {
+                "question": "How do I know which probe arm fits my manipulator?",
+                "answer": "<p>Coaxial and triaxial arms are used for DC and low-frequency work. High frequency arms fit the MA-9000, MA-9100 and MA-8500 manipulators and come in West/East and North/South orientations, and they accept industry-standard probes from Cascade and GGB.</p>"
+              }
+            },
+            "q4": {
+              "type": "sp-faq-row",
+              "name": "Can I buy individual components, or do I need a complete assembly?",
+              "settings": {
+                "question": "Can I buy individual components, or do I need a complete assembly?",
+                "answer": "<p>Components are sold individually. These are the same parts SemiProbe specifies into its own probe systems, so a single manipulator, arm, chuck or box of tips can be ordered on its own.</p>"
+              }
+            },
+            "q5": {
+              "type": "sp-faq-row",
+              "name": "Will these work with a probe station from another manufacturer?",
+              "settings": {
+                "question": "Will these work with a probe station from another manufacturer?",
+                "answer": "<p>Often, yes. The PS4L adaptive architecture is interchangeable, configurable and field-upgradable, and the accessory range follows the same principle. <a href=\"/pages/contact\">Send us the station you are working with</a> and we will confirm the fit before you order.</p>"
+              }
+            },
+            "q6": {
+              "type": "sp-faq-row",
+              "name": "Where can I find detailed specifications?",
+              "settings": {
+                "question": "Where can I find detailed specifications?",
+                "answer": "<p>Specifications are on each product page, under the family it belongs to. For anything not published there, including drawings and tolerances, <a href=\"/pages/contact\">ask us</a> and we will send it.</p>"
+              }
+            },
+            "q7": {
+              "type": "sp-faq-row",
+              "name": "What if I need a configuration that isn't listed?",
+              "settings": {
+                "question": "What if I need a configuration that isn't listed?",
+                "answer": "<p>Unlisted configurations may still be built. Standardized and customized probe arms, chucks and manipulators are all made to order, so <a href=\"/pages/contact\">describe what you need</a> and we will tell you whether it can be done.</p>"
+              }
+            }
+          },
+          "block_order": [
+            "q1",
+            "q2",
+            "q3",
+            "q4",
+            "q5",
+            "q6",
+            "q7"
+          ]
+        }
+      },
+      "block_order": [
+        "heading",
+        "rows"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 28,
+        "section_width": "full-width",
+        "section_height": "",
+        "color_scheme": "scheme-2",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "padding-block-start": 88,
+        "padding-block-end": 88
+      }
     }
   },
   "order": [
     "semiprobe_hero",
     "semiprobe_families",
     "semiprobe_why",
-    "semiprobe_apps"
+    "semiprobe_apps",
+    "semiprobe_faq"
   ]
 }

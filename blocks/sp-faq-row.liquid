@@ -1,0 +1,154 @@
+{%- doc -%}
+  One FAQ row — Figma 68:3218 / 76:226 / 78:233.
+
+  One question is one block with two fields, so the client edits both and
+  reorders or removes a question from the Theme Editor without touching code.
+
+  Built on <details>/<summary> rather than the theme's accordion element: it
+  opens and closes with no JavaScript, is keyboard operable and announced as a
+  disclosure by screen readers on its own, and keeps the row's measurements
+  under this file's control.
+
+  The design draws every row closed and gives no answer copy, so the answers
+  below are drafted from the copy already approved elsewhere on the page and
+  are marked for the client to review. The open state is not drawn either; it
+  keeps the row's own white, hairline and insets, with the answer under the
+  question.
+{%- enddoc -%}
+
+<details class="sp-faq-row" {{ block.shopify_attributes }}>
+  <summary class="sp-faq-row__q">
+    <span class="sp-faq-row__text">{{ block.settings.question }}</span>
+    <span class="sp-faq-row__mark" aria-hidden="true"></span>
+  </summary>
+  {%- if block.settings.answer != blank -%}
+    <div class="sp-faq-row__a">{{ block.settings.answer }}</div>
+  {%- endif -%}
+</details>
+
+{% stylesheet %}
+  /* Figma 68:3218 — white row, 1px #ccc hairline, no radius.
+
+     The row's height is the taller of the question and the 34px mark, inside
+     the design's insets — which is how a one-line question gives 70px at
+     desktop and 66 on mobile, and a two-line question 80. Centring the pair
+     and letting the mark hold its line height produces that without a
+     per-frame height. */
+  .sp-faq-row {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background);
+  }
+
+  .sp-faq-row__q {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    /* 15/21 against the design's 16/22: a Figma stroke does not consume
+       layout, so the 1px CSS border makes up the difference. */
+    padding: 15px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Safari draws its own disclosure triangle without this. */
+  .sp-faq-row__q::-webkit-details-marker {
+    display: none;
+  }
+
+  .sp-faq-row__q:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  .sp-faq-row__text {
+    color: var(--color-foreground-heading);
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  /* The design sets the mark as a 22px Light glyph on a 34px line, in the
+     brand maroon. It is written as content rather than drawn, so it is the
+     same glyph the design uses, and it swaps to a minus when the row opens. */
+  .sp-faq-row__mark {
+    flex: none;
+    width: 14px;
+    color: var(--color-primary);
+    font-family: var(--font-body--family);
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 34px;
+    text-align: center;
+  }
+
+  .sp-faq-row__mark::before {
+    content: "+";
+  }
+
+  .sp-faq-row[open] .sp-faq-row__mark::before {
+    content: "−";
+  }
+
+  /* The answer is not drawn in the design. It keeps the row's own insets and
+     is set in the body style used for running copy elsewhere on the page. */
+  .sp-faq-row__a {
+    padding: 0 15px 15px;
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-weight: var(--font-body--weight);
+    font-size: 15px;
+    line-height: 24px;
+  }
+
+  .sp-faq-row__a :is(p, ul, ol) {
+    margin: 0;
+  }
+
+  .sp-faq-row__a :is(p, ul, ol) + :is(p, ul, ol) {
+    margin-block-start: 12px;
+  }
+
+  .sp-faq-row__a a {
+    color: var(--color-primary);
+    font-weight: var(--font-subheading--weight);
+    text-decoration: underline;
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-faq-row__q {
+      padding: 17px 21px;
+    }
+
+    .sp-faq-row__a {
+      padding: 0 21px 17px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Question",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "question",
+      "label": "Question",
+      "default": "How do I choose the right product?"
+    },
+    {
+      "type": "richtext",
+      "id": "answer",
+      "label": "Answer",
+      "default": "<p>Start from the eight product families above and narrow by what you are probing and how you are holding it.</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Question"
+    }
+  ]
+}
+{% endschema %}
