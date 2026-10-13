@@ -34,10 +34,12 @@
     var strip = root.querySelector('.sp-gallery__strip');
     if (items.length < 2) return;
 
+    var viewport = root.querySelector('[data-sp-viewport]');
     var offset = 0;
     var timer = null;
     var hovering = false;
     var taken = false;
+    var zoomLoaded = false;
     var period = parseInt(root.getAttribute('data-rotate-ms'), 10) || 3000;
     var wantsRotation = root.getAttribute('data-autorotate') === 'true';
 
@@ -115,10 +117,53 @@
       hero.setAttribute('src', full);
       hero.setAttribute('srcset', button.getAttribute('data-srcset') || '');
       hero.setAttribute('alt', button.getAttribute('data-alt') || '');
+      hero.setAttribute('data-zoom-src', button.getAttribute('data-zoom') || '');
+      zoomLoaded = false;
       thumbs.forEach(function (other) {
         var on = other === button;
         other.classList.toggle('is-selected', on);
         other.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    /* The magnifier. The resting page loads a rendition sized for the
+       viewport; enlarging that would only show bigger soft pixels. So the
+       first time a visitor hovers, the full-size rendition is fetched in the
+       background and swapped in once it has decoded — never mid-paint, and
+       never if they picked a different photograph while it was loading. */
+    function loadZoomSource() {
+      if (zoomLoaded) return;
+      var wanted = hero.getAttribute('data-zoom-src');
+      if (!wanted) return;
+      zoomLoaded = true;
+      var pre = new Image();
+      pre.onload = function () {
+        if (hero.getAttribute('data-zoom-src') !== wanted) return;
+        hero.removeAttribute('srcset');
+        hero.removeAttribute('sizes');
+        hero.setAttribute('src', wanted);
+      };
+      pre.onerror = function () { zoomLoaded = false; };
+      pre.src = wanted;
+    }
+
+    /* Touch has no hover, and a magnification you cannot leave is a trap,
+       so the lens is for a real pointer only. */
+    if (viewport && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      viewport.addEventListener('pointerenter', function () {
+        loadZoomSource();
+        viewport.classList.add('is-zooming');
+      });
+      viewport.addEventListener('pointerleave', function () {
+        viewport.classList.remove('is-zooming');
+        hero.style.transformOrigin = '';
+      });
+      viewport.addEventListener('pointermove', function (event) {
+        var box = viewport.getBoundingClientRect();
+        if (!box.width || !box.height) return;
+        var x = ((event.clientX - box.left) / box.width) * 100;
+        var y = ((event.clientY - box.top) / box.height) * 100;
+        hero.style.transformOrigin = x.toFixed(2) + '% ' + y.toFixed(2) + '%';
       });
     }
 
