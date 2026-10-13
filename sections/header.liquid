@@ -618,18 +618,52 @@
      narrowest one reflows into two differently sized rows. Each band below is
      one of Figma's breakpoints.
 
-     The switch from nav to menu button sits at 1300px rather than at Figma's
-     1024px frame: the nav needs 1293px to clear the CTA, so anything narrower
-     would collide before the menu button took over.
+     The switch from nav to menu button sits at 1400px rather than at Figma's
+     1024px frame: the nav needs the width to clear the CTA, and anything
+     narrower would collide before the menu button took over. It was 1300 while
+     the header was inset 30px; the page container below widens that inset to
+     80, which costs 100px of row, so the whole tablet band moves with it. The
+     same 1400 is used by the search field and the utility links, which share
+     this band -- at 1300 the top row's links, field and cart need 1179px of a
+     1140px row.
      ──────────────────────────────────────────────────────────────────── */
+
+  /* ── The page container ────────────────────────────────────────────────
+     Every section and the footer lay their content in a 1440 wrapper, centred
+     above that width and inset 24 / 48 / 80. The header was drawn flush to a
+     30px inset at every frame instead, which put it out of line with
+     everything below it: 50px at 1440, and 290 at 1920, where the sections cap
+     at 1440 and the header did not. The design file has it the same way; this
+     follows the page rather than the file, at the client's direction.
+
+     `justify-self` rather than `margin-inline: auto`, because this element is
+     a grid item in the row's own section grid and auto margins would make it
+     shrink to its content instead of centring at full width -- which collapsed
+     the nav row to 1386px and pulled the logo 27px off the edge.
+
+     The rows' backgrounds stay full-bleed; only the columns inside move. */
+  .header__row .header__columns {
+    width: 100%;
+    max-width: 1440px;
+    justify-self: center;
+    padding-inline: 24px;
+  }
+
+  @media screen and (width >= 750px) {
+    .header__row .header__columns {
+      padding-inline: 48px;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .header__row .header__columns {
+      padding-inline: 80px;
+    }
+  }
 
   /* Desktop and tablet share their rows: a 60px dark bar over a 74px nav row,
      inset 30px (Figma 212:5 and 212:46). */
   @media screen and (width >= 750px) {
-    .header__row .header__columns {
-      padding-inline: 30px;
-    }
-
     .header__row--top .header__columns {
       min-height: 60px;
     }
@@ -654,7 +688,7 @@
 
   /* Tablet — Figma 212:46 hides the primary nav (212:73) and the utility links
      (212:48), and puts the menu button beside the CTA (212:87). */
-  @media screen and (750px <= width < 1300px) {
+  @media screen and (750px <= width < 1400px) {
     .header__row--bottom .header-menu {
       display: none;
     }
@@ -688,7 +722,6 @@
       grid-template-areas: 'left right';
       --header-template-columns: 1fr auto;
       column-gap: 8px;
-      padding-inline: 16px;
     }
 
     .header__column {
