@@ -258,6 +258,11 @@
       if (node) node.textContent = value || '';
     }
 
+    /* `settled` stays false until the first render has run, so landing on
+       the page never rewrites its address: only a choice the visitor makes
+       does. */
+    var settled = false;
+
     function applyVariant(variant) {
       if (!variant) return;
       if (idInput) idInput.value = variant.id;
@@ -271,7 +276,7 @@
         }
       }
 
-      if (cfg.updateUrl && window.history && window.history.replaceState) {
+      if (settled && cfg.updateUrl && window.history && window.history.replaceState) {
         var url = new URL(window.location.href);
         url.searchParams.set('variant', variant.id);
         window.history.replaceState({}, '', url.toString());
@@ -324,6 +329,7 @@
     }
 
     refresh();
+    settled = true;
   }
 
   function init(scope) {
