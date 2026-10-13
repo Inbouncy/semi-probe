@@ -58,12 +58,13 @@
   # SemiProbe: below 750px the header has no room for the pill CTA, so a copy
   # of it goes with the menu drawer, where the nav has folded to.
   #
-  # Horizon's drawer is a private block rendered through `content_for`, whose
-  # output Shopify defers — the captured string above is a placeholder, not
-  # markup — so there is nothing to splice the button into. It is rendered as
-  # the drawer's sibling instead and pinned to the open panel in CSS, which
-  # keeps every change inside this theme's own files: if Horizon restructures
-  # the drawer, the button moves but the navigation is untouched.
+  # Horizon's drawer is a private block rendered through `content_for`, and it
+  # takes no content from the theme: there is no slot to pass a button into,
+  # and the captured markup above cannot be spliced either. So the button is
+  # rendered as the drawer's sibling by header-row and pinned to the open
+  # panel in CSS, which keeps every change inside this theme's own files. If
+  # Horizon restructures the drawer, the button moves but the navigation is
+  # untouched.
   capture drawer_cta
     render 'sp-header-cta',
       label: section.settings.cta_label,
