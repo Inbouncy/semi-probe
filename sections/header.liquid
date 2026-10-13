@@ -309,6 +309,21 @@
     --header-group-height: 0px;
   }
 
+  /* The sticky header's real height, for the sections the hero's buttons
+     scroll to: they set scroll-margin-top from this so the heading stops below
+     the header instead of under it. Horizon's own --header-height is a flat
+     60px, which does not describe this header's two rows -- measured, it is
+     110 on mobile and 134 from 750px up. */
+  body {
+    --sp-header-offset: 110px;
+  }
+
+  @media screen and (width >= 750px) {
+    body {
+      --sp-header-offset: 134px;
+    }
+  }
+
   .header[transparent] {
     --language-button-background-color: transparent;
     --language-button-border-color: transparent;

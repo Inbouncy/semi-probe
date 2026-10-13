@@ -15,6 +15,7 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
+  id="product-families"
   class="
     section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} sp-families
     {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
@@ -46,6 +47,16 @@
 </div>
 
 {% stylesheet %}
+  /* The hero's "Browse Products" button scrolls here, and the header is
+     sticky, so the section has to stop clear of it rather than under it.
+     --sp-header-offset is this header's real height, defined in
+     sections/header.liquid; the theme's own --header-height is a flat 60px
+     that does not describe it. The theme already sets scroll-behavior: smooth
+     on html, behind a prefers-reduced-motion guard. */
+  .sp-families {
+    scroll-margin-top: calc(var(--sp-header-offset, 134px) + 24px);
+  }
+
   /* ────────────────────────────────────────────────────────────────────
      Product Families — Figma 68:3042 / 76:50 / 78:50.
 

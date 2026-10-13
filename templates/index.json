@@ -271,7 +271,7 @@
                       "name": "Browse products",
                       "settings": {
                         "label": "Browse Products",
-                        "link": "/collections/all",
+                        "link": "#product-families",
                         "open_in_new_tab": false,
                         "style_class": "button",
                         "width": "fit-content",
@@ -285,7 +285,7 @@
                       "name": "Need help choosing",
                       "settings": {
                         "label": "Need Help Choosing?",
-                        "link": "/pages/contact",
+                        "link": "#product-inquiry",
                         "open_in_new_tab": false,
                         "style_class": "button-outline",
                         "width": "fit-content",

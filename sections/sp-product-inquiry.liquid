@@ -179,6 +179,12 @@
 </div>
 
 {% stylesheet %}
+  /* The hero's "Need Help Choosing?" button scrolls here; see the note in
+     sections/sp-product-families.liquid for the offset. */
+  .sp-inquiry {
+    scroll-margin-top: calc(var(--sp-header-offset, 134px) + 24px);
+  }
+
   /* ────────────────────────────────────────────────────────────────────
      Product Inquiry — Figma 68:3239 / 76:247 / 78:254.
 
