@@ -350,6 +350,20 @@
     });
   }
 
+  /* The Documentation list highlights the row for the model being
+     configured. Figma pins that highlight to MA-9100, but the row is
+     labelled "(Selected Model)", which stops being true the moment a
+     visitor picks another - so it follows the selection instead. */
+  function syncDocRows(model) {
+    var rows = document.querySelectorAll('[data-sp-doc-model]');
+    Array.prototype.forEach.call(rows, function (row) {
+      var on = row.getAttribute('data-sp-doc-model') === model;
+      row.classList.toggle('is-current', on);
+      var suffix = row.querySelector('[data-sp-doc-suffix]');
+      if (suffix) suffix.hidden = !on;
+    });
+  }
+
   function scrollToConfigurator() {
     var target = document.querySelector('.sp-pdp__col--buy') ||
       document.querySelector('[data-sp-select="model"]');
@@ -528,6 +542,7 @@
       setText('arm', armEntry && shortLabel(armEntry.label));
 
       syncModelButtons(model);
+      syncDocRows(model);
 
       var variant = find(model, base, arm);
       var baseShort = baseEntry ? shortLabel(baseEntry.label) : '';

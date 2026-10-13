@@ -232,6 +232,215 @@
         "choosing_2",
         "choosing_3"
       ]
+    },
+    "docs": {
+      "type": "sp-documentation",
+      "settings": {
+        "eyebrow": "TECHNICAL ARCHIVE",
+        "heading": "Documentation",
+        "selected_suffix": "(Selected Model)"
+      },
+      "blocks": {
+        "docs_1": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-8005 datasheet",
+            "meta": "PDF · 1.4 MB",
+            "icon": "pdf",
+            "url": "",
+            "model": "MA-8005"
+          }
+        },
+        "docs_2": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-9000 datasheet",
+            "meta": "PDF · 1.8 MB",
+            "icon": "pdf",
+            "url": "",
+            "model": "MA-9000"
+          }
+        },
+        "docs_3": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-9100 datasheet",
+            "meta": "PDF · 2.1 MB",
+            "icon": "pdf",
+            "url": "",
+            "model": "MA-9100"
+          }
+        },
+        "docs_4": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-8500 datasheet",
+            "meta": "PDF · 2.4 MB",
+            "icon": "pdf",
+            "url": "",
+            "model": "MA-8500"
+          }
+        },
+        "docs_5": {
+          "type": "doc",
+          "settings": {
+            "title": "Manipulator datasheet table",
+            "meta": "PDF · 3.2 MB",
+            "icon": "table",
+            "url": "",
+            "model": ""
+          }
+        },
+        "docs_6": {
+          "type": "doc",
+          "settings": {
+            "title": "Probe arms technical description",
+            "meta": "PDF · 4.5 MB",
+            "icon": "book",
+            "url": "",
+            "model": ""
+          }
+        }
+      },
+      "block_order": [
+        "docs_1",
+        "docs_2",
+        "docs_3",
+        "docs_4",
+        "docs_5",
+        "docs_6"
+      ]
+    },
+    "faq": {
+      "type": "sp-pdp-faq",
+      "settings": {
+        "eyebrow": "COMMON INQUIRIES",
+        "heading": "Questions About Manual Manipulators"
+      },
+      "blocks": {
+        "faq_1": {
+          "type": "qa",
+          "settings": {
+            "question": "Can I upgrade the probe arm on my manipulator later?",
+            "answer": "<p>Yes. The probe arm mounts to a dovetail faceplate, so it can be swapped without replacing the manipulator body. Check the compatibility table above first: each model supports a different set of arm types, and the high-frequency arms require a magnetic base on the MA-9000 and MA-9100.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "qa",
+          "settings": {
+            "question": "What is the difference between 80 TPI and 100 TPI lead screws?",
+            "answer": "<p>Threads per inch sets how far the stage moves per turn of the drum, and so how finely you can place a probe. The 80 TPI MA-9000 resolves to 1 µm; the 100 TPI MA-9100 resolves to 0.35 µm. Choose 100 TPI for sub-micron structures and 80 TPI where 1 µm is sufficient.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "qa",
+          "settings": {
+            "question": "Are SemiProbe manipulators compatible with non-SemiProbe probe stations?",
+            "answer": "<p>In most cases, yes. Magnetic bases hold on any ferromagnetic platen, vacuum bases need house vacuum at the station, and bolt-down bases need a matching hole pattern. Send us your platen details and we will confirm fit before you order.</p>"
+          }
+        },
+        "faq_4": {
+          "type": "qa",
+          "settings": {
+            "question": "What mounting base should I choose for high-frequency measurements?",
+            "answer": "<p>Bolt-down, wherever the station allows it: a rigid mechanical mount gives the best stability for RF, microwave and millimetre-wave work, and the MA-8500 is built around it. Where bolt-down is not an option, a magnetic base is the next best choice; the West/East and North/South high-frequency arms are supported on magnetic bases on the MA-9000 and MA-9100.</p>"
+          }
+        },
+        "faq_5": {
+          "type": "qa",
+          "settings": {
+            "question": "Do manipulators come calibrated?",
+            "answer": "<p>Yes. Every unit ships with NIST-traceable calibrated vernier drums to NIST Standard Class A, and the lead time is 2 to 3 weeks after receipt of order.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5"
+      ]
+    },
+    "cta": {
+      "type": "sp-cta-band",
+      "settings": {
+        "eyebrow": "BESPOKE LABORATORY INTEGRATION",
+        "heading": "Need a Configuration That Isn't Listed?",
+        "body": "SemiProbe engineers custom faceplates, extended-reach probe arms, specialized vacuum footprints, and high-density multi-manipulator setups for proprietary test environments.",
+        "primary_label": "REQUEST A QUOTE",
+        "primary_url": "/#product-inquiry",
+        "secondary_label": "CALL (802) 860-7000",
+        "secondary_url": "tel:+18028607000"
+      }
+    },
+    "related": {
+      "type": "sp-frequently-ordered",
+      "settings": {
+        "eyebrow": "SYSTEM ACCESSORIES",
+        "heading": "Frequently Ordered With",
+        "anchor_id": "tips-callout"
+      },
+      "blocks": {
+        "related_1": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/product-pic-2-1.webp",
+            "title": "Probe Tips",
+            "description": "Tungsten & BeCu precision tips for DC, RF and low-current wafer probing.",
+            "price": "From $200.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "",
+            "featured": true,
+            "badge": "ESSENTIAL ACCESSORY"
+          }
+        },
+        "related_2": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/StandardWaferChuck.jpg",
+            "title": "Wafer Chucks",
+            "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.",
+            "price": "From $1,840.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "",
+            "featured": false,
+            "badge": "ESSENTIAL ACCESSORY"
+          }
+        },
+        "related_3": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/Vacuum_Pump_-_115_V.png",
+            "title": "Vacuum Pumps",
+            "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.",
+            "price": "From $740.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "",
+            "featured": false,
+            "badge": "ESSENTIAL ACCESSORY"
+          }
+        },
+        "related_4": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/3_coaxarm.jpg",
+            "title": "Probe Arms",
+            "description": "Individual coaxial, triaxial, Kelvin, and HF probe arms with precision mounts.",
+            "price": "From $500.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "",
+            "featured": false,
+            "badge": "ESSENTIAL ACCESSORY"
+          }
+        }
+      },
+      "block_order": [
+        "related_1",
+        "related_2",
+        "related_3",
+        "related_4"
+      ]
     }
   },
   "order": [
@@ -242,6 +451,10 @@
     "specs",
     "included",
     "compat",
-    "choosing"
+    "choosing",
+    "docs",
+    "faq",
+    "cta",
+    "related"
   ]
 }

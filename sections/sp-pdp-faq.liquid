@@ -1,0 +1,209 @@
+{%- doc -%}
+  FAQ — Figma 42:1127 (Section/FAQ 38:1104, FAQ/Item 16:79).
+
+  Five independent disclosures. Built on <details>/<summary>, so they open
+  and close with no JavaScript, are keyboard operable and are announced as
+  disclosures; the chevron rotates 180° on open, as the design specifies.
+
+  This is a different accordion from the homepage's, which uses a maroon
+  plus/minus mark on grey — hence its own section rather than reusing
+  sections/sp-faq.liquid.
+
+  As on the homepage, the design draws every row closed and supplies no
+  answers. The five here are drafted from material already approved
+  elsewhere on this page — the four model series and their figures, the
+  base guidance, the compatibility matrix — and NEED THE CLIENT'S REVIEW
+  before launch.
+{%- enddoc -%}
+
+<section class="sp-faq2">
+  <div class="sp-faq2__inner">
+    <div class="sp-faq2__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="sp-faq2__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sp-faq2__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="sp-faq2__list">
+        {%- for block in section.blocks -%}
+          <details class="sp-faq2__item" {{ block.shopify_attributes }}>
+            <summary class="sp-faq2__summary">
+              <span class="sp-faq2__question">{{ block.settings.question }}</span>
+              <svg class="sp-faq2__chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+              </svg>
+            </summary>
+            {%- if block.settings.answer != blank -%}
+              <div class="sp-faq2__answer">{{ block.settings.answer }}</div>
+            {%- endif -%}
+          </details>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     FAQ — Figma 42:1127 / 38:1104.
+     ──────────────────────────────────────────────────────────────────── */
+  .sp-faq2 {
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-ink-faint: #a09f9f;
+    --sp-border: #cccccc;
+    --sp-maroon: #661320;
+
+    border-top: 1px solid var(--sp-border);
+    background: #ffffff;
+    padding: 32px 24px;
+  }
+
+  .sp-faq2__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-inline: auto;
+    max-width: 1440px;
+  }
+
+  .sp-faq2__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-faq2__eyebrow {
+    margin: 0;
+    color: var(--sp-maroon);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-faq2__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-faq2__list { border-top: 1px solid var(--sp-border); }
+
+  .sp-faq2__item { border-bottom: 1px solid var(--sp-border); }
+
+  .sp-faq2__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+    padding-block: 16px;
+    list-style: none;
+  }
+
+  /* Safari still draws its own disclosure triangle without this. */
+  .sp-faq2__summary::-webkit-details-marker { display: none; }
+
+  .sp-faq2__question {
+    flex: 1 1 auto;
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  .sp-faq2__chevron {
+    flex: none;
+    transition: transform 200ms ease;
+    width: 24px;
+    height: 24px;
+    color: var(--sp-ink-faint);
+  }
+
+  .sp-faq2__item[open] .sp-faq2__chevron { transform: rotate(180deg); }
+
+  .sp-faq2__answer {
+    padding-bottom: 16px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 22px;
+  }
+
+  .sp-faq2__answer p { margin: 0 0 8px; }
+  .sp-faq2__answer p:last-child { margin-bottom: 0; }
+
+  .sp-faq2__answer a {
+    color: var(--sp-maroon);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-faq2 {
+      padding-block: 40px;
+      padding-inline: 48px;
+    }
+
+    .sp-faq2__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-faq2 { padding-inline: 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-faq2__chevron { transition: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "PDP FAQ",
+  "tag": "section",
+  "max_blocks": 20,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "COMMON INQUIRIES" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Questions About Manual Manipulators" },
+    { "type": "paragraph", "content": "The design supplies the questions but no answers. The five below are drafted from material already approved elsewhere on this page and need review before launch." }
+  ],
+  "blocks": [
+    {
+      "type": "qa",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Question" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Answer.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "PDP FAQ",
+      "blocks": [
+        { "type": "qa", "settings": { "question": "Can I upgrade the probe arm on my manipulator later?", "answer": "<p>Yes. The probe arm mounts to a dovetail faceplate, so it can be swapped without replacing the manipulator body. Check the compatibility table above first: each model supports a different set of arm types, and the high-frequency arms require a magnetic base on the MA-9000 and MA-9100.</p>" } },
+        { "type": "qa", "settings": { "question": "What is the difference between 80 TPI and 100 TPI lead screws?", "answer": "<p>Threads per inch sets how far the stage moves per turn of the drum, and so how finely you can place a probe. The 80 TPI MA-9000 resolves to 1 µm; the 100 TPI MA-9100 resolves to 0.35 µm. Choose 100 TPI for sub-micron structures and 80 TPI where 1 µm is sufficient.</p>" } },
+        { "type": "qa", "settings": { "question": "Are SemiProbe manipulators compatible with non-SemiProbe probe stations?", "answer": "<p>In most cases, yes. Magnetic bases hold on any ferromagnetic platen, vacuum bases need house vacuum at the station, and bolt-down bases need a matching hole pattern. Send us your platen details and we will confirm fit before you order.</p>" } },
+        { "type": "qa", "settings": { "question": "What mounting base should I choose for high-frequency measurements?", "answer": "<p>Bolt-down, wherever the station allows it: a rigid mechanical mount gives the best stability for RF, microwave and millimetre-wave work, and the MA-8500 is built around it. Where bolt-down is not an option, a magnetic base is the next best choice; the West/East and North/South high-frequency arms are supported on magnetic bases on the MA-9000 and MA-9100.</p>" } },
+        { "type": "qa", "settings": { "question": "Do manipulators come calibrated?", "answer": "<p>Yes. Every unit ships with NIST-traceable calibrated vernier drums to NIST Standard Class A, and the lead time is 2 to 3 weeks after receipt of order.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
