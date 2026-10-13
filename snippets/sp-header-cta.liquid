@@ -71,8 +71,17 @@
     .menu-drawer .sp-header-cta--drawer {
       display: flex;
       justify-content: center;
-      /* The drawer's own inline inset, so the button's edges line up with the
-         menu links above it rather than with the panel edge. */
+      /* The theme's .button is `width: fit-content`, which in the header is
+         what keeps the pill wrapped to its label. In the drawer it is the
+         only action on screen, so it runs the full width of the menu
+         instead; `auto` hands the sizing back to the panel's own flex
+         column, which stretches its children.
+
+         With the drawer's inline inset as the margin, that lands the button
+         on exactly the box of the links above it: same left edge, same
+         width, measured at 18.19 / 334.13 against the last link's 18.19 /
+         334.13 at 390px. */
+      width: auto;
       margin: var(--margin-lg, 1.5rem) var(--drawer-padding) 0;
     }
 
