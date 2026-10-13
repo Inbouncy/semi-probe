@@ -157,19 +157,19 @@
       <div class="sp-inquiry__contacts">
         {%- if section.settings.panel_email != blank -%}
           <p class="sp-inquiry__contact">
-            <img class="sp-inquiry__icon" src="{{ 'sp-contact-mail.svg' | asset_url }}" alt="" width="16.667" height="13.333" loading="lazy">
+            <img class="sp-inquiry__icon" src="{{ 'sp-contact-mail.svg' | asset_url }}" alt="" width="16.667" height="13.333" style="width: 16.667px; height: 13.333px;" loading="lazy">
             <a href="mailto:{{ section.settings.panel_email }}">{{ section.settings.panel_email }}</a>
           </p>
         {%- endif -%}
         {%- if section.settings.panel_phone != blank -%}
           <p class="sp-inquiry__contact">
-            <img class="sp-inquiry__icon" src="{{ 'sp-contact-phone.svg' | asset_url }}" alt="" width="15" height="15" loading="lazy">
+            <img class="sp-inquiry__icon" src="{{ 'sp-contact-phone.svg' | asset_url }}" alt="" width="15" height="15" style="width: 15px; height: 15px;" loading="lazy">
             <a href="tel:{{ section.settings.panel_phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">{{ section.settings.panel_phone }}</a>
           </p>
         {%- endif -%}
         {%- if section.settings.panel_hours != blank -%}
           <p class="sp-inquiry__contact">
-            <img class="sp-inquiry__icon" src="{{ 'sp-contact-clock.svg' | asset_url }}" alt="" width="16.667" height="16.667" loading="lazy">
+            <img class="sp-inquiry__icon" src="{{ 'sp-contact-clock.svg' | asset_url }}" alt="" width="16.667" height="16.667" style="width: 16.667px; height: 16.667px;" loading="lazy">
             <span>{{ section.settings.panel_hours }}</span>
           </p>
         {%- endif -%}
@@ -414,10 +414,14 @@
     text-decoration: underline;
   }
 
+  /* The size is written inline per glyph, from each file's own root width and
+     height. It has to win over the theme's base `img` rules, which otherwise
+     stretch the artwork to the panel's width and take the section with it. */
   .sp-inquiry__icon {
     display: block;
     flex: none;
     max-width: none;
+    object-fit: contain;
   }
 
   /* ── Tablet (Figma 76:247) ───────────────────────────────────────── */
