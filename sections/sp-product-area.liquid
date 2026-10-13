@@ -953,20 +953,6 @@
     background: var(--sp-low);
   }
 
-  /* A long second-button label ("Download the Specification PDF") needs
-     about 250px of the 234px a phone leaves inside the pill, so it wrapped
-     and left one word alone on a second line, taking the button to 61px
-     against the cart's 44. Easing the type and the tracking buys the 16px
-     it was short of, so the pair stays level. The balance is a safety net
-     for a label longer still: two even lines rather than an orphan. */
-  @media screen and (width < 600px) {
-    .sp-btn--quote {
-      font-size: 12px;
-      letter-spacing: 0.1px;
-      text-wrap: balance;
-    }
-  }
-
   /* Figma 104:93 (unselected, hover): the 1px edge turns from #ccc to the
      ink. The selected thumb already carries that edge, so it does not move. */
   .sp-gallery__thumb:hover {
@@ -1519,6 +1505,22 @@
     .sp-gallery__dot { margin-top: 4px; }
 
     .sp-gallery__fig { text-align: left; }
+
+    /* The second button's label needs 246px of the 234px a phone leaves
+       inside the pill, so it wrapped with one word alone on a second line
+       and the button grew to 61px against the cart's 44. Easing the type
+       and the tracking buys back the 12px, so the pair stays level. The
+       balance is a safety net for a label longer still: two even lines
+       rather than an orphan.
+
+       This has to sit here, after the base .sp-btn--quote rule: a media
+       query adds no specificity, so the same selector earlier in the file
+       simply loses. */
+    .sp-btn--quote {
+      font-size: 12px;
+      letter-spacing: 0.1px;
+      text-wrap: balance;
+    }
   }
 
   /* Figma centres the tick against a single-line bullet. Once the text
