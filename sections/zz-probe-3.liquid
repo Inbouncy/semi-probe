@@ -1,0 +1,703 @@
+{%- doc -%}
+  Product Area — Manual Manipulators PDP.
+
+  Figma 42:13 (desktop 1280), 43:1435 (tablet 768), 43:2528 (mobile 390).
+  Gallery Card 19:36, Inspection Viewport 15:58, Thumbnail Strip 104:246,
+  Trace Bar 32:94, Buy Box 22:57.
+
+  Two columns on wide screens (gallery 699 : buy box 493, 24px gutter in the
+  Figma), stacked below 1100px exactly as the Figma's tablet and mobile frames
+  stack them. The buy box sticks under the header on the two-column layout.
+
+  CLIENT EDITABILITY
+  ------------------
+  Everything the client would reasonably change is a Theme Editor setting:
+  every label, descriptor, spec value, badge, bullet and button caption.
+
+  The three dependent dropdowns are not Shopify options — this product has a
+  single 21-value option, and the catalog is not being touched before launch.
+  So the three axes are reconstructed here from a plain-text map the client
+  edits in the Theme Editor (Configurator > Variant map), one line per SKU:
+
+      SKU | MODEL | BASE | ARM
+
+  and three more tables give each key its display label, its helper text and,
+  for the model, its spec values. No Liquid, CSS or JS edit is ever needed to
+  rename an option, fix a spec or re-point a SKU.
+
+  A variant whose SKU is missing from the map still sells: it falls through to
+  the catch-all group so nothing silently disappears from the store. In the
+  Theme Editor those variants are named in a warning strip.
+{%- enddoc -%}
+
+<script src="{{ 'sp-product-area.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign p = product
+
+  comment
+  # --- Parse the four client-editable tables -------------------------------
+  # newline_to_br then split is the only reliable way to split a textarea
+  # setting on its line breaks inside a {% liquid %} tag.
+  endcomment
+
+  assign map_rows = section.settings.variant_map | newline_to_br | split: '<br />'
+  assign model_rows = section.settings.model_table | newline_to_br | split: '<br />'
+  assign base_rows = section.settings.base_table | newline_to_br | split: '<br />'
+  assign arm_rows = section.settings.arm_table | newline_to_br | split: '<br />'
+
+  assign unmapped = ''
+  assign gap = section.settings.column_gap
+-%}
+
+{%- comment -%} Resolve the variant the page loaded on. {%- endcomment -%}
+{%- liquid
+  assign current = p.selected_or_first_available_variant
+  assign cur_model = ''
+  assign cur_base = ''
+  assign cur_arm = ''
+  for row in map_rows
+    assign cells = row | strip_newlines | strip | split: '|'
+    if cells.size < 4
+      continue
+    endif
+    assign row_sku = cells[0] | strip
+    if row_sku == current.sku
+      assign cur_model = cells[1] | strip
+      assign cur_base = cells[2] | strip
+      assign cur_arm = cells[3] | strip
+      break
+    endif
+  endfor
+-%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div class="section section--page-width color-{{ section.settings.color_scheme }} sp-pdp">
+  <div
+    class="sp-pdp__inner"
+    style="--sp-pdp-gap: {{ gap }}px;"
+  >
+    {%- if request.design_mode -%}
+      {%- liquid
+        for v in p.variants
+          assign found = false
+          for row in map_rows
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 4
+              continue
+            endif
+            assign row_sku = cells[0] | strip
+            if row_sku == v.sku
+              assign found = true
+              break
+            endif
+          endfor
+          unless found
+            assign unmapped = unmapped | append: v.sku | append: ', '
+          endunless
+        endfor
+      -%}
+      {%- if unmapped != blank -%}
+        <p class="sp-pdp__notice">
+          These SKUs are not in the variant map, so they appear under the
+          catch-all group instead of the three dropdowns:
+          {{ unmapped | split: ', ' | join: ', ' }}.
+        </p>
+      {%- endif -%}
+    {%- endif -%}
+
+    <div class="sp-pdp__grid">
+      {%- comment -%} ───────────── Gallery column ───────────── {%- endcomment -%}
+      <div class="sp-pdp__col sp-pdp__col--gallery">
+        <div
+          class="sp-gallery"
+          data-sp-gallery
+          data-rotate-ms="{{ section.settings.rotate_seconds | times: 1000 }}"
+          data-autorotate="{{ section.settings.autorotate }}"
+        >
+          <div class="sp-gallery__card">
+            {%- comment -%} Inspection header — Figma 19:37 {%- endcomment -%}
+            {%- if section.settings.inspection_label != blank or section.settings.fig_label != blank -%}
+              <div class="sp-gallery__header">
+                <div class="sp-gallery__label-group">
+                  <span class="sp-gallery__dot" aria-hidden="true"></span>
+                  <p class="sp-gallery__label">{{ section.settings.inspection_label }}</p>
+                </div>
+                <p class="sp-gallery__fig">{{ section.settings.fig_label }}</p>
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Inspection viewport — Figma 15:58 {%- endcomment -%}
+            <div class="sp-gallery__viewport">
+              <div class="sp-gallery__hero">
+                {%- assign first_image = p.images | first -%}
+                {%- if first_image != blank -%}
+                  <img
+                    data-sp-hero
+                    src="{{ first_image | image_url: width: 1200 }}"
+                    srcset="
+                      {{ first_image | image_url: width: 400 }} 400w,
+                      {{ first_image | image_url: width: 800 }} 800w,
+                      {{ first_image | image_url: width: 1200 }} 1200w
+                    "
+                    sizes="(min-width: 1100px) 56vw, 92vw"
+                    width="{{ first_image.width }}"
+                    height="{{ first_image.height }}"
+                    alt="{{ first_image.alt | default: p.title | escape }}"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                  >
+                {%- endif -%}
+              </div>
+
+              {%- if section.settings.zoom_badge != blank -%}
+                <div class="sp-gallery__badge">
+                  <svg class="sp-gallery__badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14m2.5-4h-2v2H9v-2H7V9h2V7h1v2h2z"/>
+                  </svg>
+                  <span class="sp-gallery__badge-text">{{ section.settings.zoom_badge }}</span>
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} Thumbnail strip — Figma 104:246. Sliding window at
+              every width; the arrows sit over the window so the row itself
+              keeps the Figma's geometry. {%- endcomment -%}
+            {%- if p.images.size > 1 -%}
+              <div class="sp-gallery__strip">
+                <button
+                  type="button"
+                  class="sp-gallery__arrow sp-gallery__arrow--prev"
+                  data-sp-prev
+                  aria-label="{{ section.settings.prev_label | escape }}"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                  </svg>
+                </button>
+
+                <div class="sp-gallery__window" data-sp-window>
+                  <ul class="sp-gallery__row" data-sp-row role="list">
+                    {%- for img in p.images -%}
+                      <li class="sp-gallery__item">
+                        <button
+                          type="button"
+                          class="sp-gallery__thumb{% if forloop.first %} is-selected{% endif %}"
+                          data-sp-thumb
+                          data-full="{{ img | image_url: width: 1200 }}"
+                          data-srcset="{{ img | image_url: width: 400 }} 400w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1200 }} 1200w"
+                          data-alt="{{ img.alt | default: p.title | escape }}"
+                          aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                        >
+                          <span class="sp-gallery__thumb-media">
+                            <img
+                              src="{{ img | image_url: width: 220 }}"
+                              srcset="{{ img | image_url: width: 220 }} 220w, {{ img | image_url: width: 440 }} 440w"
+                              sizes="110px"
+                              width="{{ img.width }}"
+                              height="{{ img.height }}"
+                              alt=""
+                              loading="lazy"
+                              decoding="async"
+                            >
+                          </span>
+                          <span class="sp-sr">
+                            {{ section.settings.thumb_label | replace: '[n]', forloop.index }}
+                          </span>
+                        </button>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+
+                <button
+                  type="button"
+                  class="sp-gallery__arrow sp-gallery__arrow--next"
+                  data-sp-next
+                  aria-label="{{ section.settings.next_label | escape }}"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+                  </svg>
+                </button>
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Trace bar — Figma 32:94 {%- endcomment -%}
+          {%- if section.settings.trace_1 != blank or section.settings.trace_2 != blank or section.settings.trace_3 != blank -%}
+            <div class="sp-trace">
+              {%- for i in (1..3) -%}
+                {%- liquid
+                  case i
+                    when 1
+                      assign trace_text = section.settings.trace_1
+                    when 2
+                      assign trace_text = section.settings.trace_2
+                    else
+                      assign trace_text = section.settings.trace_3
+                  endcase
+                -%}
+                {%- if trace_text != blank -%}
+                  <span class="sp-trace__item{% if i == 3 %} sp-trace__item--muted{% endif %}">
+                    {%- if i < 3 -%}
+                      <svg class="sp-trace__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                        <path d="m23 12-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69zm-12.91 4.72-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48z"/>
+                      </svg>
+                    {%- endif -%}
+                    <span>{{ trace_text }}</span>
+                  </span>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} ───────────── Buy box — Figma 22:57 ───────────── {%- endcomment -%}
+      <div class="sp-pdp__col sp-pdp__col--buy">
+        <div class="sp-buy" data-sp-buy>
+          {%- comment -%} Title block — Figma 22:58 {%- endcomment -%}
+          <div class="sp-buy__title-block">
+            {%- if section.settings.eyebrow != blank or section.settings.chip != blank -%}
+              <div class="sp-buy__eyebrow-row">
+                <p class="sp-buy__eyebrow">{{ section.settings.eyebrow }}</p>
+                {%- if section.settings.chip != blank -%}
+                  <span class="sp-buy__chip">{{ section.settings.chip | replace: '[count]', p.variants.size }}</span>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            <h1 class="sp-buy__title">{{ section.settings.title_override | default: p.title }}</h1>
+            {%- if section.settings.subtitle != blank -%}
+              <p class="sp-buy__subtitle">{{ section.settings.subtitle }}</p>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Price row — Figma 22:65 {%- endcomment -%}
+          <div class="sp-buy__price-row">
+            <div class="sp-buy__price">
+              <span class="sp-buy__price-value" data-sp-price>
+                {{- current.price | money_without_trailing_zeros -}}
+              </span>
+              {%- if section.settings.price_suffix != blank -%}
+                <span class="sp-buy__price-suffix">{{ section.settings.price_suffix }}</span>
+              {%- endif -%}
+            </div>
+            <div class="sp-buy__availability">
+              {%- if section.settings.stock_label != blank -%}
+                <span class="sp-buy__stock" data-sp-stock>{{ section.settings.stock_label }}</span>
+              {%- endif -%}
+              {%- if section.settings.ships_label != blank -%}
+                <span class="sp-buy__ships">{{ section.settings.ships_label }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+
+          {%- form 'product', p, id: 'sp-buy-form', class: 'sp-buy__form', novalidate: 'novalidate' -%}
+            <input type="hidden" name="id" value="{{ current.id }}" data-sp-variant-id>
+
+            {%- comment -%} Dependent selectors — Figma 22:72 {%- endcomment -%}
+            <div class="sp-buy__selectors">
+              {%- for axis in (1..3) -%}
+                {%- liquid
+                  case axis
+                    when 1
+                      assign axis_key = 'model'
+                      assign axis_rows = model_rows
+                      assign axis_label = section.settings.model_label
+                      assign axis_current = cur_model
+                    when 2
+                      assign axis_key = 'base'
+                      assign axis_rows = base_rows
+                      assign axis_label = section.settings.base_label
+                      assign axis_current = cur_base
+                    else
+                      assign axis_key = 'arm'
+                      assign axis_rows = arm_rows
+                      assign axis_label = section.settings.arm_label
+                      assign axis_current = cur_arm
+                  endcase
+                -%}
+                <div class="sp-field" data-sp-field="{{ axis_key }}">
+                  <div class="sp-field__label-row">
+                    <label class="sp-field__label" for="sp-select-{{ axis_key }}-{{ section.id }}">
+                      {{- axis_label -}}
+                    </label>
+                    <span class="sp-field__descriptor" data-sp-descriptor="{{ axis_key }}"></span>
+                  </div>
+                  <div class="sp-field__control">
+                    <select
+                      class="sp-field__select"
+                      id="sp-select-{{ axis_key }}-{{ section.id }}"
+                      data-sp-select="{{ axis_key }}"
+                    >
+                      {%- for row in axis_rows -%}
+                        {%- liquid
+                          assign cells = row | strip_newlines | strip | split: '|'
+                          if cells.size < 2
+                            continue
+                          endif
+                          assign opt_key = cells[0] | strip
+                          assign opt_label = cells[1] | strip
+                        -%}
+                        <option
+                          value="{{ opt_key | escape }}"
+                          {% if opt_key == axis_current %}selected{% endif %}
+                        >
+                          {{- opt_label -}}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+                    <svg class="sp-field__chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                      <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                    </svg>
+                  </div>
+                </div>
+              {%- endfor -%}
+
+              {%- comment -%} Catch-all: only rendered when a SKU is missing
+                from the map, so no variant is ever unreachable. {%- endcomment -%}
+              {%- liquid
+                assign orphans = ''
+                for v in p.variants
+                  assign found = false
+                  for row in map_rows
+                    assign cells = row | strip_newlines | strip | split: '|'
+                    if cells.size < 4
+                      continue
+                    endif
+                    assign row_sku = cells[0] | strip
+                    if row_sku == v.sku
+                      assign found = true
+                      break
+                    endif
+                  endfor
+                  unless found
+                    assign orphans = orphans | append: v.id | append: ','
+                  endunless
+                endfor
+              -%}
+              {%- if orphans != blank -%}
+                <div class="sp-field" data-sp-field="other">
+                  <div class="sp-field__label-row">
+                    <label class="sp-field__label" for="sp-select-other-{{ section.id }}">
+                      {{- section.settings.other_label -}}
+                    </label>
+                  </div>
+                  <div class="sp-field__control">
+                    <select class="sp-field__select" id="sp-select-other-{{ section.id }}" data-sp-select="other">
+                      {%- assign orphan_ids = orphans | split: ',' -%}
+                      {%- for v in p.variants -%}
+                        {%- assign vid = v.id | append: '' -%}
+                        {%- if orphan_ids contains vid -%}
+                          <option value="{{ v.id }}" {% if v.id == current.id %}selected{% endif %}>
+                            {{- v.title -}}
+                          </option>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </select>
+                    <svg class="sp-field__chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                      <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                    </svg>
+                  </div>
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} Configuration summary — Figma 22:97 {%- endcomment -%}
+            <div class="sp-summary">
+              <div class="sp-summary__header">
+                <span class="sp-summary__title">{{ section.settings.summary_title }}</span>
+                <span class="sp-summary__token" data-sp-tpi></span>
+              </div>
+              <div class="sp-summary__grid">
+                <div class="sp-summary__row">
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_res_label }}</span>
+                    <span class="sp-summary__value" data-sp-res></span>
+                  </p>
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_travel_label }}</span>
+                    <span class="sp-summary__value" data-sp-travel></span>
+                  </p>
+                </div>
+                <div class="sp-summary__row">
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_base_label }}</span>
+                    <span class="sp-summary__value" data-sp-base></span>
+                  </p>
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_arm_label }}</span>
+                    <span class="sp-summary__value" data-sp-arm></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {%- comment -%} Part number — Figma 22:116 {%- endcomment -%}
+            <div class="sp-buy__part">
+              <span class="sp-buy__part-label">{{ section.settings.part_label }}</span>
+              <span class="sp-buy__sku" data-sp-sku>{{ current.sku }}</span>
+            </div>
+
+            {%- comment -%} Actions — Figma 22:120 {%- endcomment -%}
+            <div class="sp-buy__actions">
+              <button type="submit" name="add" class="sp-btn sp-btn--cart" data-sp-add>
+                <svg class="sp-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                  <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2M1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2"/>
+                </svg>
+                <span data-sp-add-text>{{ section.settings.cart_label }}</span>
+              </button>
+
+              {%- if section.settings.quote_url != blank -%}
+                <a href="{{ section.settings.quote_url }}" class="sp-btn sp-btn--quote">
+              {%- else -%}
+                <span class="sp-btn sp-btn--quote" role="link" aria-disabled="true" tabindex="0">
+              {%- endif -%}
+                <svg class="sp-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                  <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m0 16H5V5h14zM7.5 7.5h9V9h-9zm0 3.5h9v1.5h-9zm0 3.5h5.5V16H7.5z"/>
+                </svg>
+                <span>{{ section.settings.quote_label }}</span>
+              {%- if section.settings.quote_url != blank -%}
+                </a>
+              {%- else -%}
+                </span>
+              {%- endif -%}
+            </div>
+          {%- endform -%}
+
+          {%- comment -%} Purchase confidence — Figma 22:129 {%- endcomment -%}
+          {%- liquid
+            assign has_confidence = false
+            if section.settings.bullet_1 != blank or section.settings.bullet_2 != blank
+              assign has_confidence = true
+            endif
+            if section.settings.bullet_3 != blank or section.settings.contact_line != blank
+              assign has_confidence = true
+            endif
+          -%}
+          {%- if has_confidence -%}
+            <div class="sp-buy__confidence">
+              {%- for i in (1..3) -%}
+                {%- liquid
+                  case i
+                    when 1
+                      assign bullet = section.settings.bullet_1
+                    when 2
+                      assign bullet = section.settings.bullet_2
+                    else
+                      assign bullet = section.settings.bullet_3
+                  endcase
+                -%}
+                {%- if bullet != blank -%}
+                  <p class="sp-check">
+                    <svg class="sp-check__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                      <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    <span>{{ bullet }}</span>
+                  </p>
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if section.settings.contact_line != blank -%}
+                <div class="sp-buy__contact">{{ section.settings.contact_line }}</div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Configurator data for the client-side logic. Rendered as
+    JSON rather than inlined into script source so nothing needs escaping and
+    the Theme Editor can re-render it on every setting change. {%- endcomment -%}
+  <script type="application/json" data-sp-config>
+    {
+      "variants": [
+        {%- for v in p.variants -%}
+          {%- liquid
+            assign v_model = ''
+            assign v_base = ''
+            assign v_arm = ''
+            for row in map_rows
+              assign cells = row | strip_newlines | strip | split: '|'
+              if cells.size < 4
+                continue
+              endif
+              assign row_sku = cells[0] | strip
+              if row_sku == v.sku
+                assign v_model = cells[1] | strip
+                assign v_base = cells[2] | strip
+                assign v_arm = cells[3] | strip
+                break
+              endif
+            endfor
+          -%}
+          {
+            "id": {{ v.id | json }},
+            "sku": {{ v.sku | json }},
+            "model": {{ v_model | json }},
+            "base": {{ v_base | json }},
+            "arm": {{ v_arm | json }},
+            "price": {{ v.price | money_without_trailing_zeros | strip_html | json }},
+            "available": {{ v.available | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "models": [
+        {%- for row in model_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }},
+            "tpi": {{ cells[3] | default: '' | strip | json }},
+            "res": {{ cells[4] | default: '' | strip | json }},
+            "travel": {{ cells[5] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "bases": [
+        {%- for row in base_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "arms": [
+        {%- for row in arm_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "soldOutLabel": {{ section.settings.sold_out_label | json }},
+      "cartLabel": {{ section.settings.cart_label | json }},
+      "updateUrl": {{ section.settings.update_url | json }}
+    }
+  </script>
+</div>
+
+
+
+{% schema %}
+{
+  "name": "ZZ probe 3",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
+    { "type": "range", "id": "column_gap", "label": "Gap between the columns", "min": 16, "max": 48, "step": 4, "unit": "px", "default": 24 },
+
+    { "type": "header", "content": "Gallery" },
+    { "type": "text", "id": "inspection_label", "label": "Inspection label", "default": "OPTICAL INSPECTION · 100 TPI MICROMETER STAGE" },
+    { "type": "text", "id": "fig_label", "label": "Figure label", "default": "FIG 1.0 · SUB-MICRON RESOLUTION" },
+    { "type": "text", "id": "zoom_badge", "label": "Zoom badge", "default": "INSPECTION 4X ENLARGEMENT" },
+    { "type": "checkbox", "id": "autorotate", "label": "Slide the thumbnails automatically", "default": true },
+    { "type": "range", "id": "rotate_seconds", "label": "Seconds between slides", "min": 2, "max": 10, "step": 1, "unit": "s", "default": 3 },
+    { "type": "text", "id": "prev_label", "label": "Previous button label (for screen readers)", "default": "Previous images" },
+    { "type": "text", "id": "next_label", "label": "Next button label (for screen readers)", "default": "Next images" },
+    { "type": "text", "id": "thumb_label", "label": "Thumbnail label (for screen readers)", "info": "[n] is replaced with the image number.", "default": "Show image [n]" },
+
+    { "type": "header", "content": "Trace bar" },
+    { "type": "text", "id": "trace_1", "label": "Item 1", "default": "NIST-Traceable Calibrated Vernier Drums" },
+    { "type": "text", "id": "trace_2", "label": "Item 2", "default": "Zero-Backlash Preloaded Bearings" },
+    { "type": "text", "id": "trace_3", "label": "Item 3", "default": "MIL-STD-883 Compliant" },
+
+    { "type": "header", "content": "Buy box — heading" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "MANUAL MANIPULATORS" },
+    { "type": "text", "id": "chip", "label": "Chip", "info": "[count] is replaced with the number of configurations.", "default": "[count] CONFIGURATIONS" },
+    { "type": "text", "id": "title_override", "label": "Title", "info": "Leave blank to use the product title from the catalogue.", "default": "Manual Manipulators" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "X, Y and Z probe positioning for probe systems — analytical, production and bench." },
+
+    { "type": "header", "content": "Buy box — price and availability" },
+    { "type": "text", "id": "price_suffix", "label": "Price suffix", "default": "USD MSRP" },
+    { "type": "text", "id": "stock_label", "label": "Stock line", "default": "Ready to Assemble" },
+    { "type": "text", "id": "ships_label", "label": "Shipping line", "default": "Ships in 2-3 Weeks" },
+    { "type": "text", "id": "sold_out_label", "label": "Sold out button label", "default": "SOLD OUT" },
+
+    { "type": "header", "content": "Buy box — dropdown labels" },
+    { "type": "text", "id": "model_label", "label": "Dropdown 1 label", "default": "Model Series" },
+    { "type": "text", "id": "base_label", "label": "Dropdown 2 label", "default": "Mounting Base" },
+    { "type": "text", "id": "arm_label", "label": "Dropdown 3 label", "default": "Probe Arm Assembly" },
+    { "type": "text", "id": "other_label", "label": "Catch-all dropdown label", "info": "Only shown when a variant's SKU is missing from the variant map below.", "default": "Other Configurations" },
+
+    { "type": "header", "content": "Buy box — summary" },
+    { "type": "text", "id": "summary_title", "label": "Summary heading", "default": "SELECTED CONFIGURATION" },
+    { "type": "text", "id": "summary_res_label", "label": "Resolution label", "default": "Feature Resolution:" },
+    { "type": "text", "id": "summary_travel_label", "label": "Travel label", "default": "Travel (X,Y,Z):" },
+    { "type": "text", "id": "summary_base_label", "label": "Base label", "default": "Base:" },
+    { "type": "text", "id": "summary_arm_label", "label": "Probe arm label", "default": "Probe Arm:" },
+    { "type": "text", "id": "part_label", "label": "Part number label", "default": "PART NUMBER:" },
+
+    { "type": "header", "content": "Buy box — buttons" },
+    { "type": "text", "id": "cart_label", "label": "Add to cart label", "default": "ADD TO CART" },
+    { "type": "text", "id": "quote_label", "label": "Quote button label", "default": "REQUEST A FORMAL QUOTE" },
+    { "type": "url", "id": "quote_url", "label": "Quote button link", "info": "Leave blank to hold the button back until the destination exists." },
+    { "type": "checkbox", "id": "update_url", "label": "Update the page address when a configuration is picked", "default": true },
+
+    { "type": "header", "content": "Buy box — purchase confidence" },
+    { "type": "text", "id": "bullet_1", "label": "Bullet 1", "default": "Complete assembly — body, base, faceplate and probe arm included" },
+    { "type": "text", "id": "bullet_2", "label": "Bullet 2", "default": "5% academic, non-profit & government institution discount available" },
+    { "type": "text", "id": "bullet_3", "label": "Bullet 3", "default": "Net 30 Purchase Orders (PO) accepted upon credit clearance" },
+    { "type": "richtext", "id": "contact_line", "label": "Contact line", "default": "<p>Questions on configuration? Call <a href=\"tel:+18028607000\">(802) 860-7000</a> or contact metrology engineering.</p>" },
+
+    { "type": "header", "content": "Configurator" },
+    {
+      "type": "paragraph",
+      "content": "The three dropdowns are built from the four tables below. Each row is one line, and the fields on a line are separated by a vertical bar. Edit the text here to rename an option, change a spec or re-point a SKU — nothing else needs to change."
+    },
+    {
+      "type": "textarea",
+      "id": "variant_map",
+      "label": "Variant map",
+      "info": "SKU | Model key | Base key | Arm key. One line per variant. A SKU missing from this list still sells, through the catch-all dropdown.",
+      "default": "A-MAN-MA-8005-M-C-S | MA-8005 | MAG | CS\nA-MAN-MA-8005-V-C-S | MA-8005 | VAC | CS\nA-MAN-MA-8005-M-T-S | MA-8005 | MAG | TS\nA-MAN-MA-8005-V-T-S | MA-8005 | VAC | TS\nA-MAN-MA-9000-80-M-C-L | MA-9000 | MAG | CL\nA-MAN-MA-9000-80-V-C-L | MA-9000 | VAC | CL\nA-MAN-MA-9000-80-M-T-L | MA-9000 | MAG | TL\nA-MAN-MA-9000-80-V-T-L | MA-9000 | VAC | TL\nA-MAN-MA-9000-80-M-HFWE | MA-9000 | MAG | WE\nA-MAN-MA-9000-80-M-HFNS | MA-9000 | MAG | NS\nA-MAN-MA-9100-M-C-L | MA-9100 | MAG | CL\nA-MAN-MA-9100-V-C-L | MA-9100 | VAC | CL\nA-MAN-MA-9100-M-T-L | MA-9100 | MAG | TL\nA-MAN-MA-9100-V-T-L | MA-9100 | VAC | TL\nA-MAN-MA-9100-M-HFWE | MA-9100 | MAG | WE\nA-MAN-MA-9100-M-HFNS | MA-9100 | MAG | NS\nA-MAN-MA-8500-MB-HF-WE | MA-8500 | MAG | WE\nA-MAN-MA-8500-MB-HF-NS | MA-8500 | MAG | NS\nA-MAN-MA-8500-BD-HF-WE | MA-8500 | BD | WE\nA-MAN-MA-8500-BD-HF-NS | MA-8500 | BD | NS\nA-MAN-MA8500-EMWE-BD-0001 | MA-8500 | FEM | WE"
+    },
+    {
+      "type": "textarea",
+      "id": "model_table",
+      "label": "Model series table",
+      "info": "Key | Dropdown label | Helper text | TPI | Resolution | Travel. Only the MA-9100 row is taken from the design; the other three need the client's figures.",
+      "default": "MA-8005 | MA-8005 (40 TPI, 1 µm resolution, 13mm Travel) | general-purpose 40 TPI | 40 TPI | 1 µm | 13 x 13 x 13 mm\nMA-9000 | MA-9000 (80 TPI, 0.5 µm resolution, 13mm Travel) | high resolution 80 TPI | 80 TPI | 0.5 µm | 13 x 13 x 13 mm\nMA-9100 | MA-9100 (100 TPI, 0.35 µm resolution, 13mm Travel) | ultra-high resolution 100 TPI | 100 TPI | 0.35 µm | 13 x 13 x 13 mm\nMA-8500 | MA-8500 (High-frequency platform) | high-frequency platform | HF | 0.35 µm | 13 x 13 x 13 mm"
+    },
+    {
+      "type": "textarea",
+      "id": "base_table",
+      "label": "Mounting base table",
+      "info": "Key | Dropdown label | Helper text. Only the Magnetic row is taken from the design.",
+      "default": "MAG | Magnetic (High-field toggle switch) | ferromagnetic platen clamp\nVAC | Vacuum (Platen vacuum hold-down) | platen vacuum hold-down\nBD | Bolt Down (Fixed mechanical mount) | fixed mechanical mount\nFEM | Bolt Down + Frequency Extender Module | extended-frequency bolt down"
+    },
+    {
+      "type": "textarea",
+      "id": "arm_table",
+      "label": "Probe arm table",
+      "info": "Key | Dropdown label | Helper text. Only the Triaxial – Long row is taken from the design.",
+      "default": "CS | Coaxial – Short | coaxial short-reach\nTS | Triaxial – Short | low-noise 3-lug triax\nCL | Coaxial – Long | coaxial long-reach\nTL | Triaxial – Long | low-noise 3-lug triax\nWE | West/East HF Probe Arm | high-frequency W/E\nNS | North/South HF Probe Arm | high-frequency N/S"
+    }
+  ],
+  "presets": [{ "name": "ZZ probe 3" }]
+}
+{% endschema %}
