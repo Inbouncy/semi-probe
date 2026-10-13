@@ -286,6 +286,7 @@
                   "type": "menu",
                   "name": "SemiProbe",
                   "settings": {
+                    "links_active": false,
                     "menu": "sp-footer-semiprobe",
                     "heading": "SEMIPROBE",
                     "menu_spacing": 10,
@@ -453,6 +454,7 @@
                   "type": "menu",
                   "name": "Legal links",
                   "settings": {
+                    "links_active": false,
                     "menu": "sp-footer-legal",
                     "heading": "",
                     "menu_spacing": 24,
