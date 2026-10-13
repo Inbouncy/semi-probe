@@ -87,7 +87,11 @@
          --drawer-padding the menu links use, so the button lines up with the
          link text above it rather than with the panel edge. */
       inset-inline-start: var(--drawer-padding);
-      inset-block-end: max(var(--padding-xl), var(--safe-area-inset-bottom));
+      /* env() rather than Horizon's --safe-area-inset-bottom: that variable is
+         not defined in this theme's version, and an undefined var inside the
+         value invalidates the whole declaration, which left the button at its
+         static position near the top of the panel. */
+      inset-block-end: calc(var(--padding-xl) + env(safe-area-inset-bottom, 0px));
       width: calc(min(var(--drawer-width), var(--drawer-max-width)) - 2 * var(--drawer-padding));
       justify-content: center;
       transform: translateX(-100%);
