@@ -174,6 +174,64 @@
         "included_3",
         "included_4"
       ]
+    },
+    "compat": {
+      "type": "sp-arm-compatibility",
+      "settings": {
+        "eyebrow": "INTERFACING STANDARDS",
+        "heading": "Probe Arm Compatibility",
+        "description": "Verify compatibility between manipulator bodies and probe arm types. Ensure adequate clearance and mount stability for high-frequency setups.",
+        "table_caption": "Probe arm types supported by each manipulator model",
+        "row_heading": "ARM TYPE",
+        "columns": "MA-8005 | MA-9000 | MA-9100 | MA-8500",
+        "highlight_column": 3,
+        "yes_mark": "✓",
+        "no_mark": "—",
+        "rows": "Coaxial — short | ✓ | — | — | —\nCoaxial — long | — | ✓ | ✓ | —\nTriaxial — short | ✓ | — | — | —\nTriaxial — long | — | ✓ | ✓ | —\nKelvin (quasi / true) | — | ✓ | ✓ | —\nHF — West/East | — | ✓ (Mag only) | ✓ (Mag only) | ✓\nHF — North/South | — | ✓ (Mag only) | ✓ (Mag only) | ✓\nFiber optic | — | ✓ | ✓ | —"
+      }
+    },
+    "choosing": {
+      "type": "sp-choosing",
+      "settings": {
+        "eyebrow": "SELECTION ARCHITECTURE",
+        "heading": "Choosing a Configuration",
+        "bar_text": "Probing at sub-micron feature sizes, or unsure which model fits your application?",
+        "bar_call_label": "Call (802) 860-7000",
+        "bar_call_url": "tel:+18028607000",
+        "bar_cta_label": "REQUEST REVIEW",
+        "bar_cta_url": "/#product-inquiry"
+      },
+      "blocks": {
+        "choosing_1": {
+          "type": "guide",
+          "settings": {
+            "tag": "GEOMETRY",
+            "title": "START WITH FEATURE SIZE",
+            "description": "Determine the smallest pad or trace geometry you need to probe. For features ≥5 µm, the MA-8005 provides rugged, cost-effective performance. For 1 µm to 5 µm, select the MA-9000. For sub-micron structures (<1 µm), the 100 TPI resolution of the MA-9100 is essential."
+          }
+        },
+        "choosing_2": {
+          "type": "guide",
+          "settings": {
+            "tag": "ENVELOPE",
+            "title": "CHECK YOUR TRAVEL REQUIREMENT",
+            "description": "Evaluate the necessary repositioning envelope across your wafer or die. The MA-8005 provides 10 mm travel on all three axes; the MA-9000, MA-9100, and MA-8500 offer an expanded 13 mm X, Y, and Z envelope."
+          }
+        },
+        "choosing_3": {
+          "type": "guide",
+          "settings": {
+            "tag": "FIXATION",
+            "title": "MATCH THE BASE TO YOUR SETUP",
+            "description": "Magnetic bases offer quick, secure positioning on ferromagnetic platens. Vacuum bases are ideal for non-magnetic surfaces with available house vacuum. Bolt-down configurations are recommended for high-frequency installations where ultimate mechanical rigidity is critical."
+          }
+        }
+      },
+      "block_order": [
+        "choosing_1",
+        "choosing_2",
+        "choosing_3"
+      ]
     }
   },
   "order": [
@@ -182,6 +240,8 @@
     "overview",
     "compare",
     "specs",
-    "included"
+    "included",
+    "compat",
+    "choosing"
   ]
 }

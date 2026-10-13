@@ -1,0 +1,282 @@
+{%- doc -%}
+  Probe Arm Compatibility — Figma 42:867 (Section/Probe Arm Compatibility
+  35:1352).
+
+  A second matrix, read the same way as Compare Models but with far smaller
+  cells. The design gives a cell three treatments and they can all be read
+  off the cell itself, so there are no markers to learn here:
+
+      ✓              supported        - maroon, bold
+      —              not supported    - faint
+      anything else  qualified        - ink, regular  ("✓ (Mag only)")
+
+  Figma's note says this one wraps on a phone rather than scrolling, so the
+  cells tighten instead of the table keeping an intrinsic width.
+{%- enddoc -%}
+
+{%- liquid
+  assign columns = section.settings.columns | split: '|'
+  assign rows = section.settings.rows | newline_to_br | split: '<br />'
+  assign highlight = section.settings.highlight_column
+  assign yes_mark = section.settings.yes_mark | strip
+  assign no_mark = section.settings.no_mark | strip
+-%}
+
+<section class="sp-compat">
+  <div class="sp-compat__inner">
+    <div class="sp-compat__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="sp-compat__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sp-compat__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <p class="sp-compat__desc">{{ section.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <table class="sp-compat__table">
+      <caption class="sp-sr-only">{{ section.settings.table_caption | escape }}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="sp-compat__cell sp-compat__cell--head">{{ section.settings.row_heading }}</th>
+          {%- for col in columns -%}
+            <th
+              scope="col"
+              class="sp-compat__cell sp-compat__cell--head{% if forloop.index == highlight %} is-highlight{% endif %}"
+            >
+              {{- col | strip -}}
+            </th>
+          {%- endfor -%}
+        </tr>
+      </thead>
+      <tbody>
+        {%- for row in rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+            assign row_label = cells[0] | strip
+          -%}
+          <tr class="sp-compat__row">
+            <th scope="row" class="sp-compat__cell sp-compat__cell--label">{{ row_label }}</th>
+            {%- for col in columns -%}
+              {%- liquid
+                assign cell_index = forloop.index
+                assign mark = cells[cell_index] | default: '' | strip
+                assign tone = 'qualified'
+                if mark == yes_mark
+                  assign tone = 'yes'
+                elsif mark == no_mark or mark == blank
+                  assign tone = 'no'
+                endif
+              -%}
+              <td class="sp-compat__cell sp-compat__cell--mark is-{{ tone }}{% if cell_index == highlight %} is-highlight{% endif %}">
+                {{- mark | default: no_mark -}}
+              </td>
+            {%- endfor -%}
+          </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Probe Arm Compatibility — Figma 42:867 / 35:1352.
+     ──────────────────────────────────────────────────────────────────── */
+  .sp-compat {
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-ink-faint: #a09f9f;
+    --sp-border: #cccccc;
+    --sp-canvas: #efefef;
+    --sp-low: #f2f3f9;
+    --sp-maroon: #661320;
+
+    border-top: 1px solid var(--sp-border);
+    background: #ffffff;
+    padding: 32px 24px;
+  }
+
+  .sp-compat .sp-sr-only {
+    position: absolute;
+    overflow: hidden;
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+  }
+
+  .sp-compat__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-inline: auto;
+    max-width: 1440px;
+  }
+
+  .sp-compat__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-compat__eyebrow {
+    margin: 0;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-compat__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-compat__desc {
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 22px;
+  }
+
+  .sp-compat__table {
+    border: 1px solid var(--sp-border);
+    border-spacing: 0;
+    border-radius: 2px;
+    width: 100%;
+    border-collapse: separate;
+  }
+
+  .sp-compat__cell {
+    vertical-align: top;
+    padding: 8px;
+    text-align: left;
+  }
+
+  /* The design's own column rhythm: a wide label column, then the models. */
+  .sp-compat__table th:first-child { width: 32%; }
+
+  .sp-compat__cell--head {
+    border-bottom: 1px solid var(--sp-border);
+    background: var(--sp-canvas);
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-compat__row > .sp-compat__cell { border-top: 1px solid var(--sp-border); }
+
+  .sp-compat__row:nth-child(even) > .sp-compat__cell { background: var(--sp-canvas); }
+
+  .sp-compat__cell--label {
+    color: var(--sp-ink);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-compat__cell--mark {
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-compat__cell--mark.is-yes {
+    color: var(--sp-maroon);
+    font-family: var(--font-accent--family);
+    font-weight: 700;
+  }
+
+  .sp-compat__cell--mark.is-no { color: var(--sp-ink-faint); }
+
+  .sp-compat__cell--mark.is-qualified { color: var(--sp-ink); }
+
+  .sp-compat__cell.is-highlight {
+    border-inline: 1px solid var(--sp-border);
+    background: var(--sp-low);
+  }
+
+  .sp-compat__row:nth-child(even) > .sp-compat__cell.is-highlight { background: var(--sp-low); }
+
+  /* Figma: this table wraps rather than scrolling on a phone, so the cells
+     tighten and the qualified marks run to a second line instead of the
+     table keeping an intrinsic width. */
+  @media screen and (width < 750px) {
+    .sp-compat__cell {
+      padding: 6px;
+      font-size: 12px;
+    }
+
+    .sp-compat__cell--head {
+      font-size: 10px;
+      letter-spacing: 0.3px;
+    }
+
+    .sp-compat__table th:first-child { width: 28%; }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-compat {
+      padding-block: 40px;
+      padding-inline: 48px;
+    }
+
+    .sp-compat__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-compat { padding-inline: 80px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Probe arm compatibility",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "INTERFACING STANDARDS" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Probe Arm Compatibility" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Verify compatibility between manipulator bodies and probe arm types. Ensure adequate clearance and mount stability for high-frequency setups." },
+    { "type": "text", "id": "table_caption", "label": "Table caption (for screen readers)", "default": "Probe arm types supported by each manipulator model" },
+    { "type": "header", "content": "Table" },
+    { "type": "text", "id": "row_heading", "label": "First column heading", "default": "ARM TYPE" },
+    { "type": "text", "id": "columns", "label": "Columns", "info": "Model names, separated by a vertical bar.", "default": "MA-8005 | MA-9000 | MA-9100 | MA-8500" },
+    { "type": "range", "id": "highlight_column", "label": "Highlighted column", "info": "0 for none.", "min": 0, "max": 6, "step": 1, "default": 3 },
+    { "type": "text", "id": "yes_mark", "label": "Supported mark", "default": "✓" },
+    { "type": "text", "id": "no_mark", "label": "Not-supported mark", "default": "—" },
+    {
+      "type": "textarea",
+      "id": "rows",
+      "label": "Rows",
+      "info": "One line per arm type: Label | column 1 | column 2 | … A cell holding only the supported mark reads as supported, only the not-supported mark as unavailable, and anything else as a qualified yes.",
+      "default": "Coaxial — short | ✓ | — | — | —\nCoaxial — long | — | ✓ | ✓ | —\nTriaxial — short | ✓ | — | — | —\nTriaxial — long | — | ✓ | ✓ | —\nKelvin (quasi / true) | — | ✓ | ✓ | —\nHF — West/East | — | ✓ (Mag only) | ✓ (Mag only) | ✓\nHF — North/South | — | ✓ (Mag only) | ✓ (Mag only) | ✓\nFiber optic | — | ✓ | ✓ | —"
+    }
+  ],
+  "presets": [{ "name": "Probe arm compatibility" }]
+}
+{% endschema %}
