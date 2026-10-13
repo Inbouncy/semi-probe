@@ -890,6 +890,12 @@
   }
 
   .header__row--bottom .sp-submenu {
+    /* Set here rather than inherited from Horizon's own submenu rule: that
+       rule positions a full-width mega menu and is not something to depend on
+       while re-anchoring the panel. Left to it, the card laid out in flow and
+       took the nav row from 134px to 1024. */
+    position: absolute;
+    z-index: var(--layer-header-menu, 20);
     inset-inline-start: 50%;
     top: 100%;
     transform: translateX(-50%);
