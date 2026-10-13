@@ -884,9 +884,15 @@
     align-items: stretch;
   }
 
+  /* The row is 74px and the link's own line box is 22, so the item sat 15px
+     short of the row's bottom edge and the card hung inside the header. The
+     padding takes the item down to that edge, which is where the design drops
+     the card from, and it gives the pointer a full-height target so moving
+     from the label into the card never crosses a dead strip. */
   .header__row--bottom .menu-list__list-item > .menu-list__link {
     display: flex;
     align-items: center;
+    padding-block: 15px;
   }
 
   .header__row--bottom .sp-submenu {

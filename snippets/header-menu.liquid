@@ -54,13 +54,13 @@
       on:pointerleave="/deactivate"
     >
       <a
-        {%- if links_active -%}
+        {% if links_active %}
           href="{{ link.url }}"
-        {%- else -%}
+        {% else %}
           role="link"
           aria-disabled="true"
           tabindex="0"
-        {%- endif -%}
+        {% endif %}
         class="menu-list__link{% if link.active and links_active %} menu-list__link--active{% endif %}"
         {%- if link.links != blank -%}
           aria-controls="submenu-{{ forloop.index }}"
