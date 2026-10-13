@@ -1,0 +1,236 @@
+{%- doc -%}
+  One reason in the Why SemiProbe section — Figma 68:3107 / 76:829 / 79:60.
+
+  One card is one block with four fields, so the client writes the title and
+  body, picks the glyph and its accent, and reorders or removes a reason from
+  the Theme Editor without touching code.
+
+  The body is rich text rather than plain, because the fourth card carries a
+  link to the quote form and a phone number, and those have to stay editable.
+
+  The wrapper below is the card. A block whose schema sets `tag: null` gets no
+  wrapper from Shopify, so — as Horizon's own group, text and image blocks do —
+  it renders its own and carries `shopify_attributes` for the editor.
+{%- enddoc -%}
+
+{%- liquid
+  assign glyph = block.settings.icon | default: 'manufacturer'
+
+  # Each glyph is drawn at its own size and the files carry
+  # preserveAspectRatio="none", so the <img> has to be given that exact box or
+  # the artwork stretches. These are the four files' own root dimensions.
+  case glyph
+    when 'configured'
+      assign icon_w = '18'
+      assign icon_h = '14'
+    when 'custom'
+      assign icon_w = '18'
+      assign icon_h = '18'
+    when 'academic'
+      assign icon_w = '22'
+      assign icon_h = '18'
+    else
+      assign icon_w = '18.032'
+      assign icon_h = '18.506'
+  endcase
+
+  assign icon_file = 'sp-why-' | append: glyph | append: '.svg'
+-%}
+
+<div
+  class="sp-why-card sp-why-card--{{ block.settings.accent }}{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  <span class="sp-why-card__tile">
+    <img
+      class="sp-why-card__icon"
+      src="{{ icon_file | asset_url }}"
+      alt=""
+      width="{{ icon_w }}"
+      height="{{ icon_h }}"
+      loading="lazy"
+    >
+  </span>
+
+  <span class="sp-why-card__rule" aria-hidden="true"></span>
+
+  {%- if block.settings.title != blank -%}
+    <p class="sp-why-card__title">{{ block.settings.title }}</p>
+  {%- endif -%}
+
+  {%- if block.settings.body != blank -%}
+    <div class="sp-why-card__body">{{ block.settings.body }}</div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  /* Figma 68:3107 — white card, 1px #ccc hairline, 6px radius, 18px padding,
+     14px rhythm, on the section's dark ground.
+
+     The design holds every card in a row at one height — 338 at desktop, 250
+     at tablet and mobile — with the content top-aligned, so the slack falls
+     below the last paragraph. Held as a min-height, not a height, so a longer
+     body the client types grows the card instead of spilling out of it. */
+  .sp-why-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    /* 17px against the design's 18: a Figma stroke does not consume layout, so
+       its 18px inset leaves 419px of content inside a 455px card at tablet.
+       With a 1px CSS border inside the box, 17px of padding gives both — the
+       same 18px visual inset and the same content width for the text to wrap
+       in. The tablet and mobile frames both confirm it to the pixel. */
+    padding: 17px;
+    min-height: 250px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    overflow: clip;
+  }
+
+  /* 40px tile, 2px radius, the glyph centred at its own drawn size. */
+  .sp-why-card__tile {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+  }
+
+  .sp-why-card--amber .sp-why-card__tile {
+    background-color: rgb(253 174 62 / 20%);
+  }
+
+  .sp-why-card--rose .sp-why-card__tile {
+    background-color: #ffdada;
+  }
+
+  .sp-why-card__icon {
+    display: block;
+  }
+
+  /* The design draws this rule the same amber in all four cards, whichever
+     accent the tile takes, so it is not part of the accent pair. */
+  .sp-why-card__rule {
+    flex: none;
+    width: 42px;
+    height: 4px;
+    background-color: #de8b24;
+  }
+
+  .sp-why-card__title {
+    margin: 0;
+    color: var(--color-foreground-heading);
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .sp-why-card__body {
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-weight: var(--font-body--weight);
+    font-size: 14px;
+    line-height: 23px;
+  }
+
+  .sp-why-card__body :is(p, ul, ol) {
+    margin: 0;
+  }
+
+  /* The design separates the fourth card's two paragraphs by a blank line.
+     Reproduced as a one-line gap rather than an empty paragraph, so the
+     spacing survives the client editing the text. */
+  .sp-why-card__body :is(p, ul, ol) + :is(p, ul, ol) {
+    margin-block-start: 23px;
+  }
+
+  .sp-why-card__body a {
+    color: var(--color-primary);
+    font-weight: var(--font-subheading--weight);
+    text-decoration: underline;
+  }
+
+  /* The design sets the phone number in the same maroon but without a rule
+     under it. Keeping it a tel: link makes it tappable without changing how
+     the design looks. */
+  .sp-why-card__body a[href^="tel:"] {
+    text-decoration: none;
+  }
+
+  .sp-why-card__body strong {
+    color: var(--color-primary);
+    font-weight: var(--font-subheading--weight);
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-why-card {
+      min-height: 338px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reason",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        { "value": "manufacturer", "label": "Robotic arm" },
+        { "value": "configured", "label": "Layout" },
+        { "value": "custom", "label": "Sliders" },
+        { "value": "academic", "label": "Graduation cap" }
+      ],
+      "default": "manufacturer"
+    },
+    {
+      "type": "select",
+      "id": "accent",
+      "label": "Icon background",
+      "options": [
+        { "value": "amber", "label": "Amber" },
+        { "value": "rose", "label": "Rose" }
+      ],
+      "default": "amber"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Made by the manufacturer"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Text",
+      "default": "<p>These are the same parts SemiProbe specifies into its own probe systems, designed and manufactured in the United States at the company's facility in Winooski, Vermont.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reason"
+    }
+  ]
+}
+{% endschema %}

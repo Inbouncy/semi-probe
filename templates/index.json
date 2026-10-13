@@ -584,10 +584,158 @@
         "subhead",
         "grid"
       ]
+    },
+    "semiprobe_why": {
+      "type": "sp-why-semiprobe",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Heading",
+          "settings": {
+            "text": "<h2>Why Buy Direct from SemiProbe</h2>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "left",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "2.5rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          }
+        },
+        "grid": {
+          "type": "group",
+          "name": "Reasons",
+          "settings": {
+            "link": "",
+            "open_in_new_tab": false,
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 20,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "r1": {
+              "type": "sp-why-card",
+              "name": "Made by the manufacturer",
+              "settings": {
+                "icon": "manufacturer",
+                "accent": "amber",
+                "title": "Made by the manufacturer",
+                "body": "<p>These are the same parts SemiProbe specifies into its own probe systems, designed and manufactured in the United States at the company's facility in Winooski, Vermont.</p>",
+                "inherit_color_scheme": false,
+                "color_scheme": "scheme-1"
+              }
+            },
+            "r2": {
+              "type": "sp-why-card",
+              "name": "Built to be configured",
+              "settings": {
+                "icon": "configured",
+                "accent": "rose",
+                "title": "Built to be configured",
+                "body": "<p>PS4L patented adaptive architecture, interchangeable/configurable/field-upgradable; accessory range follows principle.</p>",
+                "inherit_color_scheme": false,
+                "color_scheme": "scheme-1"
+              }
+            },
+            "r3": {
+              "type": "sp-why-card",
+              "name": "Custom configurations available",
+              "settings": {
+                "icon": "custom",
+                "accent": "amber",
+                "title": "Custom configurations available",
+                "body": "<p>Standardized and customized probe arms, chucks, manipulators; unlisted configurations may still be built.</p>",
+                "inherit_color_scheme": false,
+                "color_scheme": "scheme-1"
+              }
+            },
+            "r4": {
+              "type": "sp-why-card",
+              "name": "Academic and government pricing",
+              "settings": {
+                "icon": "academic",
+                "accent": "rose",
+                "title": "Academic and government pricing",
+                "body": "<p>A 5% discount applies to university and government laboratory purchases.</p><p>To receive the 5% discount, please contact us by <a href=\"/pages/contact\">filling out the quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a></p>",
+                "inherit_color_scheme": false,
+                "color_scheme": "scheme-1"
+              }
+            }
+          },
+          "block_order": [
+            "r1",
+            "r2",
+            "r3",
+            "r4"
+          ]
+        }
+      },
+      "block_order": [
+        "heading",
+        "grid"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 28,
+        "section_width": "full-width",
+        "section_height": "",
+        "color_scheme": "scheme-5",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "padding-block-start": 88,
+        "padding-block-end": 88
+      }
     }
   },
   "order": [
     "semiprobe_hero",
-    "semiprobe_families"
+    "semiprobe_families",
+    "semiprobe_why"
   ]
 }
