@@ -695,7 +695,7 @@
                 "icon": "academic",
                 "accent": "rose",
                 "title": "Academic and government pricing",
-                "body": "<p>A 5% discount applies to university and government laboratory purchases.</p><p>To receive the 5% discount, please contact us by <a href=\"/pages/contact\">filling out the quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a></p>",
+                "body": "<p>A 5% discount applies to university and government laboratory purchases.</p><p>To receive the 5% discount, please contact us by <a href=\"#product-inquiry\">filling out the quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a></p>",
                 "inherit_color_scheme": false,
                 "color_scheme": "scheme-1"
               }
@@ -1207,6 +1207,13 @@
         "padding-block-start": 88,
         "padding-block-end": 88
       }
+    },
+    "semiprobe_inquiry": {
+      "type": "sp-product-inquiry",
+      "settings": {
+        "section_width": "full-width",
+        "color_scheme": "scheme-1"
+      }
     }
   },
   "order": [
@@ -1214,6 +1221,7 @@
     "semiprobe_families",
     "semiprobe_why",
     "semiprobe_apps",
-    "semiprobe_faq"
+    "semiprobe_faq",
+    "semiprobe_inquiry"
   ]
 }
