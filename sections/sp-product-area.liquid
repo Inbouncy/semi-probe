@@ -1484,9 +1484,33 @@
     font-family: var(--font-accent--family);
     font-weight: 700;
     text-decoration: none;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
   }
 
-  .sp-buy__contact a:hover { color: var(--sp-amber-dark); }
+  /* A text link is underlined; the phone number is not, which is what the
+     design's Link/Text note asks for. Keyed off the href rather than a
+     class, because Shopify's rich text strips classes - so the client can
+     rewrite this sentence in the Theme Editor and the rule still holds.
+
+     The underline is drawn in the link's own colour and fades to
+     transparent on hover rather than switching off, so it leaves with the
+     colour change instead of snapping away. */
+  .sp-buy__contact a:not([href^="tel:"]) {
+    text-decoration: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .sp-buy__contact a:hover,
+  .sp-buy__contact a:focus-visible {
+    color: var(--sp-amber-dark);
+  }
+
+  .sp-buy__contact a:not([href^="tel:"]):hover,
+  .sp-buy__contact a:not([href^="tel:"]):focus-visible {
+    text-decoration-color: transparent;
+  }
 
   /* ── Narrow phones ───────────────────────────────────────────────────
      Both halves of the inspection header are long enough to wrap at 390,
@@ -1683,7 +1707,13 @@
     { "type": "text", "id": "bullet_1", "label": "Bullet 1", "default": "Complete assembly — body, base, faceplate and probe arm included" },
     { "type": "text", "id": "bullet_2", "label": "Bullet 2", "default": "5% academic, non-profit & government institution discount available" },
     { "type": "text", "id": "bullet_3", "label": "Bullet 3", "default": "Net 30 Purchase Orders (PO) accepted upon credit clearance" },
-    { "type": "richtext", "id": "contact_line", "label": "Contact line", "default": "<p>Questions on configuration? Call <a href=\"tel:+18028607000\">(802) 860-7000</a> or contact metrology engineering.</p>" },
+    {
+      "type": "richtext",
+      "id": "contact_line",
+      "label": "Contact line",
+      "info": "Any link here is maroon and loses its underline on hover. A tel: link carries no underline to begin with, matching the design.",
+      "default": "<p>Questions about configuration or want to receive your discount? <a href=\"/#product-inquiry\">Fill out our quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a>.</p>"
+    },
 
     { "type": "header", "content": "Configurator" },
     {
