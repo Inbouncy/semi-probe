@@ -38,7 +38,7 @@
   comment
   # --- Parse the four client-editable tables -------------------------------
   # newline_to_br then split is the only reliable way to split a textarea
-  # setting on its line breaks inside a {% liquid %} tag.
+  # setting on its line breaks inside a liquid tag.
   endcomment
 
   assign map_rows = section.settings.variant_map | newline_to_br | split: '<br />'
