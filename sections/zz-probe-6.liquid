@@ -1,0 +1,176 @@
+{%- doc -%}
+  Product Area — Manual Manipulators PDP.
+
+  Figma 42:13 (desktop 1280), 43:1435 (tablet 768), 43:2528 (mobile 390).
+  Gallery Card 19:36, Inspection Viewport 15:58, Thumbnail Strip 104:246,
+  Trace Bar 32:94, Buy Box 22:57.
+
+  Two columns on wide screens (gallery 699 : buy box 493, 24px gutter in the
+  Figma), stacked below 1100px exactly as the Figma's tablet and mobile frames
+  stack them. The buy box sticks under the header on the two-column layout.
+
+  CLIENT EDITABILITY
+  ------------------
+  Everything the client would reasonably change is a Theme Editor setting:
+  every label, descriptor, spec value, badge, bullet and button caption.
+
+  The three dependent dropdowns are not Shopify options — this product has a
+  single 21-value option, and the catalog is not being touched before launch.
+  So the three axes are reconstructed here from a plain-text map the client
+  edits in the Theme Editor (Configurator > Variant map), one line per SKU:
+
+      SKU | MODEL | BASE | ARM
+
+  and three more tables give each key its display label, its helper text and,
+  for the model, its spec values. No Liquid, CSS or JS edit is ever needed to
+  rename an option, fix a spec or re-point a SKU.
+
+  A variant whose SKU is missing from the map still sells: it falls through to
+  the catch-all group so nothing silently disappears from the store. In the
+  Theme Editor those variants are named in a warning strip.
+{%- enddoc -%}
+
+<script src="{{ 'sp-product-area.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign p = product
+
+  comment
+  # --- Parse the four client-editable tables -------------------------------
+  # newline_to_br then split is the only reliable way to split a textarea
+  # setting on its line breaks inside a {% liquid %} tag.
+  endcomment
+
+  assign map_rows = section.settings.variant_map | newline_to_br | split: '<br />'
+  assign model_rows = section.settings.model_table | newline_to_br | split: '<br />'
+  assign base_rows = section.settings.base_table | newline_to_br | split: '<br />'
+  assign arm_rows = section.settings.arm_table | newline_to_br | split: '<br />'
+
+  assign unmapped = ''
+  assign gap = section.settings.column_gap
+-%}
+
+{%- comment -%} Resolve the variant the page loaded on. {%- endcomment -%}
+{%- liquid
+  assign current = p.selected_or_first_available_variant
+  assign cur_model = ''
+  assign cur_base = ''
+  assign cur_arm = ''
+  for row in map_rows
+    assign cells = row | strip_newlines | strip | split: '|'
+    if cells.size < 4
+      continue
+    endif
+    assign row_sku = cells[0] | strip
+    if row_sku == current.sku
+      assign cur_model = cells[1] | strip
+      assign cur_base = cells[2] | strip
+      assign cur_arm = cells[3] | strip
+      break
+    endif
+  endfor
+-%}
+
+<div class="sp-pdp">
+<script type="application/json" data-sp-config>
+    {
+      "variants": [
+        {%- for v in p.variants -%}
+          {%- liquid
+            assign v_model = ''
+            assign v_base = ''
+            assign v_arm = ''
+            for row in map_rows
+              assign cells = row | strip_newlines | strip | split: '|'
+              if cells.size < 4
+                continue
+              endif
+              assign row_sku = cells[0] | strip
+              if row_sku == v.sku
+                assign v_model = cells[1] | strip
+                assign v_base = cells[2] | strip
+                assign v_arm = cells[3] | strip
+                break
+              endif
+            endfor
+          -%}
+          {
+            "id": {{ v.id | json }},
+            "sku": {{ v.sku | json }},
+            "model": {{ v_model | json }},
+            "base": {{ v_base | json }},
+            "arm": {{ v_arm | json }},
+            "price": {{ v.price | money_without_trailing_zeros | strip_html | json }},
+            "available": {{ v.available | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "models": [
+        {%- for row in model_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }},
+            "tpi": {{ cells[3] | default: '' | strip | json }},
+            "res": {{ cells[4] | default: '' | strip | json }},
+            "travel": {{ cells[5] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "bases": [
+        {%- for row in base_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "arms": [
+        {%- for row in arm_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "soldOutLabel": {{ section.settings.sold_out_label | json }},
+      "cartLabel": {{ section.settings.cart_label | json }},
+      "updateUrl": {{ section.settings.update_url | json }}
+    }
+  </script>
+</div>
+
+
+</div>
+
+{% schema %}
+{
+  "name": "ZZ probe 6",
+  "settings": [
+    { "type": "textarea", "id": "variant_map", "label": "m" },
+    { "type": "textarea", "id": "model_table", "label": "m" },
+    { "type": "textarea", "id": "base_table", "label": "m" },
+    { "type": "textarea", "id": "arm_table", "label": "m" }
+  ]
+}
+{% endschema %}
