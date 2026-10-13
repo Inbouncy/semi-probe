@@ -7,9 +7,12 @@
   it to `header-row` as the `utility_menu` slot.
 
   @param {object} menu - A linklist object, from `section.settings.utility_menu`.
+  @param {boolean} links_active - When false the links render with no href, so
+    the row is in place for review before its destinations exist. They keep
+    their styling and hover, and keep keyboard focus through tabindex.
 
   @example
-  {% render 'sp-header-utility-menu', menu: section.settings.utility_menu %}
+  {% render 'sp-header-utility-menu', menu: section.settings.utility_menu, links_active: links_active %}
 {%- enddoc -%}
 
 {%- if menu != blank and menu.links.size > 0 -%}
@@ -25,10 +28,16 @@
         <li class="sp-utility-menu__item">
           <a
             class="sp-utility-menu__link"
-            href="{{ link.url }}"
-            {%- if link.current %}
-              aria-current="page"
-            {% endif -%}
+            {% if links_active %}
+              href="{{ link.url }}"
+              {%- if link.current %}
+                aria-current="page"
+              {% endif -%}
+            {% else %}
+              role="link"
+              aria-disabled="true"
+              tabindex="0"
+            {% endif %}
           >
             {{- link.title -}}
           </a>
@@ -39,6 +48,12 @@
 {%- endif -%}
 
 {% stylesheet %}
+  /* A link with no href is a placeholder until the client supplies
+     destinations; it still hovers and still takes focus. */
+  .sp-utility-menu__link[aria-disabled="true"] {
+    cursor: default;
+  }
+
   /* Utility row — Figma 212:6. Labels are Mulish SemiBold 14/20, uppercase,
      white on the dark bar, hovering to the orange accent. */
   .sp-utility-menu__list {

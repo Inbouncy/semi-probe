@@ -101,7 +101,7 @@
   # Horizon has no slot for either; both are placed by header-row like the
   # built-in chunks.
   capture utility_menu
-    render 'sp-header-utility-menu', menu: section.settings.utility_menu
+    render 'sp-header-utility-menu', menu: section.settings.utility_menu, links_active: section.settings.nav_links_active
   endcapture
 
   capture cta
@@ -1240,7 +1240,7 @@
       "type": "checkbox",
       "id": "nav_links_active",
       "label": "Navigation links active",
-      "info": "Off while the menu's destinations are still being decided: the nav, its dropdowns and the call-to-action button all render without links, but keep their styling and hover. Turn on to restore every link from the menu and the button setting.",
+      "info": "Off while the header's destinations are still being decided: the utility row, the nav, its dropdowns and the call-to-action all render without links, but keep their styling and hover. Turn on to restore every link from the menus and the button setting. The menu drawer below 1400px is Horizon's own and still links.",
       "default": false
     },
     {
