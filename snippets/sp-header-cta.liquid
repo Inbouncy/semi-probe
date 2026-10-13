@@ -10,6 +10,9 @@
 
   @param {string} label - Button text. Renders nothing when blank.
   @param {string} link - Destination URL.
+  @param {boolean} [in_drawer] - Render the copy that lives inside the mobile
+    menu drawer. The two are complementary: the header one shows from 750px up,
+    the drawer one only below it, so exactly one is ever on screen.
 
   @example
   {% render 'sp-header-cta', label: section.settings.cta_label, link: section.settings.cta_link %}
@@ -17,7 +20,7 @@
 
 {%- if label != blank -%}
   <a
-    class="button sp-header-cta"
+    class="button sp-header-cta{% if in_drawer %} sp-header-cta--drawer{% endif %}"
     {% if link == blank %}
       role="link"
       aria-disabled="true"
@@ -41,11 +44,29 @@
     white-space: nowrap;
   }
 
-  /* Tablet and below: the CTA stays, the nav collapses beside it
-     (Figma 212:46 — "hides them and adds the hamburger beside the CTA"). */
+  /* Tablet: the CTA stays in the header, the nav collapses beside it
+     (Figma 212:46 — "hides them and adds the hamburger beside the CTA").
+     Below 750px the header has no room for it, so the copy inside the drawer
+     takes over. The two rules are complementary — exactly one is on screen at
+     any width, so the duplicate link is never both visible and focusable. */
   @media screen and (width < 750px) {
-    .sp-header-cta {
+    .sp-header-cta:not(.sp-header-cta--drawer) {
       display: none;
     }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-header-cta--drawer {
+      display: none;
+    }
+  }
+
+  /* In the drawer it is a full-width button under the menu rather than a pill
+     beside it, so it reads as the drawer's action and gives a proper target. */
+  .sp-header-cta--drawer {
+    display: flex;
+    justify-content: center;
+    margin-block: var(--margin-md) 0;
+    margin-inline: var(--padding-xl);
   }
 {% endstylesheet %}

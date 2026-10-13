@@ -55,6 +55,31 @@
     content_for 'block', type: '_header-menu', id: 'header-menu', variant: 'mobile'
   endcapture
 
+  # SemiProbe: below 750px the header has no room for the pill CTA, so a copy
+  # of it goes inside the menu drawer, where the nav has folded to. Horizon's
+  # drawer is a private block with no slot to pass content into, so the button
+  # is spliced in after the drawer's own <nav>, which is where the design wants
+  # it and where Horizon already leaves an empty utility-links box.
+  #
+  # Only the first </nav> is replaced, and only when the drawer actually
+  # contains one, so if Horizon ever restructures the drawer this no-ops and
+  # the navigation is untouched — the button is the only thing that goes
+  # missing, and the header's own copy still carries it from 750px up.
+  capture drawer_cta
+    render 'sp-header-cta',
+      label: section.settings.cta_label,
+      link: section.settings.cta_link,
+      in_drawer: true
+  endcapture
+
+  if drawer_cta != blank and mobile_menu contains '</nav>'
+    capture nav_close_with_cta
+      echo '</nav>'
+      echo drawer_cta
+    endcapture
+    assign mobile_menu = mobile_menu | replace_first: '</nav>', nav_close_with_cta
+  endif
+
   capture navigation_bar
     content_for 'block', type: '_header-menu', id: 'header-menu', variant: 'navigation_bar', transparent: transparent
   endcapture
