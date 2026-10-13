@@ -338,6 +338,28 @@
     });
   }
 
+  /* The Specifications section further down binds its values to this
+     configurator through [data-sp-spec] placeholders, so it never has to
+     know how the variant map works - it just names the value it wants. */
+  function syncLiveSpecs(values) {
+    var nodes = document.querySelectorAll('[data-sp-spec]');
+    Array.prototype.forEach.call(nodes, function (node) {
+      var key = node.getAttribute('data-sp-spec');
+      if (!Object.prototype.hasOwnProperty.call(values, key)) return;
+      node.textContent = values[key] == null ? '' : values[key];
+    });
+  }
+
+  function scrollToConfigurator() {
+    var target = document.querySelector('.sp-pdp__col--buy') ||
+      document.querySelector('[data-sp-select="model"]');
+    if (!target) return;
+    target.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start'
+    });
+  }
+
   var modelPickerBound = false;
 
   function bindModelPicker() {
@@ -355,11 +377,13 @@
       if (!match) return;
       select.value = wanted;
       select.dispatchEvent(new Event('change', { bubbles: true }));
-      var target = document.querySelector('.sp-pdp__col--buy') || select;
-      target.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start'
-      });
+      scrollToConfigurator();
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest) return;
+      if (!event.target.closest('[data-sp-scroll-to-config]')) return;
+      scrollToConfigurator();
     });
   }
 
@@ -504,7 +528,22 @@
       setText('arm', armEntry && shortLabel(armEntry.label));
 
       syncModelButtons(model);
-      applyVariant(find(model, base, arm));
+
+      var variant = find(model, base, arm);
+      var baseShort = baseEntry ? shortLabel(baseEntry.label) : '';
+      var armShort = armEntry ? shortLabel(armEntry.label) : '';
+      syncLiveSpecs({
+        model: model,
+        tpi: modelEntry && modelEntry.tpi,
+        resolution: modelEntry && modelEntry.res,
+        travel: modelEntry && modelEntry.travel,
+        base: baseShort,
+        arm: armShort,
+        sku: variant && variant.sku,
+        config: [model, armShort, baseShort].filter(Boolean).join(' ')
+      });
+
+      applyVariant(variant);
     }
 
     if (hasAxes) {

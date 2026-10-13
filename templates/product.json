@@ -105,12 +105,83 @@
         "select_label": "SELECT",
         "selected_label": "SELECTED"
       }
+    },
+    "specs": {
+      "type": "sp-specifications",
+      "settings": {
+        "eyebrow": "ENGINEERING DATA",
+        "heading": "Specifications",
+        "headline": "Showing: [model] · [base] Base · [arm]",
+        "note": "Specs update live with the model, base and probe arm selected in the configurator.",
+        "change_label": "Change configuration ↑",
+        "group_1_title": "MANIPULATOR",
+        "group_1_icon": "tune",
+        "group_1_rows": "Model: | [model] | bold\nType: | Manual micromanipulator\nTPI: | [tpi] | bold\nFeature resolution: | [resolution] | bold\nTravel range (X, Y, Z): | [travel]\nBase type: | [base] mounting platform",
+        "group_2_title": "PROBE ARM FITTED",
+        "group_2_icon": "cable",
+        "group_2_rows": "Arm type: | [arm] | bold\nLength: | Long (210 mm)\nBody diameter: | 12.7 mm\nMount: | Precision dovetail faceplate\nDrop: | Adjustable 0–15 mm\nCable: | Low-noise triaxial cable\nConnector: | Standard triaxial (3-lug)",
+        "group_3_title": "ORDERING",
+        "group_3_icon": "inventory",
+        "group_3_rows": "SKU: | [sku] | bold\nConfiguration name: | [config]\nLead time: | 2–3 weeks ARO\nCalibration standard: | NIST Standard Class A\nCountry of Origin: | USA (Burlington, VT)\nHarmonized Tariff (HTS): | 9031.90.5900"
+      }
+    },
+    "included": {
+      "type": "sp-whats-included",
+      "settings": {
+        "eyebrow": "PACKAGE CONTENTS",
+        "heading": "What's Included",
+        "note": "Probe tips are ordered separately.",
+        "note_link_label": "VIEW COMPATIBLE TIPS →",
+        "note_link_url": "#tips-callout"
+      },
+      "blocks": {
+        "included_1": {
+          "type": "card",
+          "settings": {
+            "title": "Manipulator body",
+            "description": "Precision CNC-machined body with micrometer drives and zero-backlash preloaded spring mechanism.",
+            "caption": "Chassis core"
+          }
+        },
+        "included_2": {
+          "type": "card",
+          "settings": {
+            "title": "Base",
+            "description": "Selected magnetic, vacuum, or bolt-down mounting base with integrated clamping lever.",
+            "caption": "Platen interface"
+          }
+        },
+        "included_3": {
+          "type": "card",
+          "settings": {
+            "title": "Adjustable faceplate",
+            "description": "Dovetail mounting faceplate allowing vertical height adjustment and probe tip planarization.",
+            "caption": "Z-drop align"
+          }
+        },
+        "included_4": {
+          "type": "card",
+          "settings": {
+            "title": "Probe arm",
+            "description": "Selected coaxial, triaxial, or high-frequency probe arm assembly with integrated cabling and connector.",
+            "caption": "Signal conduit"
+          }
+        }
+      },
+      "block_order": [
+        "included_1",
+        "included_2",
+        "included_3",
+        "included_4"
+      ]
     }
   },
   "order": [
     "breadcrumb",
     "product_area",
     "overview",
-    "compare"
+    "compare",
+    "specs",
+    "included"
   ]
 }

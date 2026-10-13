@@ -1,0 +1,432 @@
+{%- doc -%}
+  Specifications — Figma 42:602 (Section/Specifications 34:997,
+  Spec/Row 16:37, Spec/Live Note 160:149).
+
+  Three definition-list cards. The design binds Model, TPI, resolution,
+  travel, base, arm, SKU and configuration name to the configurator, so
+  those values follow the selection rather than sitting static.
+
+  Each card's rows are a plain-text list in the Theme Editor:
+
+      Term | Value | bold
+
+  where the value may carry a token - [model] [tpi] [resolution] [travel]
+  [base] [arm] [sku] [config] - which the configurator fills and keeps up
+  to date. A row with no token is ordinary copy. That keeps the whole
+  block editable without a line of code, and nothing here has to know how
+  the variant map works: it just names the value it wants.
+{%- enddoc -%}
+
+{%- liquid
+  assign tokens = 'model,tpi,resolution,travel,base,arm,sku,config' | split: ','
+-%}
+
+{%- capture live_headline -%}
+  {%- assign headline = section.settings.headline -%}
+  {%- for t in tokens -%}
+    {%- capture needle %}[{{ t }}]{% endcapture -%}
+    {%- capture span %}<span class="sp-spec__live" data-sp-spec="{{ t }}"></span>{% endcapture -%}
+    {%- assign headline = headline | replace: needle, span -%}
+  {%- endfor -%}
+  {{- headline -}}
+{%- endcapture -%}
+
+<section class="sp-specs">
+  <div class="sp-specs__inner">
+    <div class="sp-specs__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="sp-specs__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sp-specs__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      <div class="sp-specs__headline-row">
+        {%- if section.settings.headline != blank -%}
+          <p class="sp-specs__showing">{{ live_headline }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.note != blank or section.settings.change_label != blank -%}
+          <div class="sp-specs__note">
+            {%- if section.settings.note != blank -%}
+              <span class="sp-specs__note-msg">
+                <svg class="sp-specs__note-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                  <path d="M3 17v2h6v-2zM3 5v2h10V5zm10 16v-2h8v-2h-8v-2h-2v6zM7 9v2H3v2h4v2h2V9zm14 4v-2H11v2zm-6-4h2V7h4V5h-4V3h-2z"/>
+                </svg>
+                <span>{{ section.settings.note }}</span>
+              </span>
+            {%- endif -%}
+            {%- if section.settings.change_label != blank -%}
+              <button type="button" class="sp-specs__change" data-sp-scroll-to-config>
+                {{- section.settings.change_label -}}
+              </button>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="sp-specs__groups">
+      {%- for g in (1..3) -%}
+        {%- liquid
+          case g
+            when 1
+              assign group_title = section.settings.group_1_title
+              assign group_icon = section.settings.group_1_icon
+              assign group_rows = section.settings.group_1_rows
+            when 2
+              assign group_title = section.settings.group_2_title
+              assign group_icon = section.settings.group_2_icon
+              assign group_rows = section.settings.group_2_rows
+            else
+              assign group_title = section.settings.group_3_title
+              assign group_icon = section.settings.group_3_icon
+              assign group_rows = section.settings.group_3_rows
+          endcase
+          assign row_lines = group_rows | newline_to_br | split: '<br />'
+        -%}
+        {%- if group_title != blank or group_rows != blank -%}
+          <div class="sp-specs__group">
+            <div class="sp-specs__group-title">
+              <span>{{ group_title }}</span>
+              {%- case group_icon -%}
+                {%- when 'tune' -%}
+                  <svg class="sp-specs__group-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M3 17v2h6v-2zM3 5v2h10V5zm10 16v-2h8v-2h-8v-2h-2v6zM7 9v2H3v2h4v2h2V9zm14 4v-2H11v2zm-6-4h2V7h4V5h-4V3h-2z"/>
+                  </svg>
+                {%- when 'cable' -%}
+                  <svg class="sp-specs__group-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M20 5V3h-2v2h-1V3h-2v2a2 2 0 0 0 2 2v3a2 2 0 0 1-4 0V8a4 4 0 0 0-8 0v3a2 2 0 0 0-2 2v4h2v2h2v-2h1v2h2v-2h2v-4a2 2 0 0 0-2-2V8a2 2 0 0 1 4 0v2a4 4 0 0 0 8 0V7a2 2 0 0 0 2-2z"/>
+                  </svg>
+                {%- when 'inventory' -%}
+                  <svg class="sp-specs__group-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M20 2H4a2 2 0 0 0-2 2v3h2v13h16V7h2V4a2 2 0 0 0-2-2m-2 16H6V7h12zM4 5V4h16v1zm5 5h6v2H9z"/>
+                  </svg>
+              {%- endcase -%}
+            </div>
+
+            <dl class="sp-specs__list">
+              {%- for line in row_lines -%}
+                {%- liquid
+                  assign parts = line | strip_newlines | strip | split: '|'
+                  if parts.size < 1
+                    continue
+                  endif
+                  assign term = parts[0] | strip
+                  if term == blank
+                    continue
+                  endif
+                  assign value = parts[1] | default: '' | strip
+                  assign flag = parts[2] | default: '' | strip | downcase
+                  for t in tokens
+                    capture needle
+                      echo '['
+                      echo t
+                      echo ']'
+                    endcapture
+                    capture span
+                      echo '<span class="sp-spec__live" data-sp-spec="'
+                      echo t
+                      echo '"></span>'
+                    endcapture
+                    assign value = value | replace: needle, span
+                  endfor
+                -%}
+                <div class="sp-specs__row{% if forloop.first %} is-first{% endif %}">
+                  <dt class="sp-specs__term">{{ term }}</dt>
+                  <dd class="sp-specs__value{% if flag == 'bold' %} is-bold{% endif %}">{{ value }}</dd>
+                </div>
+              {%- endfor -%}
+            </dl>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Specifications — Figma 42:602 / 34:997.
+     ──────────────────────────────────────────────────────────────────── */
+  .sp-specs {
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-ink-faint: #a09f9f;
+    --sp-border: #cccccc;
+    --sp-canvas: #efefef;
+    --sp-low: #f2f3f9;
+    --sp-maroon: #661320;
+    --sp-amber-dark: #de8b24;
+
+    border-top: 1px solid var(--sp-border);
+    background: #ffffff;
+    padding: 32px 24px;
+    scroll-margin-top: calc(var(--sp-header-offset, 134px) + 24px);
+  }
+
+  .sp-specs__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-inline: auto;
+    max-width: 1440px;
+  }
+
+  .sp-specs__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-specs__eyebrow {
+    margin: 0;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-specs__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-specs__headline-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+  }
+
+  .sp-specs__showing {
+    margin: 0;
+    flex: 1 1 260px;
+    color: var(--sp-amber-dark);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+  }
+
+  .sp-specs__note {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    border: 1px solid var(--sp-border);
+    border-radius: 4px;
+    background: var(--sp-low);
+    padding: 8px 12px;
+  }
+
+  .sp-specs__note-msg {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-specs__note-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--sp-maroon);
+  }
+
+  .sp-specs__change {
+    transition: color 160ms ease;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--sp-maroon);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.88px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sp-specs__change:hover,
+  .sp-specs__change:focus-visible { color: var(--sp-amber-dark); }
+
+  /* Figma: three columns at >= 768, one on a phone. */
+  .sp-specs__groups {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .sp-specs__group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: var(--sp-canvas);
+    padding: 16px;
+  }
+
+  .sp-specs__group-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid var(--sp-border);
+    padding-bottom: 4px;
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-specs__group-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--sp-ink-faint);
+  }
+
+  .sp-specs__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+  }
+
+  /* The design draws a hairline above every row but the first. */
+  .sp-specs__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--sp-border);
+    padding-top: 4px;
+  }
+
+  .sp-specs__row.is-first {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .sp-specs__term {
+    margin: 0;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-specs__value {
+    margin: 0;
+    flex: 1 1 auto;
+    color: var(--sp-ink);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    text-align: right;
+  }
+
+  .sp-specs__value.is-bold {
+    font-family: var(--font-accent--family);
+    font-weight: 700;
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-specs {
+      padding-block: 40px;
+      padding-inline: 48px;
+    }
+
+    .sp-specs__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+
+    .sp-specs__groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-specs { padding-inline: 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-specs__change { transition: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Specifications",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "ENGINEERING DATA" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Specifications" },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Showing line",
+      "info": "Tokens: [model] [tpi] [resolution] [travel] [base] [arm] [sku] [config]",
+      "default": "Showing: [model] · [base] Base · [arm]"
+    },
+    { "type": "textarea", "id": "note", "label": "Live note", "default": "Specs update live with the model, base and probe arm selected in the configurator." },
+    { "type": "text", "id": "change_label", "label": "Back-to-configurator link", "default": "Change configuration ↑" },
+
+    { "type": "header", "content": "First card" },
+    { "type": "text", "id": "group_1_title", "label": "Title", "default": "MANIPULATOR" },
+    { "type": "select", "id": "group_1_icon", "label": "Icon", "options": [ { "value": "tune", "label": "Tune" }, { "value": "cable", "label": "Cable" }, { "value": "inventory", "label": "Inventory" }, { "value": "none", "label": "None" } ], "default": "tune" },
+    {
+      "type": "textarea",
+      "id": "group_1_rows",
+      "label": "Rows",
+      "info": "Term | Value | bold",
+      "default": "Model: | [model] | bold\nType: | Manual micromanipulator\nTPI: | [tpi] | bold\nFeature resolution: | [resolution] | bold\nTravel range (X, Y, Z): | [travel]\nBase type: | [base] mounting platform"
+    },
+
+    { "type": "header", "content": "Second card" },
+    { "type": "text", "id": "group_2_title", "label": "Title", "default": "PROBE ARM FITTED" },
+    { "type": "select", "id": "group_2_icon", "label": "Icon", "options": [ { "value": "tune", "label": "Tune" }, { "value": "cable", "label": "Cable" }, { "value": "inventory", "label": "Inventory" }, { "value": "none", "label": "None" } ], "default": "cable" },
+    {
+      "type": "textarea",
+      "id": "group_2_rows",
+      "label": "Rows",
+      "info": "Term | Value | bold",
+      "default": "Arm type: | [arm] | bold\nLength: | Long (210 mm)\nBody diameter: | 12.7 mm\nMount: | Precision dovetail faceplate\nDrop: | Adjustable 0–15 mm\nCable: | Low-noise triaxial cable\nConnector: | Standard triaxial (3-lug)"
+    },
+
+    { "type": "header", "content": "Third card" },
+    { "type": "text", "id": "group_3_title", "label": "Title", "default": "ORDERING" },
+    { "type": "select", "id": "group_3_icon", "label": "Icon", "options": [ { "value": "tune", "label": "Tune" }, { "value": "cable", "label": "Cable" }, { "value": "inventory", "label": "Inventory" }, { "value": "none", "label": "None" } ], "default": "inventory" },
+    {
+      "type": "textarea",
+      "id": "group_3_rows",
+      "label": "Rows",
+      "info": "Term | Value | bold",
+      "default": "SKU: | [sku] | bold\nConfiguration name: | [config]\nLead time: | 2–3 weeks ARO\nCalibration standard: | NIST Standard Class A\nCountry of Origin: | USA (Burlington, VT)\nHarmonized Tariff (HTS): | 9031.90.5900"
+    }
+  ],
+  "presets": [{ "name": "Specifications" }]
+}
+{% endschema %}
