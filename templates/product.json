@@ -9,6 +9,18 @@
  */
 {
   "sections": {
+    "breadcrumb": {
+      "type": "sp-pdp-breadcrumb",
+      "settings": {
+        "aria_label": "Breadcrumb",
+        "separator": "›",
+        "crumb_1_label": "SHOP",
+        "crumb_1_url": "",
+        "crumb_2_label": "",
+        "crumb_2_url": "",
+        "current_label": "Manual Manipulators"
+      }
+    },
     "product_area": {
       "type": "sp-product-area",
       "settings": {
@@ -60,9 +72,45 @@
         "base_table": "MAG | Magnetic (High-field toggle switch) | ferromagnetic platen clamp\nVAC | Vacuum (Direct laboratory house suction) | house vacuum hold-down\nBLT | Bolt-down (MA-8500 only) | fixed mechanical mount\nFEM | Bolt-down with Frequency Extender Module (MA-8500 only) | extended-frequency bolt-down",
         "arm_table": "CS | Coaxial – Short (MA-8005 only) | coaxial short-reach\nCL | Coaxial – Long | coaxial long-reach\nTS | Triaxial – Short (MA-8005 only) | low-noise 3-lug triax\nTL | Triaxial – Long | low-noise 3-lug triax\nWE | HF – West/East (Magnetic base only) | high-frequency west/east\nNS | HF – North/South (Magnetic base only) | high-frequency north/south"
       }
+    },
+    "overview": {
+      "type": "sp-pdp-overview",
+      "settings": {
+        "eyebrow": "PRODUCT FAMILY",
+        "heading": "Overview",
+        "body": "<p>SemiProbe manual manipulators provide precise X, Y, and Z positioning of probe arms and probe tips on analytical, production, and benchtop probing systems. Designed for wafer-level probing, device characterization, and failure analysis, each manipulator delivers smooth, backlash-free movement across its entire travel range.</p><p>The family spans four distinct model series — from the compact MA-8005 for general probing down to 5 µm features, through the ultra-high-resolution MA-9100 offering 100 TPI and sub-micron positioning, to the specialized MA-8500 engineered specifically for high-frequency and millimeter-wave applications.</p>",
+        "spec_1_label": "Kinematic Structure",
+        "spec_1_value": "Cross-Roller Bearing Rails",
+        "spec_2_label": "Drift Stability",
+        "spec_2_value": "< 0.1 µm / hour @ 21°C",
+        "spec_3_label": "Faceplate Interface",
+        "spec_3_value": "Quick-Swap Dovetail Joint"
+      }
+    },
+    "compare": {
+      "type": "sp-compare-models",
+      "settings": {
+        "eyebrow": "SYSTEM SELECTION MATRIX",
+        "heading": "Compare Models",
+        "description": "Four model series, each suited to a different combination of feature size, travel range and probe arm type.",
+        "table_caption": "Specifications compared across the four manual manipulator model series",
+        "spec_heading": "SPECIFICATION",
+        "columns": "MA-8005 | MA-9000 | MA-9100 | MA-8500",
+        "highlight_column": 3,
+        "badge_label": "POPULAR",
+        "accent_row": "Feature Resolution",
+        "rows": "TPI | 40 | 80 | 100 | 80\nFeature Resolution | 5 µm | 1 µm | 0.35 µm | 1 µm\nTravel (X, Y, Z) | 10 x 10 x 10 mm | 13 x 13 x 13 mm | 13 x 13 x 13 mm | 13 x 13 x 13 mm\nProbe Arms | Coaxial short, Triaxial short | Coaxial long, Triaxial long, HF | Coaxial long, Triaxial long, HF | HF West/East, HF North/South\nBases | Magnetic, Vacuum | Magnetic, Vacuum | Magnetic, Vacuum | **Magnetic, Bolt-down, Bolt-down + Frequency Extender Module**\nConfigurations | 4 | 6 | 6 | 5\nTypically Used For | General analytical probing & test pads | Precision characterization & failure analysis | Sub-micron semiconductor probing | RF, microwave & mm-wave testing",
+        "show_actions": true,
+        "action_label": "Action",
+        "select_label": "SELECT",
+        "selected_label": "SELECTED"
+      }
     }
   },
   "order": [
-    "product_area"
+    "breadcrumb",
+    "product_area",
+    "overview",
+    "compare"
   ]
 }

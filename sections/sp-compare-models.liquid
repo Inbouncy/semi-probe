@@ -1,0 +1,406 @@
+{%- doc -%}
+  Compare Models — Figma 42:376 (Section/Compare Models 34:758,
+  Table/Compare Models 33:546).
+
+  Five equal columns, one of them highlighted and badged, zebra rows, and a
+  row of Select buttons at the foot. The design's note says the table fills
+  its container at desktop and tablet and keeps its 639px intrinsic width
+  inside a horizontally scrolling frame on a phone, which is what this does.
+
+  The whole matrix is one plain-text table in the Theme Editor: one line per
+  row, cells separated by a vertical bar. Wrapping a cell in ** makes it
+  bold, which is how the design picks out a value in a column that is not
+  the highlighted one. The client can add a row, rename a model or correct a
+  figure without touching code.
+
+  The Select buttons drive the configurator above: Figma's note says they
+  set the model and scroll to it, and sections/sp-product-area.liquid
+  listens for them.
+{%- enddoc -%}
+
+{%- liquid
+  assign columns = section.settings.columns | split: '|'
+  assign rows = section.settings.rows | newline_to_br | split: '<br />'
+  assign highlight = section.settings.highlight_column
+  assign accent_row = section.settings.accent_row | strip | downcase
+-%}
+
+<section class="sp-compare">
+  <div class="sp-compare__inner">
+    <div class="sp-compare__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="sp-compare__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sp-compare__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <p class="sp-compare__desc">{{ section.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="sp-compare__scroll">
+      <table class="sp-compare__table">
+        <caption class="sp-sr-only">{{ section.settings.table_caption | escape }}</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="sp-compare__cell sp-compare__cell--spec">
+              {{ section.settings.spec_heading }}
+            </th>
+            {%- for col in columns -%}
+              {%- assign col_name = col | strip -%}
+              <th
+                scope="col"
+                class="sp-compare__cell sp-compare__cell--model{% if forloop.index == highlight %} is-highlight{% endif %}"
+              >
+                <span class="sp-compare__model">{{ col_name }}</span>
+                {%- if forloop.index == highlight and section.settings.badge_label != blank -%}
+                  <span class="sp-compare__badge">{{ section.settings.badge_label }}</span>
+                {%- endif -%}
+              </th>
+            {%- endfor -%}
+          </tr>
+        </thead>
+        <tbody>
+          {%- for row in rows -%}
+            {%- liquid
+              assign cells = row | strip_newlines | strip | split: '|'
+              if cells.size < 2
+                continue
+              endif
+              assign row_label = cells[0] | strip
+              assign is_accent = false
+              assign row_key = row_label | downcase
+              if accent_row != blank and row_key == accent_row
+                assign is_accent = true
+              endif
+            -%}
+            <tr class="sp-compare__row">
+              <th scope="row" class="sp-compare__cell sp-compare__cell--label">{{ row_label }}</th>
+              {%- for col in columns -%}
+                {%- liquid
+                  assign cell_index = forloop.index
+                  assign raw = cells[cell_index] | default: '' | strip
+                  assign is_bold = false
+                  if raw contains '**'
+                    assign is_bold = true
+                    assign raw = raw | remove: '**'
+                  endif
+                -%}
+                <td
+                  class="
+                    sp-compare__cell sp-compare__cell--value
+                    {% if cell_index == highlight %} is-highlight{% endif %}
+                    {% if is_bold %} is-bold{% endif %}
+                    {% if is_accent and cell_index == highlight %} is-accent{% endif %}
+                  "
+                >
+                  {{- raw -}}
+                </td>
+              {%- endfor -%}
+            </tr>
+          {%- endfor -%}
+
+          {%- if section.settings.show_actions -%}
+            <tr class="sp-compare__row sp-compare__row--actions">
+              <th scope="row" class="sp-compare__cell sp-compare__cell--label">
+                {{ section.settings.action_label }}
+              </th>
+              {%- for col in columns -%}
+                {%- assign col_name = col | strip -%}
+                <td class="sp-compare__cell sp-compare__cell--value{% if forloop.index == highlight %} is-highlight{% endif %}">
+                  <button
+                    type="button"
+                    class="sp-compare__select{% if forloop.index == highlight %} is-current{% endif %}"
+                    data-sp-select-model="{{ col_name | escape }}"
+                    data-select-label="{{ section.settings.select_label | escape }}"
+                    data-selected-label="{{ section.settings.selected_label | escape }}"
+                  >
+                    {%- if forloop.index == highlight -%}
+                      {{- section.settings.selected_label -}}
+                    {%- else -%}
+                      {{- section.settings.select_label -}}
+                    {%- endif -%}
+                  </button>
+                </td>
+              {%- endfor -%}
+            </tr>
+          {%- endif -%}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Compare Models — Figma 42:376 / 33:546.
+     ──────────────────────────────────────────────────────────────────── */
+  .sp-compare {
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-ink-faint: #a09f9f;
+    --sp-border: #cccccc;
+    --sp-canvas: #efefef;
+    --sp-low: #f2f3f9;
+    --sp-maroon: #661320;
+    --sp-amber: #e59a2a;
+    --sp-amber-dark: #de8b24;
+
+    background: var(--sp-canvas);
+    padding: 32px 24px;
+  }
+
+  .sp-compare .sp-sr-only {
+    position: absolute;
+    overflow: hidden;
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+  }
+
+  .sp-compare__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-inline: auto;
+    max-width: 1440px;
+  }
+
+  .sp-compare__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-compare__eyebrow {
+    margin: 0;
+    color: var(--sp-amber-dark);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-compare__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-compare__desc {
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 22px;
+  }
+
+  /* The design's mobile treatment: the table keeps its intrinsic width and
+     the frame scrolls, rather than the columns crushing. */
+  .sp-compare__scroll {
+    border-radius: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sp-compare__table {
+    border: 1px solid var(--sp-border);
+    border-spacing: 0;
+    border-radius: 4px;
+    background: #ffffff;
+    width: 100%;
+    min-width: 639px;
+    border-collapse: separate;
+    table-layout: fixed;
+  }
+
+  .sp-compare__cell {
+    vertical-align: top;
+    padding: 16px;
+    text-align: left;
+  }
+
+  /* Head */
+  .sp-compare__table thead th {
+    border-bottom: 1px solid var(--sp-border);
+    background: var(--sp-canvas);
+  }
+
+  .sp-compare__cell--spec {
+    color: var(--sp-ink-faint);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-compare__cell--model {
+    display: table-cell;
+  }
+
+  .sp-compare__model {
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  .sp-compare__cell--model.is-highlight .sp-compare__model { color: var(--sp-maroon); }
+
+  .sp-compare__badge {
+    display: inline-block;
+    margin-left: 4px;
+    border-radius: 2px;
+    background: var(--sp-maroon);
+    padding: 2px 6px;
+    color: #ffffff;
+    font-family: var(--font-accent--family);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Body */
+  .sp-compare__row > .sp-compare__cell { border-top: 1px solid var(--sp-border); }
+
+  /* Zebra, as drawn: every other row takes the canvas grey. */
+  .sp-compare__row:nth-child(even) > .sp-compare__cell { background: var(--sp-canvas); }
+
+  .sp-compare__cell--label {
+    background: var(--sp-canvas);
+    color: var(--sp-ink-soft);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+  }
+
+  .sp-compare__row:nth-child(even) > .sp-compare__cell--label { background: var(--sp-canvas); }
+
+  .sp-compare__cell--value {
+    border-left: 1px solid var(--sp-border);
+    color: var(--sp-ink);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-compare__cell--value.is-bold,
+  .sp-compare__cell--value.is-highlight {
+    font-family: var(--font-accent--family);
+    font-weight: 700;
+  }
+
+  /* One flourish the design makes: the highlighted column's figure on the
+     accent row is set in the brand maroon. */
+  .sp-compare__cell--value.is-accent { color: var(--sp-maroon); }
+
+  .sp-compare__cell.is-highlight {
+    border-right: 1px solid var(--sp-border);
+    background: var(--sp-low);
+  }
+
+  .sp-compare__row:nth-child(even) > .sp-compare__cell.is-highlight { background: var(--sp-low); }
+
+  /* Actions */
+  .sp-compare__select {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    border: 1px solid var(--sp-border);
+    border-radius: 24px;
+    background: #ffffff;
+    cursor: pointer;
+    padding: 6px 12px;
+    color: var(--sp-maroon);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sp-compare__select:hover { border-color: var(--sp-maroon); }
+
+  .sp-compare__select.is-current {
+    box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+    border-color: transparent;
+    background: var(--sp-amber);
+    cursor: default;
+    padding-inline: 16px;
+    color: #ffffff;
+  }
+
+  .sp-compare__select.is-current:hover { background: var(--sp-amber-dark); }
+
+  @media screen and (width >= 750px) {
+    .sp-compare {
+      padding-block: 40px;
+      padding-inline: 48px;
+    }
+
+    .sp-compare__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-compare { padding-inline: 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-compare__select { transition: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Compare models",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "SYSTEM SELECTION MATRIX" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Compare Models" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Four model series, each suited to a different combination of feature size, travel range and probe arm type." },
+    { "type": "text", "id": "table_caption", "label": "Table caption (for screen readers)", "default": "Specifications compared across the four manual manipulator model series" },
+    { "type": "header", "content": "Table" },
+    { "type": "text", "id": "spec_heading", "label": "First column heading", "default": "SPECIFICATION" },
+    { "type": "text", "id": "columns", "label": "Columns", "info": "Model names, separated by a vertical bar.", "default": "MA-8005 | MA-9000 | MA-9100 | MA-8500" },
+    { "type": "range", "id": "highlight_column", "label": "Highlighted column", "info": "0 for none.", "min": 0, "max": 6, "step": 1, "default": 3 },
+    { "type": "text", "id": "badge_label", "label": "Badge on the highlighted column", "default": "POPULAR" },
+    { "type": "text", "id": "accent_row", "label": "Accent row", "info": "The row whose highlighted figure is set in maroon. Match the row label exactly.", "default": "Feature Resolution" },
+    {
+      "type": "textarea",
+      "id": "rows",
+      "label": "Rows",
+      "info": "One line per row: Label | column 1 | column 2 | … Wrap a cell in ** to set it bold.",
+      "default": "TPI | 40 | 80 | 100 | 80\nFeature Resolution | 5 µm | 1 µm | 0.35 µm | 1 µm\nTravel (X, Y, Z) | 10 x 10 x 10 mm | 13 x 13 x 13 mm | 13 x 13 x 13 mm | 13 x 13 x 13 mm\nProbe Arms | Coaxial short, Triaxial short | Coaxial long, Triaxial long, HF | Coaxial long, Triaxial long, HF | HF West/East, HF North/South\nBases | Magnetic, Vacuum | Magnetic, Vacuum | Magnetic, Vacuum | **Magnetic, Bolt-down, Bolt-down + Frequency Extender Module**\nConfigurations | 4 | 6 | 6 | 5\nTypically Used For | General analytical probing & test pads | Precision characterization & failure analysis | Sub-micron semiconductor probing | RF, microwave & mm-wave testing"
+    },
+    { "type": "header", "content": "Select buttons" },
+    { "type": "checkbox", "id": "show_actions", "label": "Show the Select row", "default": true },
+    { "type": "text", "id": "action_label", "label": "Row label", "default": "Action" },
+    { "type": "text", "id": "select_label", "label": "Button label", "default": "SELECT" },
+    { "type": "text", "id": "selected_label", "label": "Label when chosen", "default": "SELECTED" }
+  ],
+  "presets": [{ "name": "Compare models" }]
+}
+{% endschema %}

@@ -317,6 +317,52 @@
     return String(label || '').split(' (')[0].trim();
   }
 
+  /* The Compare Models table sits in its own section further down the page
+     and its Select buttons drive this configurator, which is what the
+     design's note on that table describes. The listener is delegated from
+     the document and registered once, because the two sections re-render
+     independently in the Theme Editor and a per-section listener would
+     stack up a duplicate on every edit. */
+  function modelButtons() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-sp-select-model]'));
+  }
+
+  function syncModelButtons(model) {
+    modelButtons().forEach(function (button) {
+      var on = button.getAttribute('data-sp-select-model') === model;
+      button.classList.toggle('is-current', on);
+      var label = on
+        ? button.getAttribute('data-selected-label')
+        : button.getAttribute('data-select-label');
+      if (label) button.textContent = label;
+    });
+  }
+
+  var modelPickerBound = false;
+
+  function bindModelPicker() {
+    if (modelPickerBound) return;
+    modelPickerBound = true;
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest && event.target.closest('[data-sp-select-model]');
+      if (!button) return;
+      var select = document.querySelector('[data-sp-select="model"]');
+      if (!select) return;
+      var wanted = button.getAttribute('data-sp-select-model');
+      var match = Array.prototype.slice.call(select.options).some(function (option) {
+        return option.value === wanted;
+      });
+      if (!match) return;
+      select.value = wanted;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      var target = document.querySelector('.sp-pdp__col--buy') || select;
+      target.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start'
+      });
+    });
+  }
+
   function initBuy(section) {
     var holder = section.querySelector('[data-sp-config]');
     var buy = section.querySelector('[data-sp-buy]');
@@ -457,6 +503,7 @@
       setText('base', baseEntry && shortLabel(baseEntry.label));
       setText('arm', armEntry && shortLabel(armEntry.label));
 
+      syncModelButtons(model);
       applyVariant(find(model, base, arm));
     }
 
@@ -480,6 +527,7 @@
       });
     }
 
+    bindModelPicker();
     if (hasAxes) refresh();
     settled = true;
   }

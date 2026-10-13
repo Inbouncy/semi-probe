@@ -1,0 +1,235 @@
+{%- doc -%}
+  Overview — Figma 42:358 (Section/Overview 33:528).
+
+  Editorial band: white, ruled top and bottom, with the copy held to 750px
+  and centred. The design's note says the same component serves every
+  breakpoint — the container simply shrinks — so there is no per-frame
+  layout here, only the type stepping down on a phone.
+
+  The body is rich text so the client can add a paragraph or a link without
+  needing another setting, and the three spec pairs are plain fields.
+{%- enddoc -%}
+
+<section class="sp-overview">
+  <div class="sp-overview__inner">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="sp-overview__eyebrow">
+        <span class="sp-overview__rule" aria-hidden="true"></span>
+        <span>{{ section.settings.eyebrow }}</span>
+      </p>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="sp-overview__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.body != blank -%}
+      <div class="sp-overview__body">{{ section.settings.body }}</div>
+    {%- endif -%}
+
+    {%- liquid
+      assign has_specs = false
+      for i in (1..3)
+        case i
+          when 1
+            assign spec_label = section.settings.spec_1_label
+          when 2
+            assign spec_label = section.settings.spec_2_label
+          else
+            assign spec_label = section.settings.spec_3_label
+        endcase
+        if spec_label != blank
+          assign has_specs = true
+        endif
+      endfor
+    -%}
+
+    {%- if has_specs -%}
+      <dl class="sp-overview__specs">
+        {%- for i in (1..3) -%}
+          {%- liquid
+            case i
+              when 1
+                assign spec_label = section.settings.spec_1_label
+                assign spec_value = section.settings.spec_1_value
+              when 2
+                assign spec_label = section.settings.spec_2_label
+                assign spec_value = section.settings.spec_2_value
+              else
+                assign spec_label = section.settings.spec_3_label
+                assign spec_value = section.settings.spec_3_value
+            endcase
+          -%}
+          {%- if spec_label != blank -%}
+            <div class="sp-overview__spec">
+              <dt class="sp-overview__spec-label">{{ spec_label }}</dt>
+              <dd class="sp-overview__spec-value">{{ spec_value }}</dd>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </dl>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Overview — Figma 42:358 / Section/Overview 33:528.
+     ──────────────────────────────────────────────────────────────────── */
+  .sp-overview {
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-ink-faint: #a09f9f;
+    --sp-border: #cccccc;
+    --sp-maroon: #661320;
+
+    border-block: 1px solid var(--sp-border);
+    background: #ffffff;
+    padding: 32px 24px;
+  }
+
+  .sp-overview__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-inline: auto;
+    /* The design holds the column to 750px; the page's own gutters still
+       apply, so on a narrow screen the gutters win and this never fights
+       them. */
+    max-width: 750px;
+  }
+
+  .sp-overview__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--sp-maroon);
+    font-family: var(--font-accent--family);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+  }
+
+  .sp-overview__rule {
+    flex: none;
+    background: var(--sp-maroon);
+    width: 4px;
+    height: 16px;
+  }
+
+  .sp-overview__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-overview__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 26px;
+  }
+
+  .sp-overview__body p { margin: 0; }
+
+  .sp-overview__body a {
+    color: var(--sp-maroon);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Figma keeps this bar at three columns on every frame. At 390 three
+     columns of this type would be four words deep each, so it wraps to a
+     readable number and regains three as soon as there is room. */
+  .sp-overview__specs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px 16px;
+    margin: 0;
+    border-top: 1px solid var(--sp-border);
+    padding-top: 8px;
+  }
+
+  .sp-overview__spec {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .sp-overview__spec-label {
+    margin: 0;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: -0.11px;
+    text-transform: uppercase;
+  }
+
+  .sp-overview__spec-value {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+  }
+
+  @media screen and (width >= 600px) {
+    .sp-overview__specs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-overview {
+      padding-block: 40px;
+      padding-inline: 48px;
+    }
+
+    .sp-overview__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-overview { padding-inline: 80px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "PDP overview",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "PRODUCT FAMILY" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Overview" },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body",
+      "default": "<p>SemiProbe manual manipulators provide precise X, Y, and Z positioning of probe arms and probe tips on analytical, production, and benchtop probing systems. Designed for wafer-level probing, device characterization, and failure analysis, each manipulator delivers smooth, backlash-free movement across its entire travel range.</p><p>The family spans four distinct model series — from the compact MA-8005 for general probing down to 5 µm features, through the ultra-high-resolution MA-9100 offering 100 TPI and sub-micron positioning, to the specialized MA-8500 engineered specifically for high-frequency and millimeter-wave applications.</p>"
+    },
+    { "type": "header", "content": "Spec bar" },
+    { "type": "text", "id": "spec_1_label", "label": "First label", "default": "Kinematic Structure" },
+    { "type": "text", "id": "spec_1_value", "label": "First value", "default": "Cross-Roller Bearing Rails" },
+    { "type": "text", "id": "spec_2_label", "label": "Second label", "default": "Drift Stability" },
+    { "type": "text", "id": "spec_2_value", "label": "Second value", "default": "< 0.1 µm / hour @ 21°C" },
+    { "type": "text", "id": "spec_3_label", "label": "Third label", "default": "Faceplate Interface" },
+    { "type": "text", "id": "spec_3_value", "label": "Third value", "default": "Quick-Swap Dovetail Joint" }
+  ],
+  "presets": [{ "name": "PDP overview" }]
+}
+{% endschema %}

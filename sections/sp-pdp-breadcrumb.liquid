@@ -1,0 +1,135 @@
+{%- doc -%}
+  Breadcrumb — Figma 42:3 (Section/Breadcrumb 27:101).
+
+  A thin grey band above the product area. The trail is two ancestor links
+  the client sets, then the current page, which takes its name from the
+  product so it never falls out of step with the catalogue.
+
+  The design's own links are href="#", so an ancestor with no URL is held
+  back in the same disabled style the header CTA uses rather than rendering
+  a link that goes nowhere.
+{%- enddoc -%}
+
+<nav class="sp-crumbs" aria-label="{{ section.settings.aria_label | escape }}">
+  <ol class="sp-crumbs__list">
+    {%- for i in (1..2) -%}
+      {%- liquid
+        case i
+          when 1
+            assign crumb_label = section.settings.crumb_1_label
+            assign crumb_url = section.settings.crumb_1_url
+          else
+            assign crumb_label = section.settings.crumb_2_label
+            assign crumb_url = section.settings.crumb_2_url
+        endcase
+      -%}
+      {%- if crumb_label != blank -%}
+        <li class="sp-crumbs__item">
+          {%- if crumb_url != blank -%}
+            <a class="sp-crumbs__link" href="{{ crumb_url }}">{{ crumb_label }}</a>
+          {%- else -%}
+            <span class="sp-crumbs__link" role="link" aria-disabled="true" tabindex="0">{{ crumb_label }}</span>
+          {%- endif -%}
+          <span class="sp-crumbs__sep" aria-hidden="true">{{ section.settings.separator }}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+    <li class="sp-crumbs__item">
+      <span class="sp-crumbs__current" aria-current="page">
+        {{- section.settings.current_label | default: product.title -}}
+      </span>
+    </li>
+  </ol>
+</nav>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Breadcrumb — Figma 42:3.
+     Manrope in the design is carried by the theme's Muli at the matching
+     weight, as everywhere else on this page.
+     ──────────────────────────────────────────────────────────────────── */
+  .sp-crumbs {
+    --sp-ink: #23252c;
+    --sp-ink-faint: #a09f9f;
+
+    background: #efefef;
+  }
+
+  .sp-crumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 0 auto;
+    padding: 8px 24px;
+    max-width: 1440px;
+    list-style: none;
+  }
+
+  .sp-crumbs__item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sp-crumbs__link,
+  .sp-crumbs__current,
+  .sp-crumbs__sep {
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sp-crumbs__link,
+  .sp-crumbs__sep {
+    color: var(--sp-ink-faint);
+  }
+
+  .sp-crumbs__current {
+    color: var(--sp-ink);
+  }
+
+  a.sp-crumbs__link {
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  a.sp-crumbs__link:hover,
+  a.sp-crumbs__link:focus-visible {
+    color: var(--sp-ink);
+  }
+
+  /* Held back until the destination exists, as the header CTA is. */
+  .sp-crumbs__link[aria-disabled="true"] {
+    cursor: default;
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-crumbs__list { padding-inline: 48px; }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-crumbs__list { padding-inline: 80px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "PDP breadcrumb",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "aria_label", "label": "Landmark name (for screen readers)", "default": "Breadcrumb" },
+    { "type": "text", "id": "separator", "label": "Separator", "default": "›" },
+    { "type": "text", "id": "crumb_1_label", "label": "First crumb", "default": "SHOP" },
+    { "type": "url", "id": "crumb_1_url", "label": "First crumb link", "info": "Leave blank to hold it back until the destination exists." },
+    { "type": "text", "id": "crumb_2_label", "label": "Second crumb", "info": "Leave blank for a two-level trail." },
+    { "type": "url", "id": "crumb_2_url", "label": "Second crumb link" },
+    { "type": "text", "id": "current_label", "label": "Current page", "info": "Leave blank to use the product title from the catalogue.", "default": "Manual Manipulators" }
+  ],
+  "presets": [{ "name": "PDP breadcrumb" }]
+}
+{% endschema %}
