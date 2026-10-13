@@ -808,6 +808,9 @@
 
   .sp-gallery__window {
     overflow: clip;
+    /* A thumb can land exactly on the clip boundary, which shaves the 1px
+       its selected edge needs. */
+    overflow-clip-margin: 1px;
   }
 
   .sp-gallery__row {
@@ -1016,9 +1019,10 @@
 
   .sp-buy__price-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
+    gap: 4px 12px;
     border-bottom: 1px solid var(--sp-border);
     padding-top: 4px;
     padding-bottom: 8px;
@@ -1052,6 +1056,7 @@
   .sp-buy__availability {
     display: flex;
     flex: none;
+    margin-left: auto;
     flex-direction: column;
     align-items: flex-end;
     text-align: right;
@@ -1373,6 +1378,33 @@
   }
 
   .sp-buy__contact a:hover { color: var(--sp-amber-dark); }
+
+  /* ── Narrow phones ───────────────────────────────────────────────────
+     Both halves of the inspection header are long enough to wrap at 390,
+     and space-between then strands the figure label mid-row. Stacking them
+     left-aligned reads as one caption block instead. */
+  @media screen and (width < 600px) {
+    .sp-gallery__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .sp-gallery__label-group { align-items: flex-start; }
+
+    /* Centre the dot on the first line rather than on the wrapped block. */
+    .sp-gallery__dot { margin-top: 4px; }
+
+    .sp-gallery__fig { text-align: left; }
+  }
+
+  /* Figma centres the tick against a single-line bullet. Once the text
+     wraps the tick floats in the middle of the block, so below the two
+     column layout it sits on the first line instead. */
+  @media screen and (width < 1100px) {
+    .sp-check { align-items: flex-start; }
+    .sp-check__icon { margin-top: 1.5px; }
+  }
 
   /* ── Tablet ──────────────────────────────────────────────────────── */
   @media screen and (width >= 600px) {
