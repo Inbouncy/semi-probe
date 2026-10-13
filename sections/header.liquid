@@ -56,18 +56,29 @@
   endcapture
 
   # SemiProbe: below 750px the header has no room for the pill CTA, so a copy
-  # of it goes with the menu drawer, where the nav has folded to.
+  # of it goes inside the menu drawer, where the nav has folded to.
   #
-  # Horizon's drawer is a private block rendered through `content_for`, and it
-  # takes no content from the theme: there is no slot to pass a button into,
-  # and the captured markup above cannot be spliced either. So the button is
-  # rendered as the drawer's sibling by header-row and pinned to the open
-  # panel in CSS, which keeps every change inside this theme's own files. If
-  # Horizon restructures the drawer, the button moves but the navigation is
-  # untouched.
+  # Horizon's drawer is a private block with no slot to pass content into, so
+  # the button is spliced in after the drawer's own </nav>, which puts it
+  # directly under the last menu item. Only the first </nav> is replaced, and
+  # only when the captured drawer actually contains one, so if Horizon ever
+  # restructures the drawer this no-ops and the navigation is untouched.
+  #
+  # When the splice does not fire, drawer_cta survives and header-row renders
+  # it as the drawer's sibling instead, pinned to the open panel in CSS. Either
+  # way exactly one copy exists: the splice clears drawer_cta when it fires.
   capture drawer_cta
     render 'sp-header-cta', label: section.settings.cta_label, link: section.settings.cta_link, in_drawer: true
   endcapture
+
+  if drawer_cta != blank and mobile_menu contains '</nav>'
+    capture nav_close_with_cta
+      echo '</nav>'
+      echo drawer_cta
+    endcapture
+    assign mobile_menu = mobile_menu | replace_first: '</nav>', nav_close_with_cta
+    assign drawer_cta = ''
+  endif
 
   capture navigation_bar
     content_for 'block', type: '_header-menu', id: 'header-menu', variant: 'navigation_bar', transparent: transparent
@@ -195,7 +206,7 @@
 
 <header-component
   id="header-component"
-  class="{{ class }}{% unless section.settings.show_account_icon %} header--hide-account{% endunless %}"
+  class="{{ class }} header--edge-{{ section.settings.bottom_edge }}{% unless section.settings.show_account_icon %} header--hide-account{% endunless %}"
   {% if transparent %}
     transparent="{{ transparent }}"
   {% endif %}
@@ -758,6 +769,43 @@
     margin-inline-start: 0;
   }
 
+  /* ─────────────────────────────────────────────────────────────────────
+     Bottom edge.
+
+     The design draws the header flush against the page, which works in Figma
+     because every frame below it is shown in isolation. On the live page the
+     nav row is white and so is the hero under it, so the two run together and
+     the header loses its edge. This is the one treatment on the page that is
+     not in the design file, and it is a setting rather than a fixed rule, so
+     the client can take it off or swap it from the Theme Editor.
+
+     Both variants are drawn as box-shadow layers rather than a border: a
+     border would add a pixel to the header's height and move every section
+     below it, and the row's own border-bottom is already driven by the
+     `border_width` setting through an inline custom property, which a
+     stylesheet cannot override. A shadow changes no geometry at all.
+
+     The colour is the page's own ink (#0e1017) at low alpha rather than flat
+     black, so it reads as a soft edge instead of a grey smear, and it is held
+     off a transparent header, where there is no edge to separate.
+     ──────────────────────────────────────────────────────────────────── */
+  .header:not([transparent]) {
+    --sp-edge-hairline: 0 1px 0 0 rgb(14 16 23 / 8%);
+    --sp-edge-shadow: 0 1px 2px rgb(14 16 23 / 4%), 0 4px 12px rgb(14 16 23 / 6%);
+  }
+
+  .header--edge-hairline:not([transparent]) .header__row--bottom {
+    box-shadow: var(--sp-edge-hairline);
+  }
+
+  .header--edge-shadow:not([transparent]) .header__row--bottom {
+    box-shadow: var(--sp-edge-shadow);
+  }
+
+  .header--edge-both:not([transparent]) .header__row--bottom {
+    box-shadow: var(--sp-edge-hairline), var(--sp-edge-shadow);
+  }
+
 {% endstylesheet %}
 
 {% schema %}
@@ -1055,6 +1103,19 @@
       "step": 0.5,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "select",
+      "id": "bottom_edge",
+      "label": "Bottom edge",
+      "info": "Separates the header from the page below it. The design draws none, which leaves the white nav row running into a white section under it.",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "hairline", "label": "Hairline" },
+        { "value": "shadow", "label": "Shadow" },
+        { "value": "both", "label": "Hairline and shadow" }
+      ],
+      "default": "shadow"
     },
     {
       "type": "header",
