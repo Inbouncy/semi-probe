@@ -195,19 +195,18 @@
     var mapped = cfg.variants.filter(function (v) {
       return v.model && v.base && v.arm;
     });
-    if (!mapped.length) return;
 
     var selects = {
       model: buy.querySelector('[data-sp-select="model"]'),
       base: buy.querySelector('[data-sp-select="base"]'),
       arm: buy.querySelector('[data-sp-select="arm"]')
     };
-    if (!selects.model || !selects.base || !selects.arm) return;
 
     var other = buy.querySelector('[data-sp-select="other"]');
     var idInput = buy.querySelector('[data-sp-variant-id]');
     var addButton = buy.querySelector('[data-sp-add]');
     var addText = buy.querySelector('[data-sp-add-text]');
+    var hasAxes = !!(mapped.length && selects.model && selects.base && selects.arm);
 
     var tables = { model: cfg.models, base: cfg.bases, arm: cfg.arms };
 
@@ -319,9 +318,11 @@
       applyVariant(find(model, base, arm));
     }
 
-    Object.keys(selects).forEach(function (axis) {
-      selects[axis].addEventListener('change', refresh);
-    });
+    if (hasAxes) {
+      Object.keys(selects).forEach(function (axis) {
+        selects[axis].addEventListener('change', refresh);
+      });
+    }
 
     /* The catch-all only exists when a SKU is missing from the variant map.
        It picks a variant outright, so it bypasses the three axes. */
@@ -337,7 +338,7 @@
       });
     }
 
-    refresh();
+    if (hasAxes) refresh();
     settled = true;
   }
 
