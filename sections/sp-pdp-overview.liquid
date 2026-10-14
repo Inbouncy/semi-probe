@@ -85,7 +85,7 @@
 
     border-block: 1px solid var(--sp-border);
     background: #ffffff;
-    padding: 32px 24px;
+    padding-block: 32px;
   }
 
   .sp-overview__inner {
@@ -93,10 +93,11 @@
     flex-direction: column;
     gap: 16px;
     margin-inline: auto;
-    /* The design holds the column to 750px; the page's own gutters still
-       apply, so on a narrow screen the gutters win and this never fights
-       them. */
-    max-width: 750px;
+    /* Figma holds this to a 750px column centred in the page, which put it
+       on a different axis to every other section. It now takes the same
+       frame as the rest, so its left edge lines up with them. */
+    max-width: 1440px;
+    padding-inline: 24px;
   }
 
   .sp-overview__eyebrow {
@@ -193,10 +194,9 @@
   }
 
   @media screen and (width >= 750px) {
-    .sp-overview {
-      padding-block: 40px;
-      padding-inline: 48px;
-    }
+    .sp-overview { padding-block: 40px; }
+
+    .sp-overview__inner { padding-inline: 48px; }
 
     .sp-overview__heading {
       font-size: 36px;
@@ -205,7 +205,7 @@
   }
 
   @media screen and (width >= 1300px) {
-    .sp-overview { padding-inline: 80px; }
+    .sp-overview__inner { padding-inline: 80px; }
   }
 {% endstylesheet %}
 
