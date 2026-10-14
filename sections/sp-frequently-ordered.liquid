@@ -83,6 +83,12 @@
   /* ────────────────────────────────────────────────────────────────────
      Frequently Ordered With — Figma 42:1204 / 39:1366.
      ──────────────────────────────────────────────────────────────────── */
+  /* The inset lives on the inner box, with the max-width, so the two act on
+     the same element - as the header's own columns and the product area do.
+     Padding the full-bleed section instead and capping the inner at 1440
+     makes the inner a full 1440 wide once the viewport passes 1600, which is
+     160px wider than the header's content and puts this section outside it.
+     The two coincide at exactly 1440, which is what hid it. */
   .sp-accessories {
     --sp-ink: #23252c;
     --sp-ink-soft: #55585d;
@@ -94,7 +100,7 @@
 
     border-top: 1px solid var(--sp-border);
     background: var(--sp-canvas);
-    padding: 32px 24px;
+    padding-block: 32px;
     scroll-margin-top: calc(var(--sp-header-offset, 134px) + 24px);
   }
 
@@ -104,6 +110,7 @@
     gap: 24px;
     margin-inline: auto;
     max-width: 1440px;
+    padding-inline: 24px;
   }
 
   .sp-accessories__head {
@@ -280,10 +287,9 @@
   }
 
   @media screen and (width >= 750px) {
-    .sp-accessories {
-      padding-block: 40px;
-      padding-inline: 48px;
-    }
+    .sp-accessories { padding-block: 40px; }
+
+    .sp-accessories__inner { padding-inline: 48px; }
 
     .sp-accessories__heading {
       font-size: 36px;
@@ -296,7 +302,7 @@
   }
 
   @media screen and (width >= 1300px) {
-    .sp-accessories { padding-inline: 80px; }
+    .sp-accessories__inner { padding-inline: 80px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
