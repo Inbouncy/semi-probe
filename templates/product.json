@@ -365,7 +365,7 @@
             "cta_label": "VIEW PRODUCT",
             "url": "/products/probe-tips",
             "featured": false,
-            "badge": "ESSENTIAL ACCESSORY"
+            "badge": ""
           }
         },
         "related_2": {
@@ -378,7 +378,7 @@
             "cta_label": "VIEW PRODUCT",
             "url": "/products/wafer-chucks",
             "featured": false,
-            "badge": "ESSENTIAL ACCESSORY"
+            "badge": ""
           }
         },
         "related_3": {
@@ -391,7 +391,7 @@
             "cta_label": "VIEW PRODUCT",
             "url": "/products/vacuum-pumps",
             "featured": false,
-            "badge": "ESSENTIAL ACCESSORY"
+            "badge": ""
           }
         },
         "related_4": {
@@ -404,7 +404,7 @@
             "cta_label": "VIEW PRODUCT",
             "url": "/products/probe-arms",
             "featured": false,
-            "badge": "ESSENTIAL ACCESSORY"
+            "badge": ""
           }
         }
       },
