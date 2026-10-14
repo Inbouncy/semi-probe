@@ -627,7 +627,13 @@
             "base": {{ v_base | json }},
             "arm": {{ v_arm | json }},
             "price": {{ v.price | money_without_trailing_zeros | strip_html | json }},
-            "available": {{ v.available | json }}
+            "available": {{ v.available | json }},
+            {%- comment -%}
+              null unless Shopify is counting this variant. A variant with no
+              inventory management cannot run out, so it must never be able to
+              read as sold out whatever else happens.
+            {%- endcomment -%}
+            "tracked": {{ v.inventory_management | json }}
           }{%- unless forloop.last -%},{%- endunless -%}
         {%- endfor -%}
       ],

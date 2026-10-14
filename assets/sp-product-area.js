@@ -512,12 +512,15 @@
       setText('price', variant.price);
       setText('sku', variant.sku);
 
-      /* Only an explicit false means sold out. This product does not track
-         inventory, so every variant is purchasable; if the flag ever went
-         missing, defaulting to purchasable loses a sale far less often than
-         defaulting to SOLD OUT does. */
+      /* Sold out needs two things to be true: Shopify is actually counting
+         this variant, and it says there is none left. Every variant of this
+         product has inventory management off, so none of them can run out
+         and none can show SOLD OUT - which is what was appearing, from a
+         render neither the variant data nor any market could account for.
+         Gating on `tracked` removes the state rather than the symptom: it
+         can only ever appear once someone turns counting on. */
       if (addButton) {
-        var soldOut = variant.available === false;
+        var soldOut = !!variant.tracked && variant.available === false;
         addButton.disabled = soldOut;
         if (addText) {
           addText.textContent = soldOut ? cfg.soldOutLabel : cfg.cartLabel;
