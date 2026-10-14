@@ -11,6 +11,12 @@
 
   Nothing here writes to a product or a variant; it reads the cart Shopify
   already holds.
+
+  The class namespace is sp-bag, not sp-cart: the header's cart icon in
+  snippets/cart-icon-component.liquid already owns .sp-cart, and a second
+  .sp-cart rule here put this section's grey ground and 64px of padding on
+  that icon on every page of the site. The file keeps its name, so the
+  template's section type does not move.
 {%- enddoc -%}
 
 {%- liquid
@@ -21,18 +27,18 @@
   endif
 -%}
 
-<section class="sp-cart">
-  <div class="sp-cart__inner">
-    <div class="sp-cart__head">
+<section class="sp-bag">
+  <div class="sp-bag__inner">
+    <div class="sp-bag__head">
       {%- if section.settings.eyebrow != blank -%}
-        <p class="sp-cart__eyebrow">{{ section.settings.eyebrow }}</p>
+        <p class="sp-bag__eyebrow">{{ section.settings.eyebrow }}</p>
       {%- endif -%}
-      <div class="sp-cart__headline">
+      <div class="sp-bag__headline">
         {%- if section.settings.heading != blank -%}
-          <h1 class="sp-cart__heading">{{ section.settings.heading }}</h1>
+          <h1 class="sp-bag__heading">{{ section.settings.heading }}</h1>
         {%- endif -%}
         {%- if has_items -%}
-          <span class="sp-cart__count">
+          <span class="sp-bag__count">
             {%- if item_count == 1 -%}
               {{ section.settings.count_one }}
             {%- else -%}
@@ -44,12 +50,12 @@
     </div>
 
     {%- if has_items -%}
-      <form action="{{ routes.cart_url }}" method="post" novalidate class="sp-cart__form" data-sp-cart-form>
-        <div class="sp-cart__grid">
-          <div class="sp-cart__lines">
+      <form action="{{ routes.cart_url }}" method="post" novalidate class="sp-bag__form" data-sp-bag-form>
+        <div class="sp-bag__grid">
+          <div class="sp-bag__lines">
             {%- for item in cart.items -%}
-              <article class="sp-cart__line">
-                <div class="sp-cart__media">
+              <article class="sp-bag__line">
+                <div class="sp-bag__media">
                   {%- if item.image -%}
                     <a href="{{ item.url }}" tabindex="-1" aria-hidden="true">
                       <img
@@ -66,37 +72,37 @@
                   {%- endif -%}
                 </div>
 
-                <div class="sp-cart__detail">
-                  <h2 class="sp-cart__title">
-                    <a class="sp-cart__title-link" href="{{ item.url }}">{{ item.product.title }}</a>
+                <div class="sp-bag__detail">
+                  <h2 class="sp-bag__title">
+                    <a class="sp-bag__title-link" href="{{ item.url }}">{{ item.product.title }}</a>
                   </h2>
 
                   {%- unless item.product.has_only_default_variant -%}
-                    <p class="sp-cart__variant">{{ item.variant.title }}</p>
+                    <p class="sp-bag__variant">{{ item.variant.title }}</p>
                   {%- endunless -%}
 
                   {%- if item.sku != blank -%}
-                    <p class="sp-cart__sku">
-                      <span class="sp-cart__sku-label">{{ section.settings.sku_label }}</span>
-                      <span class="sp-cart__sku-value">{{ item.sku }}</span>
+                    <p class="sp-bag__sku">
+                      <span class="sp-bag__sku-label">{{ section.settings.sku_label }}</span>
+                      <span class="sp-bag__sku-value">{{ item.sku }}</span>
                     </p>
                   {%- endif -%}
 
                   {%- if item.properties != blank -%}
                     {%- for property in item.properties -%}
                       {%- unless property.last == blank or property.first.first == '_' -%}
-                        <p class="sp-cart__property">{{ property.first }}: {{ property.last }}</p>
+                        <p class="sp-bag__property">{{ property.first }}: {{ property.last }}</p>
                       {%- endunless -%}
                     {%- endfor -%}
                   {%- endif -%}
 
-                  <p class="sp-cart__unit">
+                  <p class="sp-bag__unit">
                     {{- item.original_price | money -}}
-                    <span class="sp-cart__unit-note">{{ section.settings.each_label }}</span>
+                    <span class="sp-bag__unit-note">{{ section.settings.each_label }}</span>
                   </p>
                 </div>
 
-                <div class="sp-cart__controls">
+                <div class="sp-bag__controls">
                   {%- comment -%}
                     The steps are links to cart/change, not submit buttons.
                     A button carrying name="updates[]" would post a value on
@@ -104,22 +110,22 @@
                     - an extra entry shifts every line's quantity onto its
                     neighbour. As links they need no JavaScript either.
                   {%- endcomment -%}
-                  <div class="sp-cart__qty">
+                  <div class="sp-bag__qty">
                     {%- if item.quantity > 1 -%}
                       <a
-                        class="sp-cart__step"
+                        class="sp-bag__step"
                         href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}"
                         aria-label="{{ section.settings.decrease_label | escape }}"
                       >&minus;</a>
                     {%- else -%}
-                      <span class="sp-cart__step sp-cart__step--off" aria-hidden="true">&minus;</span>
+                      <span class="sp-bag__step sp-bag__step--off" aria-hidden="true">&minus;</span>
                     {%- endif -%}
 
                     <label class="sp-sr-only" for="sp-qty-{{ forloop.index }}">
                       {{- section.settings.quantity_label -}}
                     </label>
                     <input
-                      class="sp-cart__qty-input"
+                      class="sp-bag__qty-input"
                       id="sp-qty-{{ forloop.index }}"
                       type="number"
                       name="updates[]"
@@ -130,23 +136,23 @@
                     >
 
                     <a
-                      class="sp-cart__step"
+                      class="sp-bag__step"
                       href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}"
                       aria-label="{{ section.settings.increase_label | escape }}"
                     >+</a>
                   </div>
 
                   <a
-                    class="sp-cart__remove"
+                    class="sp-bag__remove"
                     href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0"
                     aria-label="{{ section.settings.remove_label | escape }}: {{ item.product.title | strip_html }}"
                   >{{ section.settings.remove_label }}</a>
                 </div>
 
-                <p class="sp-cart__line-total">
+                <p class="sp-bag__line-total">
                   {{- item.original_line_price | money -}}
                   {%- if item.original_line_price != item.final_line_price -%}
-                    <span class="sp-cart__line-was">{{ item.final_line_price | money }}</span>
+                    <span class="sp-bag__line-was">{{ item.final_line_price | money }}</span>
                   {%- endif -%}
                 </p>
               </article>
@@ -162,37 +168,37 @@
               posted, so this stays visible rather than hidden behind
               noscript.
             {%- endcomment -%}
-            <button class="sp-cart__update" type="submit" name="update">
+            <button class="sp-bag__update" type="submit" name="update">
               {{ section.settings.update_label }}
             </button>
           </div>
 
-          <aside class="sp-cart__summary">
-            <h2 class="sp-cart__summary-title">{{ section.settings.summary_title }}</h2>
+          <aside class="sp-bag__summary">
+            <h2 class="sp-bag__summary-title">{{ section.settings.summary_title }}</h2>
 
-            <dl class="sp-cart__totals">
-              <div class="sp-cart__total-row">
+            <dl class="sp-bag__totals">
+              <div class="sp-bag__total-row">
                 <dt>{{ section.settings.subtotal_label }}</dt>
                 <dd>{{ cart.items_subtotal_price | money_with_currency }}</dd>
               </div>
 
               {%- if cart.cart_level_discount_applications.size > 0 -%}
                 {%- for discount in cart.cart_level_discount_applications -%}
-                  <div class="sp-cart__total-row sp-cart__total-row--discount">
+                  <div class="sp-bag__total-row sp-bag__total-row--discount">
                     <dt>{{ discount.title }}</dt>
                     <dd>&minus;{{ discount.total_allocated_amount | money }}</dd>
                   </div>
                 {%- endfor -%}
               {%- endif -%}
 
-              <div class="sp-cart__total-row sp-cart__total-row--grand">
+              <div class="sp-bag__total-row sp-bag__total-row--grand">
                 <dt>{{ section.settings.total_label }}</dt>
                 <dd>{{ cart.total_price | money_with_currency }}</dd>
               </div>
             </dl>
 
             {%- if section.settings.tax_note != blank -%}
-              <p class="sp-cart__note">{{ section.settings.tax_note }}</p>
+              <p class="sp-bag__note">{{ section.settings.tax_note }}</p>
             {%- endif -%}
 
             <button class="sp-btn sp-btn--checkout" type="submit" name="checkout">
@@ -200,18 +206,18 @@
             </button>
 
             {%- if additional_checkout_buttons and section.settings.show_wallets -%}
-              <div class="sp-cart__wallets">{{ content_for_additional_checkout_buttons }}</div>
+              <div class="sp-bag__wallets">{{ content_for_additional_checkout_buttons }}</div>
             {%- endif -%}
 
             {%- if section.settings.continue_label != blank -%}
-              <a class="sp-cart__continue" href="{{ section.settings.continue_url | default: routes.root_url }}">
+              <a class="sp-bag__continue" href="{{ section.settings.continue_url | default: routes.root_url }}">
                 {{ section.settings.continue_label }}
               </a>
             {%- endif -%}
 
             {%- assign bullets = section.settings.bullets | newline_to_br | split: '<br />' -%}
             {%- if bullets.size > 0 -%}
-              <ul class="sp-cart__assurance" role="list">
+              <ul class="sp-bag__assurance" role="list">
                 {%- for bullet in bullets -%}
                   {%- assign line = bullet | strip -%}
                   {%- if line != blank -%}
@@ -229,18 +235,18 @@
         </div>
       </form>
     {%- else -%}
-      <div class="sp-cart__empty">
-        <svg class="sp-cart__empty-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+      <div class="sp-bag__empty">
+        <svg class="sp-bag__empty-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
           <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2M1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2"/>
         </svg>
         {%- if section.settings.empty_title != blank -%}
-          <p class="sp-cart__empty-title">{{ section.settings.empty_title }}</p>
+          <p class="sp-bag__empty-title">{{ section.settings.empty_title }}</p>
         {%- endif -%}
         {%- if section.settings.empty_body != blank -%}
-          <p class="sp-cart__empty-body">{{ section.settings.empty_body }}</p>
+          <p class="sp-bag__empty-body">{{ section.settings.empty_body }}</p>
         {%- endif -%}
         {%- if section.settings.continue_label != blank -%}
-          <a class="sp-btn sp-btn--checkout sp-cart__empty-cta" href="{{ section.settings.continue_url | default: routes.root_url }}">
+          <a class="sp-btn sp-btn--checkout sp-bag__empty-cta" href="{{ section.settings.continue_url | default: routes.root_url }}">
             {{ section.settings.continue_label }}
           </a>
         {%- endif -%}
@@ -255,7 +261,7 @@
      cards on a 1px #ccc hairline, the amber pill for the one action that
      matters and an outlined one for everything else.
      ──────────────────────────────────────────────────────────────────── */
-  .sp-cart {
+  .sp-bag {
     --sp-surface: #ffffff;
     --sp-canvas: #efefef;
     --sp-border: #cccccc;
@@ -272,7 +278,7 @@
     padding-block: 64px;
   }
 
-  .sp-cart__inner {
+  .sp-bag__inner {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -281,7 +287,7 @@
     padding-inline: 24px;
   }
 
-  .sp-cart .sp-sr-only {
+  .sp-bag .sp-sr-only {
     position: absolute;
     clip-path: inset(50%);
     width: 1px;
@@ -291,13 +297,13 @@
   }
 
   /* ── Heading ─────────────────────────────────────────────────────── */
-  .sp-cart__head {
+  .sp-bag__head {
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
 
-  .sp-cart__eyebrow {
+  .sp-bag__eyebrow {
     margin: 0;
     color: var(--sp-amber-dark);
     font-family: var(--font-subheading--family);
@@ -308,14 +314,14 @@
     text-transform: uppercase;
   }
 
-  .sp-cart__headline {
+  .sp-bag__headline {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 12px;
   }
 
-  .sp-cart__heading {
+  .sp-bag__heading {
     margin: 0;
     color: var(--sp-ink);
     font-family: var(--font-heading--family);
@@ -325,7 +331,7 @@
     letter-spacing: -0.36px;
   }
 
-  .sp-cart__count {
+  .sp-bag__count {
     border: 1px solid var(--sp-border);
     border-radius: 2px;
     background: var(--sp-surface);
@@ -341,14 +347,14 @@
   }
 
   /* ── Layout ──────────────────────────────────────────────────────── */
-  .sp-cart__grid {
+  .sp-bag__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
     align-items: start;
   }
 
-  .sp-cart__lines {
+  .sp-bag__lines {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--sp-border);
@@ -358,18 +364,18 @@
   }
 
   /* ── One line ────────────────────────────────────────────────────── */
-  .sp-cart__line {
+  .sp-bag__line {
     display: grid;
     grid-template-columns: 80px minmax(0, 1fr);
     gap: 8px 16px;
     padding: 16px;
   }
 
-  .sp-cart__line + .sp-cart__line { border-top: 1px solid var(--sp-border); }
+  .sp-bag__line + .sp-bag__line { border-top: 1px solid var(--sp-border); }
 
   /* The same tile the accessory cards use: white ground, hairline edge, so
      a photograph shot on white does not letterbox against grey. */
-  .sp-cart__media {
+  .sp-bag__media {
     display: flex;
     grid-row: span 2;
     align-items: center;
@@ -382,20 +388,20 @@
     overflow: hidden;
   }
 
-  .sp-cart__media img {
+  .sp-bag__media img {
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
 
-  .sp-cart__detail {
+  .sp-bag__detail {
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
   }
 
-  .sp-cart__title {
+  .sp-bag__title {
     margin: 0;
     color: var(--sp-ink);
     font-family: var(--font-subheading--family);
@@ -404,7 +410,7 @@
     line-height: 22px;
   }
 
-  .sp-cart__title-link {
+  .sp-bag__title-link {
     transition: color 160ms ease;
     color: inherit;
     text-decoration: none;
@@ -412,8 +418,8 @@
 
   /* Stated explicitly: the theme paints link underlines in transparent for
      its own reveal effect, and a shorthand does not outrank that. */
-  .sp-cart__title-link:hover,
-  .sp-cart__title-link:focus-visible {
+  .sp-bag__title-link:hover,
+  .sp-bag__title-link:focus-visible {
     color: var(--sp-maroon);
     text-decoration: underline;
     text-decoration-color: currentcolor;
@@ -421,8 +427,8 @@
     text-underline-offset: 3px;
   }
 
-  .sp-cart__variant,
-  .sp-cart__property {
+  .sp-bag__variant,
+  .sp-bag__property {
     margin: 0;
     color: var(--sp-ink-soft);
     font-family: var(--font-body--family);
@@ -431,7 +437,7 @@
     line-height: 19px;
   }
 
-  .sp-cart__sku {
+  .sp-bag__sku {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -439,7 +445,7 @@
     margin: 4px 0 0;
   }
 
-  .sp-cart__sku-label {
+  .sp-bag__sku-label {
     color: var(--sp-ink-faint);
     font-family: var(--font-accent--family);
     font-size: 10px;
@@ -449,7 +455,7 @@
     text-transform: uppercase;
   }
 
-  .sp-cart__sku-value {
+  .sp-bag__sku-value {
     border-radius: 2px;
     background: var(--sp-low);
     padding: 1px 6px;
@@ -461,7 +467,7 @@
     letter-spacing: 0.44px;
   }
 
-  .sp-cart__unit {
+  .sp-bag__unit {
     margin: 6px 0 0;
     color: var(--sp-ink-soft);
     font-family: var(--font-accent--family);
@@ -470,7 +476,7 @@
     line-height: 17px;
   }
 
-  .sp-cart__unit-note {
+  .sp-bag__unit-note {
     margin-inline-start: 4px;
     color: var(--sp-ink-faint);
     font-weight: 400;
@@ -480,7 +486,7 @@
   }
 
   /* ── Quantity and remove ─────────────────────────────────────────── */
-  .sp-cart__controls {
+  .sp-bag__controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -488,7 +494,7 @@
     grid-column: 2;
   }
 
-  .sp-cart__qty {
+  .sp-bag__qty {
     display: flex;
     align-items: center;
     border: 1px solid var(--sp-border);
@@ -497,7 +503,7 @@
     overflow: hidden;
   }
 
-  .sp-cart__step {
+  .sp-bag__step {
     display: grid;
     place-items: center;
     transition: background-color 160ms ease, color 160ms ease;
@@ -515,20 +521,20 @@
 
   /* At one, stepping down would remove the line; Remove says that plainly,
      so the step is shown spent rather than doing it by surprise. */
-  .sp-cart__step--off {
+  .sp-bag__step--off {
     cursor: default;
     color: var(--sp-border);
   }
 
-  .sp-cart__step--off:hover { background: none; color: var(--sp-border); }
+  .sp-bag__step--off:hover { background: none; color: var(--sp-border); }
 
-  .sp-cart__step:hover,
-  .sp-cart__step:focus-visible {
+  .sp-bag__step:hover,
+  .sp-bag__step:focus-visible {
     background: var(--sp-low);
     color: var(--sp-maroon);
   }
 
-  .sp-cart__qty-input {
+  .sp-bag__qty-input {
     appearance: textfield;
     border: 0;
     border-inline: 1px solid var(--sp-border);
@@ -543,13 +549,13 @@
     text-align: center;
   }
 
-  .sp-cart__qty-input::-webkit-outer-spin-button,
-  .sp-cart__qty-input::-webkit-inner-spin-button {
+  .sp-bag__qty-input::-webkit-outer-spin-button,
+  .sp-bag__qty-input::-webkit-inner-spin-button {
     appearance: none;
     margin: 0;
   }
 
-  .sp-cart__remove {
+  .sp-bag__remove {
     transition: color 160ms ease;
     color: var(--sp-ink-faint);
     font-family: var(--font-subheading--family);
@@ -561,8 +567,8 @@
     text-decoration: none;
   }
 
-  .sp-cart__remove:hover,
-  .sp-cart__remove:focus-visible {
+  .sp-bag__remove:hover,
+  .sp-bag__remove:focus-visible {
     color: var(--sp-maroon);
     text-decoration: underline;
     text-decoration-color: currentcolor;
@@ -570,7 +576,7 @@
     text-underline-offset: 3px;
   }
 
-  .sp-cart__line-total {
+  .sp-bag__line-total {
     grid-column: 2;
     margin: 0;
     color: var(--sp-ink);
@@ -580,14 +586,14 @@
     line-height: 21px;
   }
 
-  .sp-cart__line-was {
+  .sp-bag__line-was {
     margin-inline-start: 6px;
     color: var(--sp-ink-faint);
     font-weight: 400;
     text-decoration: line-through;
   }
 
-  .sp-cart__update {
+  .sp-bag__update {
     margin: 0 16px 16px;
     border: 1px solid var(--sp-border);
     border-radius: 24px;
@@ -603,7 +609,7 @@
   }
 
   /* ── Summary ─────────────────────────────────────────────────────── */
-  .sp-cart__summary {
+  .sp-bag__summary {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -613,7 +619,7 @@
     padding: 20px;
   }
 
-  .sp-cart__summary-title {
+  .sp-bag__summary-title {
     margin: 0;
     color: var(--sp-ink-faint);
     font-family: var(--font-accent--family);
@@ -624,21 +630,21 @@
     text-transform: uppercase;
   }
 
-  .sp-cart__totals {
+  .sp-bag__totals {
     display: flex;
     flex-direction: column;
     gap: 8px;
     margin: 0;
   }
 
-  .sp-cart__total-row {
+  .sp-bag__total-row {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 16px;
   }
 
-  .sp-cart__total-row dt {
+  .sp-bag__total-row dt {
     color: var(--sp-ink-soft);
     font-family: var(--font-body--family);
     font-size: 13px;
@@ -646,7 +652,7 @@
     line-height: 19px;
   }
 
-  .sp-cart__total-row dd {
+  .sp-bag__total-row dd {
     margin: 0;
     color: var(--sp-ink);
     font-family: var(--font-accent--family);
@@ -655,22 +661,22 @@
     line-height: 19px;
   }
 
-  .sp-cart__total-row--discount dd { color: var(--sp-maroon); }
+  .sp-bag__total-row--discount dd { color: var(--sp-maroon); }
 
-  .sp-cart__total-row--grand {
+  .sp-bag__total-row--grand {
     margin-block-start: 4px;
     border-top: 1px solid var(--sp-border);
     padding-block-start: 12px;
   }
 
-  .sp-cart__total-row--grand dt {
+  .sp-bag__total-row--grand dt {
     color: var(--sp-ink);
     font-family: var(--font-subheading--family);
     font-size: 14px;
     font-weight: 600;
   }
 
-  .sp-cart__total-row--grand dd {
+  .sp-bag__total-row--grand dd {
     font-family: var(--font-heading--family);
     font-size: 24px;
     font-weight: 200;
@@ -678,7 +684,7 @@
     letter-spacing: -0.24px;
   }
 
-  .sp-cart__note {
+  .sp-bag__note {
     margin: 0;
     color: var(--sp-ink-faint);
     font-family: var(--font-body--family);
@@ -688,7 +694,7 @@
   }
 
   /* ── Buttons ─────────────────────────────────────────────────────── */
-  .sp-cart .sp-btn {
+  .sp-bag .sp-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -703,7 +709,7 @@
     text-transform: uppercase;
   }
 
-  .sp-cart .sp-btn--checkout {
+  .sp-bag .sp-btn--checkout {
     box-shadow: 0 1px 1px rgb(0 0 0 / 10%), 0 1px 1.5px rgb(0 0 0 / 10%);
     border: 0;
     background: var(--sp-amber);
@@ -715,21 +721,21 @@
     letter-spacing: 0.28px;
   }
 
-  .sp-cart .sp-btn--checkout:hover,
-  .sp-cart .sp-btn--checkout:focus-visible { background: var(--sp-amber-dark); }
+  .sp-bag .sp-btn--checkout:hover,
+  .sp-bag .sp-btn--checkout:focus-visible { background: var(--sp-amber-dark); }
 
   /* Shopify injects the wallet buttons' own markup; this only gives them
      room and keeps their corners with ours. */
-  .sp-cart__wallets {
+  .sp-bag__wallets {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  .sp-cart__wallets [role="button"],
-  .sp-cart__wallets button { border-radius: 24px; }
+  .sp-bag__wallets [role="button"],
+  .sp-bag__wallets button { border-radius: 24px; }
 
-  .sp-cart__continue {
+  .sp-bag__continue {
     transition: color 160ms ease;
     color: var(--sp-ink-soft);
     font-family: var(--font-subheading--family);
@@ -742,8 +748,8 @@
     text-decoration: none;
   }
 
-  .sp-cart__continue:hover,
-  .sp-cart__continue:focus-visible {
+  .sp-bag__continue:hover,
+  .sp-bag__continue:focus-visible {
     color: var(--sp-maroon);
     text-decoration: underline;
     text-decoration-color: currentcolor;
@@ -751,7 +757,7 @@
     text-underline-offset: 3px;
   }
 
-  .sp-cart__assurance {
+  .sp-bag__assurance {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -761,7 +767,7 @@
     list-style: none;
   }
 
-  .sp-cart__assurance li {
+  .sp-bag__assurance li {
     display: flex;
     align-items: flex-start;
     gap: 8px;
@@ -772,7 +778,7 @@
     line-height: 18px;
   }
 
-  .sp-cart__assurance svg {
+  .sp-bag__assurance svg {
     flex: none;
     margin-block-start: 2px;
     width: 14px;
@@ -781,7 +787,7 @@
   }
 
   /* ── Empty ───────────────────────────────────────────────────────── */
-  .sp-cart__empty {
+  .sp-bag__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -793,13 +799,13 @@
     text-align: center;
   }
 
-  .sp-cart__empty-icon {
+  .sp-bag__empty-icon {
     width: 32px;
     height: 32px;
     color: var(--sp-ink-faint);
   }
 
-  .sp-cart__empty-title {
+  .sp-bag__empty-title {
     margin: 8px 0 0;
     color: var(--sp-ink);
     font-family: var(--font-subheading--family);
@@ -808,7 +814,7 @@
     line-height: 24px;
   }
 
-  .sp-cart__empty-body {
+  .sp-bag__empty-body {
     margin: 0;
     max-width: 440px;
     color: var(--sp-ink-soft);
@@ -818,7 +824,7 @@
     line-height: 21px;
   }
 
-  .sp-cart__empty-cta {
+  .sp-bag__empty-cta {
     margin-block-start: 8px;
     width: auto;
     min-width: 220px;
@@ -826,30 +832,30 @@
 
   /* ── Wider ───────────────────────────────────────────────────────── */
   @media screen and (width >= 750px) {
-    .sp-cart { padding-block: 70px; }
+    .sp-bag { padding-block: 70px; }
 
-    .sp-cart__inner { padding-inline: 48px; }
+    .sp-bag__inner { padding-inline: 48px; }
 
-    .sp-cart__heading {
+    .sp-bag__heading {
       font-size: 36px;
       line-height: 44px;
     }
 
-    .sp-cart__line {
+    .sp-bag__line {
       grid-template-columns: 96px minmax(0, 1fr) auto;
       align-items: center;
       gap: 16px 20px;
       padding: 20px;
     }
 
-    .sp-cart__media { grid-row: span 1; }
+    .sp-bag__media { grid-row: span 1; }
 
-    .sp-cart__controls {
+    .sp-bag__controls {
       grid-column: auto;
       justify-content: flex-end;
     }
 
-    .sp-cart__line-total {
+    .sp-bag__line-total {
       grid-column: auto;
       min-width: 110px;
       text-align: right;
@@ -857,26 +863,26 @@
   }
 
   @media screen and (width >= 1000px) {
-    .sp-cart__grid { grid-template-columns: minmax(0, 1fr) 360px; }
+    .sp-bag__grid { grid-template-columns: minmax(0, 1fr) 360px; }
 
     /* The summary follows the list on a long cart rather than scrolling off
        the top of it. */
-    .sp-cart__summary {
+    .sp-bag__summary {
       position: sticky;
       top: calc(var(--sp-header-offset, 134px) + 24px);
     }
   }
 
   @media screen and (width >= 1300px) {
-    .sp-cart__inner { padding-inline: 80px; }
+    .sp-bag__inner { padding-inline: 80px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sp-cart .sp-btn,
-    .sp-cart__step,
-    .sp-cart__remove,
-    .sp-cart__continue,
-    .sp-cart__title-link { transition: none; }
+    .sp-bag .sp-btn,
+    .sp-bag__step,
+    .sp-bag__remove,
+    .sp-bag__continue,
+    .sp-bag__title-link { transition: none; }
   }
 {% endstylesheet %}
 
