@@ -237,6 +237,16 @@
   a.sp-docs__dl:hover,
   a.sp-docs__dl:focus-visible { color: var(--sp-ink); }
 
+  /* The wording underlines on hover instead of carrying the standing
+     highlight - that is the arrow's job alone. */
+  a.sp-docs__dl:hover .sp-docs__dl-label,
+  a.sp-docs__dl:focus-visible .sp-docs__dl-label {
+    text-decoration: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
   .sp-docs__dl--off { opacity: 0.4; }
 
   .sp-docs__left {
@@ -318,32 +328,23 @@
 
   .sp-docs__row.is-current .sp-docs__meta { color: var(--sp-maroon); }
 
-  /* A standing highlight on the picked row's download: the wording and the
-     arrow both go maroon and pulse in step, and the arrow additionally
-     nudges downwards to point at what it does. Hover must not dim it back
-     to ink, so it is restated here. */
-  .sp-docs__row.is-current .sp-docs__dl,
-  .sp-docs__row.is-current a.sp-docs__dl:hover,
-  .sp-docs__row.is-current a.sp-docs__dl:focus-visible {
+  /* A standing highlight on the picked row's arrow, and the arrow only: it
+     holds maroon and nudges slowly downwards to point at what it does. The
+     maroon is restated for hover so hovering a picked row does not dim the
+     arrow back to ink along with the wording. */
+  .sp-docs__row.is-current .sp-docs__dl-icon,
+  .sp-docs__row.is-current a.sp-docs__dl:hover .sp-docs__dl-icon,
+  .sp-docs__row.is-current a.sp-docs__dl:focus-visible .sp-docs__dl-icon {
     color: var(--sp-maroon);
   }
 
-  .sp-docs__row.is-current .sp-docs__dl {
+  .sp-docs__row.is-current .sp-docs__dl-icon {
     animation: sp-docs-beckon 1.8s ease-in-out infinite;
   }
 
-  .sp-docs__row.is-current .sp-docs__dl-icon {
-    animation: sp-docs-nudge 1.8s ease-in-out infinite;
-  }
-
   @keyframes sp-docs-beckon {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
-  }
-
-  @keyframes sp-docs-nudge {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(3px); }
+    0%, 100% { opacity: 1; transform: translateY(0); }
+    50% { opacity: 0.5; transform: translateY(3px); }
   }
 
   @media screen and (width < 600px) {
@@ -389,8 +390,7 @@
     .sp-docs__row,
     .sp-docs__link { transition: none; }
 
-    /* Both stay maroon - only the movement goes. */
-    .sp-docs__row.is-current .sp-docs__dl,
+    /* The arrow stays maroon - only the movement goes. */
     .sp-docs__row.is-current .sp-docs__dl-icon { animation: none; }
   }
 {% endstylesheet %}
