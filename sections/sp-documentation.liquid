@@ -305,10 +305,11 @@
   .sp-docs__row.is-current:hover,
   .sp-docs__row.is-current:focus-within { background: var(--sp-low); }
 
-  .sp-docs__row.is-current .sp-docs__link {
+  .sp-docs__row.is-current {
     border-left: 4px solid var(--sp-maroon);
-    padding-left: 20px;
   }
+
+  .sp-docs__row.is-current .sp-docs__link { padding-left: 20px; }
 
   .sp-docs__row.is-current .sp-docs__title {
     font-family: var(--font-accent--family);
@@ -346,15 +347,27 @@
   }
 
   @media screen and (width < 600px) {
+    /* The download takes its own line rather than standing beside the
+       title: sharing one line left the title about 130px to wrap inside. */
+    .sp-docs__row { flex-wrap: wrap; }
+
     .sp-docs__link {
+      flex: 1 1 100%;
       flex-wrap: wrap;
       gap: 8px;
+      padding-block-end: 8px;
     }
+
+    /* The file icon belongs with the first line of a wrapping title. */
+    .sp-docs__left { align-items: start; }
 
     .sp-docs__right { margin-left: 32px; }
 
-    /* The arrow keeps to the top line while the body wraps beneath it. */
-    .sp-docs__dl { align-items: start; padding-block-start: 16px; }
+    .sp-docs__dl {
+      flex: 1 1 100%;
+      justify-content: flex-end;
+      padding: 0 16px 16px;
+    }
   }
 
   @media screen and (width >= 750px) {
