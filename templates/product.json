@@ -236,7 +236,8 @@
       "settings": {
         "eyebrow": "TECHNICAL ARCHIVE",
         "heading": "Documentation",
-        "selected_label": "Selected"
+        "selected_label": "Selected",
+        "download_label": "Download Now"
       },
       "blocks": {
         "docs_1": {
