@@ -61,7 +61,7 @@
     align-items: center;
     gap: 4px;
     margin: 0 auto;
-    padding: 8px 24px;
+    padding: 18px 24px 8px;
     max-width: 1440px;
     list-style: none;
   }
@@ -87,6 +87,13 @@
   .sp-crumbs__link,
   .sp-crumbs__sep {
     color: var(--sp-ink-faint);
+  }
+
+  /* The chevron centres on the x-height, which sits below the middle of the
+     uppercase either side of it, so it reads a touch low against them. A
+     pixel up puts it on the optical centre. */
+  .sp-crumbs__sep {
+    transform: translateY(-1px);
   }
 
   .sp-crumbs__current {
@@ -125,7 +132,7 @@
     { "type": "text", "id": "aria_label", "label": "Landmark name (for screen readers)", "default": "Breadcrumb" },
     { "type": "text", "id": "separator", "label": "Separator", "default": "›" },
     { "type": "text", "id": "crumb_1_label", "label": "First crumb", "default": "SHOP" },
-    { "type": "url", "id": "crumb_1_url", "label": "First crumb link", "info": "Leave blank to hold it back until the destination exists." },
+    { "type": "url", "id": "crumb_1_url", "label": "First crumb link", "info": "Leave blank to hold it back until the destination exists.", "default": "/" },
     { "type": "text", "id": "crumb_2_label", "label": "Second crumb", "info": "Leave blank for a two-level trail." },
     { "type": "url", "id": "crumb_2_url", "label": "Second crumb link" },
     { "type": "text", "id": "current_label", "label": "Current page", "info": "Leave blank to use the product title from the catalogue.", "default": "Manual Manipulators" }

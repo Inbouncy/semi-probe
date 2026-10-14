@@ -15,7 +15,7 @@
         "aria_label": "Breadcrumb",
         "separator": "›",
         "crumb_1_label": "SHOP",
-        "crumb_1_url": "",
+        "crumb_1_url": "/",
         "crumb_2_label": "",
         "crumb_2_url": "",
         "current_label": "Manual Manipulators"
