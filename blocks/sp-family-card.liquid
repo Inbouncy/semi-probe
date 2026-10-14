@@ -37,7 +37,13 @@
   </div>
 
   {%- if block.settings.title != blank -%}
-    <p class="sp-family__title">{{ block.settings.title }}</p>
+    <p class="sp-family__title">
+      {%- if block.settings.link != blank -%}
+        <a class="sp-family__title-link" href="{{ block.settings.link }}">{{ block.settings.title }}</a>
+      {%- else -%}
+        {{- block.settings.title -}}
+      {%- endif -%}
+    </p>
   {%- endif -%}
 
   {%- if block.settings.configurations != blank -%}
@@ -89,18 +95,12 @@
     background-color: var(--color-background);
   }
 
-  /* A tile around the photograph, matching the PDP's accessory cards: the
-     ground is the card's own, so only the hairline shows, and it is mixed
-     lighter than the card's edge so the two do not compete. The plain
-     border-color first is the fallback where color-mix is not understood. */
+  /* No border or ground of its own: the photograph sits on the card as the
+     design draws it. The radius and the clip are only here so the zoom
+     below has an edge to grow behind. */
   .sp-family__media {
-    border: 1px solid var(--color-border);
-    border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-background));
-    border-radius: 6px;
-    background-color: var(--color-background);
-    padding: 12px;
+    border-radius: 4px;
     width: 100%;
-    /* Clips the zoom below. */
     overflow: hidden;
   }
 
@@ -125,6 +125,23 @@
   .sp-family__count,
   .sp-family__desc {
     margin: 0;
+  }
+
+  /* As on the PDP's accessory cards: the name carries the link and answers
+     on its own, while the card stays put. The hover colour is the theme's
+     own link hover rather than a hardcoded maroon, so it follows the scheme. */
+  .sp-family__title-link {
+    transition: color 160ms ease;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .sp-family__title-link:hover,
+  .sp-family__title-link:focus-visible {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
 
   /* The design lays the title out as a 20px-tall box while its line height is
@@ -236,7 +253,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sp-family__image { transition: none; }
+    .sp-family__image,
+    .sp-family__title-link { transition: none; }
 
     .sp-family__media:hover .sp-family__image { transform: none; }
   }
