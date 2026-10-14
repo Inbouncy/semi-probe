@@ -89,12 +89,24 @@
     background-color: var(--color-background);
   }
 
+  /* A tile around the photograph, matching the PDP's accessory cards: the
+     ground is the card's own, so only the hairline shows, and it is mixed
+     lighter than the card's edge so the two do not compete. The plain
+     border-color first is the fallback where color-mix is not understood. */
   .sp-family__media {
+    border: 1px solid var(--color-border);
+    border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-background));
+    border-radius: 6px;
+    background-color: var(--color-background);
+    padding: 12px;
     width: 100%;
+    /* Clips the zoom below. */
+    overflow: hidden;
   }
 
   .sp-family__image {
     display: block;
+    transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
     width: 100%;
     /* The design's box is 306x145 here, 419x145 at tablet and 269x150 at
        desktop. Held as a ratio rather than a height so the box grows with the
@@ -104,6 +116,10 @@
     border-radius: 4px;
     object-fit: contain;
   }
+
+  /* The photograph answers, not the card: the hover sits on the tile, so
+     the rest of the card is left exactly as it was. */
+  .sp-family__media:hover .sp-family__image { transform: scale(1.06); }
 
   .sp-family__title,
   .sp-family__count,
@@ -217,6 +233,12 @@
       font-size: 20px;
       letter-spacing: -0.01em;
     }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-family__image { transition: none; }
+
+    .sp-family__media:hover .sp-family__image { transform: none; }
   }
 {% endstylesheet %}
 
