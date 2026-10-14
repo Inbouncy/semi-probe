@@ -351,10 +351,11 @@
   }
 
   /* The Documentation list marks the row a visitor has picked. Nothing is
-     marked on load: the highlight is a record of what they clicked, not a
-     reading of the configurator, so arriving at the page shows a plain
-     list. Clicking a row both downloads it and marks it, and marking one
-     clears the rest. */
+     marked on load, so the list reads plainly on arrival and no row claims
+     to be picked before anyone has chosen. The row body only marks - the
+     document itself is behind the arrow - and marking one clears the rest.
+     The arrow marks its row too, since downloading a sheet is also choosing
+     it. */
   var docPickerBound = false;
 
   function bindDocPicker() {
@@ -369,13 +370,10 @@
       Array.prototype.forEach.call(list.querySelectorAll('.sp-docs__row'), function (other) {
         var on = other === row;
         other.classList.toggle('is-current', on);
-        var link = other.querySelector('.sp-docs__link');
-        if (!link) return;
-        if (on) {
-          link.setAttribute('aria-current', 'true');
-        } else {
-          link.removeAttribute('aria-current');
-        }
+        var pick = other.querySelector('[data-sp-doc-pick]');
+        if (pick) pick.setAttribute('aria-pressed', on ? 'true' : 'false');
+        var word = other.querySelector('[data-sp-doc-selected]');
+        if (word) word.hidden = !on;
       });
     });
   }

@@ -235,7 +235,8 @@
       "type": "sp-documentation",
       "settings": {
         "eyebrow": "TECHNICAL ARCHIVE",
-        "heading": "Documentation"
+        "heading": "Documentation",
+        "selected_label": "Selected"
       },
       "blocks": {
         "docs_1": {
