@@ -90,9 +90,19 @@
        1px CSS border inside the box, 17px of padding gives both — the same
        18px visual inset and the same 269px for the text to wrap in. */
     padding: 17px;
+    transition: box-shadow 200ms ease, transform 200ms ease;
     border: 1px solid var(--color-border);
     border-radius: 8px;
     background-color: var(--color-background);
+  }
+
+  /* The card lifts onto a soft shadow. The edge is deliberately left alone:
+     a heavier border here read badly against the grid. Focus-within draws
+     the same state so a keyboard reaches it too. */
+  .sp-family:hover,
+  .sp-family:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 10%);
   }
 
   /* No border or ground of its own: the photograph sits on the card as the
@@ -117,9 +127,10 @@
     object-fit: contain;
   }
 
-  /* The photograph answers, not the card: the hover sits on the tile, so
-     the rest of the card is left exactly as it was. */
-  .sp-family__media:hover .sp-family__image { transform: scale(1.06); }
+  /* Hovering anywhere on the card eases the photograph, so the lift and the
+     zoom read as one movement rather than two separate hit areas. */
+  .sp-family:hover .sp-family__image,
+  .sp-family:focus-within .sp-family__image { transform: scale(1.06); }
 
   .sp-family__title,
   .sp-family__count,
@@ -140,6 +151,10 @@
   .sp-family__title-link:focus-visible {
     color: var(--color-primary-hover);
     text-decoration: underline;
+    /* The theme sets text-decoration-color: transparent on links, for its
+       own reveal-on-hover underline, and the shorthand above does not
+       outrank it - so the line was being drawn in nothing. Stated here. */
+    text-decoration-color: currentcolor;
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
   }
@@ -253,10 +268,16 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .sp-family,
     .sp-family__image,
     .sp-family__title-link { transition: none; }
 
-    .sp-family__media:hover .sp-family__image { transform: none; }
+    /* The shadow still answers; only the movement goes. */
+    .sp-family:hover,
+    .sp-family:focus-within { transform: none; }
+
+    .sp-family:hover .sp-family__image,
+    .sp-family:focus-within .sp-family__image { transform: none; }
   }
 {% endstylesheet %}
 
