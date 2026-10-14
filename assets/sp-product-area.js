@@ -599,10 +599,88 @@
     settled = true;
   }
 
+  /* The FAQ disclosures. A details element removes its content from the box
+     tree the instant open is taken away, so the browser gives a close no
+     frames to animate and both directions read as a snap. The script drives
+     open itself: on the way in it sets open first and grows the panel on the
+     next frame, and on the way out it shrinks the panel and only drops open
+     once that has finished. The section marks itself is-animated so a
+     visitor without JavaScript keeps a plain working disclosure instead of a
+     panel collapsed to nothing. */
+  var faqBound = false;
+  var FAQ_MS = 320;
+
+  function settleOnce(el, property, done) {
+    var fired = false;
+    function finish() {
+      if (fired) return;
+      fired = true;
+      el.removeEventListener('transitionend', onEnd);
+      done();
+    }
+    function onEnd(event) {
+      if (event.target === el && event.propertyName === property) finish();
+    }
+    el.addEventListener('transitionend', onEnd);
+    /* transitionend does not arrive if the transition was never started. */
+    setTimeout(finish, FAQ_MS + 120);
+  }
+
+  function initFaq(scope) {
+    var lists = scope.querySelectorAll ? scope.querySelectorAll('.sp-faq2__list') : [];
+    Array.prototype.forEach.call(lists, function (list) {
+      if (list.getAttribute('data-sp-faq-ready')) return;
+      list.setAttribute('data-sp-faq-ready', 'true');
+      Array.prototype.forEach.call(list.querySelectorAll('.sp-faq2__item'), function (item) {
+        if (item.open) item.classList.add('is-open');
+      });
+      list.classList.add('is-animated');
+    });
+
+    if (faqBound) return;
+    faqBound = true;
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest) return;
+      var summary = event.target.closest('.sp-faq2__summary');
+      if (!summary) return;
+      var item = summary.closest('.sp-faq2__item');
+      var list = item && item.closest('.sp-faq2__list');
+      var panel = item && item.querySelector('.sp-faq2__panel');
+      /* Nothing to grow, or the section never got enhanced: leave the
+         browser's own behaviour alone. */
+      if (!list || !panel || !list.classList.contains('is-animated')) return;
+
+      event.preventDefault();
+      var opening = !item.classList.contains('is-open');
+
+      if (reduceMotion.matches) {
+        item.open = opening;
+        item.classList.toggle('is-open', opening);
+        return;
+      }
+
+      if (opening) {
+        item.open = true;
+        /* One frame to render the panel closed, the next to grow it. */
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { item.classList.add('is-open'); });
+        });
+        return;
+      }
+
+      item.classList.remove('is-open');
+      settleOnce(panel, 'grid-template-rows', function () {
+        /* Re-opened mid-close: leave it open. */
+        if (!item.classList.contains('is-open')) item.open = false;
+      });
+    });
+  }
+
   function init(scope) {
     scope.querySelectorAll('[data-sp-gallery]').forEach(initGallery);
     scope.querySelectorAll('.sp-pdp').forEach(initBuy);
     bindDocPicker();
+    initFaq(scope);
   }
 
   if (document.readyState === 'loading') {

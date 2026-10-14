@@ -5,6 +5,12 @@
   and close with no JavaScript, are keyboard operable and are announced as
   disclosures; the chevron rotates 180° on open, as the design specifies.
 
+  A details element drops its content from the box tree the moment open goes
+  away, so its height cannot be transitioned on its own - which is why these
+  used to snap. The answer sits in a panel the script grows and shrinks,
+  driving the open attribute itself so the closing frame still has something
+  to animate. Without the script they still work, just without the easing.
+
   This is a different accordion from the homepage's, which uses a maroon
   plus/minus mark on grey — hence its own section rather than reusing
   sections/sp-faq.liquid.
@@ -38,7 +44,9 @@
               </svg>
             </summary>
             {%- if block.settings.answer != blank -%}
-              <div class="sp-faq2__answer">{{ block.settings.answer }}</div>
+              <div class="sp-faq2__panel">
+                <div class="sp-faq2__answer">{{ block.settings.answer }}</div>
+              </div>
             {%- endif -%}
           </details>
         {%- endfor -%}
@@ -141,6 +149,31 @@
 
   .sp-faq2__item[open] .sp-faq2__chevron { transform: rotate(180deg); }
 
+  /* Once the script has taken over, the chevron follows is-open rather than
+     open, so it turns back as the panel closes instead of after it. */
+  .sp-faq2__list.is-animated .sp-faq2__item .sp-faq2__chevron { transform: rotate(0deg); }
+  .sp-faq2__list.is-animated .sp-faq2__item.is-open .sp-faq2__chevron { transform: rotate(180deg); }
+
+  /* 0fr to 1fr grows the row to exactly the content's height, which keeps
+     the easing honest whatever the answer's length - no guessed max-height
+     to overshoot. Only applied when the script is driving, so a no-script
+     visitor is not left with a collapsed panel. */
+  .sp-faq2__list.is-animated .sp-faq2__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 320ms cubic-bezier(0.33, 0, 0.2, 1);
+  }
+
+  .sp-faq2__list.is-animated .sp-faq2__item.is-open .sp-faq2__panel {
+    grid-template-rows: 1fr;
+  }
+
+  /* A grid item will not shrink below its content without both of these. */
+  .sp-faq2__list.is-animated .sp-faq2__answer {
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .sp-faq2__answer {
     padding-bottom: 16px;
     color: var(--sp-ink-soft);
@@ -160,7 +193,7 @@
   }
 
   @media screen and (width >= 750px) {
-    .sp-faq2 { padding-block: 100px; }
+    .sp-faq2 { padding-block: 80px; }
 
     .sp-faq2__inner { padding-inline: 48px; }
 
@@ -176,6 +209,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .sp-faq2__chevron { transition: none; }
+
+    .sp-faq2__list.is-animated .sp-faq2__panel { transition: none; }
   }
 {% endstylesheet %}
 
