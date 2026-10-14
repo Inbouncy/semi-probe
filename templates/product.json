@@ -363,8 +363,8 @@
             "description": "Tungsten & BeCu precision tips for DC, RF and low-current wafer probing.",
             "price": "From $200.00",
             "cta_label": "VIEW PRODUCT",
-            "url": "",
-            "featured": true,
+            "url": "/products/probe-tips",
+            "featured": false,
             "badge": "ESSENTIAL ACCESSORY"
           }
         },
@@ -376,7 +376,7 @@
             "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.",
             "price": "From $1,840.00",
             "cta_label": "VIEW PRODUCT",
-            "url": "",
+            "url": "/products/wafer-chucks",
             "featured": false,
             "badge": "ESSENTIAL ACCESSORY"
           }
@@ -389,7 +389,7 @@
             "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.",
             "price": "From $740.00",
             "cta_label": "VIEW PRODUCT",
-            "url": "",
+            "url": "/products/vacuum-pumps",
             "featured": false,
             "badge": "ESSENTIAL ACCESSORY"
           }
@@ -402,7 +402,7 @@
             "description": "Individual coaxial, triaxial, Kelvin, and HF probe arms with precision mounts.",
             "price": "From $500.00",
             "cta_label": "VIEW PRODUCT",
-            "url": "",
+            "url": "/products/probe-arms",
             "featured": false,
             "badge": "ESSENTIAL ACCESSORY"
           }

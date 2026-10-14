@@ -5,9 +5,15 @@
   Accessories grid. It carries id="tips-callout", which is where the
   "View Compatible Tips →" link in What's Included scrolls to.
 
-  One card is one block. A card marked featured takes the design's
-  treatment: a 2px dark edge, a shadow, the badge pinned above its top
-  left, and the amber button instead of the outlined one.
+  One card is one block, and every card reads the same: none is dressed as
+  already chosen. The featured flag is still there for the client, and still
+  takes the design's treatment - a 2px dark edge, a shadow and the amber
+  button - but no card ships with it set. The badge is independent of it, so
+  a card can be labelled without being singled out.
+
+  The whole card is the hit area. The button's link is stretched over it
+  with a pseudo-element, which keeps exactly one link per card rather than
+  nesting the image, the title and the button as three.
 
   Figma: 4 columns at >= 1024, 2 at >= 640, 1 on a phone.
 {%- enddoc -%}
@@ -30,7 +36,7 @@
             class="sp-accessories__card{% if block.settings.featured %} is-featured{% endif %}"
             {{ block.shopify_attributes }}
           >
-            {%- if block.settings.featured and block.settings.badge != blank -%}
+            {%- if block.settings.badge != blank -%}
               <span class="sp-accessories__badge">{{ block.settings.badge }}</span>
             {%- endif -%}
 
@@ -97,6 +103,7 @@
     --sp-maroon: #661320;
     --sp-amber: #e59a2a;
     --sp-amber-dark: #de8b24;
+    --sp-ink-faint: #a09f9f;
 
     border-top: 1px solid var(--sp-border);
     background: var(--sp-canvas);
@@ -157,10 +164,29 @@
     position: relative;
     flex-direction: column;
     justify-content: space-between;
+    transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
     border: 1px solid var(--sp-border);
     border-radius: 4px;
     background: #ffffff;
     padding: 16px;
+  }
+
+  /* The whole card is the hit area: the button's link is stretched across
+     it, so there is still one link per card and not three competing ones.
+     Only cards that actually have a link take the pointer and the lift. */
+  a.sp-accessories__btn::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+  }
+
+  .sp-accessories__card:has(a.sp-accessories__btn) { cursor: pointer; }
+
+  .sp-accessories__card:has(a.sp-accessories__btn):hover,
+  .sp-accessories__card:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(35 37 44 / 12%);
+    border-color: var(--sp-ink-faint);
   }
 
   .sp-accessories__card.is-featured {
@@ -207,9 +233,15 @@
   /* The design fits these with contain, not cover: the wafer chuck is a
      complete circle with white either side, which cover cannot produce. */
   .sp-accessories__media img {
+    transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+
+  .sp-accessories__card:has(a.sp-accessories__btn):hover .sp-accessories__media img,
+  .sp-accessories__card:focus-within .sp-accessories__media img {
+    transform: scale(1.07);
   }
 
   .sp-accessories__title {
@@ -233,7 +265,8 @@
   .sp-accessories__purchase {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    /* The price was sitting almost on the button; this gives it room. */
+    gap: 12px;
   }
 
   .sp-accessories__price {
@@ -266,8 +299,16 @@
     text-transform: uppercase;
   }
 
+  /* Fills on hover instead of only tightening its edge, and answers a hover
+     anywhere on the card so the two do not disagree. */
   a.sp-accessories__btn:hover,
-  a.sp-accessories__btn:focus-visible { border-color: var(--sp-maroon); }
+  a.sp-accessories__btn:focus-visible,
+  .sp-accessories__card:hover a.sp-accessories__btn,
+  .sp-accessories__card:focus-within a.sp-accessories__btn {
+    border-color: var(--sp-amber);
+    background: var(--sp-amber);
+    color: #ffffff;
+  }
 
   .sp-accessories__card.is-featured .sp-accessories__btn {
     border-color: transparent;
@@ -276,7 +317,10 @@
   }
 
   .sp-accessories__card.is-featured a.sp-accessories__btn:hover,
-  .sp-accessories__card.is-featured a.sp-accessories__btn:focus-visible {
+  .sp-accessories__card.is-featured a.sp-accessories__btn:focus-visible,
+  .sp-accessories__card.is-featured:hover a.sp-accessories__btn,
+  .sp-accessories__card.is-featured:focus-within a.sp-accessories__btn {
+    border-color: var(--sp-amber-dark);
     background: var(--sp-amber-dark);
   }
 
@@ -306,7 +350,17 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sp-accessories__btn { transition: none; }
+    .sp-accessories__btn,
+    .sp-accessories__card { transition: none; }
+
+    /* The colour and the shadow still answer; only the movement goes. */
+    .sp-accessories__card:has(a.sp-accessories__btn):hover,
+    .sp-accessories__card:focus-within { transform: none; }
+
+    .sp-accessories__media img { transition: none; }
+
+    .sp-accessories__card:has(a.sp-accessories__btn):hover .sp-accessories__media img,
+    .sp-accessories__card:focus-within .sp-accessories__media img { transform: none; }
   }
 {% endstylesheet %}
 
@@ -340,10 +394,10 @@
     {
       "name": "Frequently ordered with",
       "blocks": [
-        { "type": "accessory", "settings": { "title": "Probe Tips", "description": "Tungsten & BeCu precision tips for DC, RF and low-current wafer probing.", "price": "From $200.00", "featured": true, "badge": "ESSENTIAL ACCESSORY" } },
-        { "type": "accessory", "settings": { "title": "Wafer Chucks", "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.", "price": "From $1,840.00", "featured": false } },
-        { "type": "accessory", "settings": { "title": "Vacuum Pumps", "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.", "price": "From $740.00", "featured": false } },
-        { "type": "accessory", "settings": { "title": "Probe Arms", "description": "Individual coaxial, triaxial, Kelvin, and HF probe arms with precision mounts.", "price": "From $500.00", "featured": false } }
+        { "type": "accessory", "settings": { "title": "Probe Tips", "description": "Tungsten & BeCu precision tips for DC, RF and low-current wafer probing.", "price": "From $200.00", "url": "/products/probe-tips", "featured": false } },
+        { "type": "accessory", "settings": { "title": "Wafer Chucks", "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.", "price": "From $1,840.00", "url": "/products/wafer-chucks", "featured": false } },
+        { "type": "accessory", "settings": { "title": "Vacuum Pumps", "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.", "price": "From $740.00", "url": "/products/vacuum-pumps", "featured": false } },
+        { "type": "accessory", "settings": { "title": "Probe Arms", "description": "Individual coaxial, triaxial, Kelvin, and HF probe arms with precision mounts.", "price": "From $500.00", "url": "/products/probe-arms", "featured": false } }
       ]
     }
   ]
