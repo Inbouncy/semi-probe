@@ -235,68 +235,43 @@
       "type": "sp-documentation",
       "settings": {
         "eyebrow": "TECHNICAL ARCHIVE",
-        "heading": "Documentation",
-        "selected_suffix": "(Selected Model)"
+        "heading": "Documentation"
       },
       "blocks": {
         "docs_1": {
           "type": "doc",
           "settings": {
-            "title": "MA-8005 datasheet",
-            "meta": "PDF · 1.4 MB",
+            "title": "MA-8005 Data Sheet — general purpose DC",
+            "meta": "PDF · 196 KB",
             "icon": "pdf",
-            "url": "",
-            "model": "MA-8005"
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-8005-Data-Sheet.pdf?v=1791973957"
           }
         },
         "docs_2": {
           "type": "doc",
           "settings": {
-            "title": "MA-9000 datasheet",
-            "meta": "PDF · 1.8 MB",
+            "title": "MA-9000 Data Sheet — multi-purpose DC, HF and opto",
+            "meta": "PDF · 130 KB",
             "icon": "pdf",
-            "url": "",
-            "model": "MA-9000"
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-9000-Data-Sheet-0117.pdf?v=1791973957"
           }
         },
         "docs_3": {
           "type": "doc",
           "settings": {
-            "title": "MA-9100 datasheet",
-            "meta": "PDF · 2.1 MB",
+            "title": "MA-9100 Data Sheet — submicron DC and HF",
+            "meta": "PDF · 104 KB",
             "icon": "pdf",
-            "url": "",
-            "model": "MA-9100"
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-9100-Data-Sheet-0117.pdf?v=1791973957"
           }
         },
         "docs_4": {
           "type": "doc",
           "settings": {
-            "title": "MA-8500 datasheet",
-            "meta": "PDF · 2.4 MB",
+            "title": "MA-8500 Data Sheet — heavy-duty high frequency",
+            "meta": "PDF · 373 KB",
             "icon": "pdf",
-            "url": "",
-            "model": "MA-8500"
-          }
-        },
-        "docs_5": {
-          "type": "doc",
-          "settings": {
-            "title": "Manipulator datasheet table",
-            "meta": "PDF · 3.2 MB",
-            "icon": "table",
-            "url": "",
-            "model": ""
-          }
-        },
-        "docs_6": {
-          "type": "doc",
-          "settings": {
-            "title": "Probe arms technical description",
-            "meta": "PDF · 4.5 MB",
-            "icon": "book",
-            "url": "",
-            "model": ""
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-8500-Data-Sheet-0317.pdf?v=1791973957"
           }
         }
       },
@@ -304,9 +279,7 @@
         "docs_1",
         "docs_2",
         "docs_3",
-        "docs_4",
-        "docs_5",
-        "docs_6"
+        "docs_4"
       ]
     },
     "faq": {

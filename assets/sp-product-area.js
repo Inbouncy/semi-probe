@@ -350,17 +350,33 @@
     });
   }
 
-  /* The Documentation list highlights the row for the model being
-     configured. Figma pins that highlight to MA-9100, but the row is
-     labelled "(Selected Model)", which stops being true the moment a
-     visitor picks another - so it follows the selection instead. */
-  function syncDocRows(model) {
-    var rows = document.querySelectorAll('[data-sp-doc-model]');
-    Array.prototype.forEach.call(rows, function (row) {
-      var on = row.getAttribute('data-sp-doc-model') === model;
-      row.classList.toggle('is-current', on);
-      var suffix = row.querySelector('[data-sp-doc-suffix]');
-      if (suffix) suffix.hidden = !on;
+  /* The Documentation list marks the row a visitor has picked. Nothing is
+     marked on load: the highlight is a record of what they clicked, not a
+     reading of the configurator, so arriving at the page shows a plain
+     list. Clicking a row both downloads it and marks it, and marking one
+     clears the rest. */
+  var docPickerBound = false;
+
+  function bindDocPicker() {
+    if (docPickerBound) return;
+    docPickerBound = true;
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest) return;
+      var row = event.target.closest('.sp-docs__row');
+      if (!row) return;
+      var list = row.closest('.sp-docs__list');
+      if (!list) return;
+      Array.prototype.forEach.call(list.querySelectorAll('.sp-docs__row'), function (other) {
+        var on = other === row;
+        other.classList.toggle('is-current', on);
+        var link = other.querySelector('.sp-docs__link');
+        if (!link) return;
+        if (on) {
+          link.setAttribute('aria-current', 'true');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
     });
   }
 
@@ -542,7 +558,6 @@
       setText('arm', armEntry && shortLabel(armEntry.label));
 
       syncModelButtons(model);
-      syncDocRows(model);
 
       var variant = find(model, base, arm);
       var baseShort = baseEntry ? shortLabel(baseEntry.label) : '';
@@ -589,6 +604,7 @@
   function init(scope) {
     scope.querySelectorAll('[data-sp-gallery]').forEach(initGallery);
     scope.querySelectorAll('.sp-pdp').forEach(initBuy);
+    bindDocPicker();
   }
 
   if (document.readyState === 'loading') {

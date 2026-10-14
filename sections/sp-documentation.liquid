@@ -5,12 +5,11 @@
   A list of downloads. One row is one block, so the client adds a document
   or reorders the list from the Theme Editor.
 
-  One deliberate departure from the design. Figma highlights the MA-9100
-  row statically and labels it "(Selected Model)" — but that label is only
-  true while MA-9100 is the selection, and reads as plainly wrong the
-  moment a visitor picks another model. So a row may name a model, and the
-  highlight and the suffix follow the configurator instead of being fixed.
-  Leave the model blank and the row is an ordinary one, as most are.
+  Figma highlights one row and labels it "(Selected Model)". Nothing is
+  highlighted on load here: the mark records what the visitor clicked, so
+  the list reads plainly on arrival and no row claims to be selected before
+  anyone has chosen one. Clicking a row downloads it and marks it, and
+  marking one clears the rest.
 
   Downloads are href="#" in the design. A row with no file is rendered
   inert rather than as a link to nowhere.
@@ -36,11 +35,7 @@
               assign has_file = true
             endif
           -%}
-          <li
-            class="sp-docs__row"
-            {% if block.settings.model != blank %}data-sp-doc-model="{{ block.settings.model | escape }}"{% endif %}
-            {{ block.shopify_attributes }}
-          >
+          <li class="sp-docs__row" {{ block.shopify_attributes }}>
             {%- if has_file -%}
               <a class="sp-docs__link" href="{{ block.settings.url }}" download>
             {%- else -%}
@@ -61,14 +56,7 @@
                       <path d="M20 2H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2m-8.5 7.5a1.5 1.5 0 0 1-1.5 1.5H9v2H7.5V7H10a1.5 1.5 0 0 1 1.5 1.5zm5 2a1.5 1.5 0 0 1-1.5 1.5h-2.5V7H15a1.5 1.5 0 0 1 1.5 1.5zM21 8.5h-1.75v1h1.75V11h-1.75v2H17.5V7H21zM9 9.5h1v-1H9zM4 6H2v14a2 2 0 0 0 2 2h14v-2H4zm10.5 5.5h1v-3h-1z"/>
                     </svg>
                 {%- endcase -%}
-                <span class="sp-docs__title">
-                  {{- block.settings.title -}}
-                  {%- if block.settings.model != blank -%}
-                    <span class="sp-docs__suffix" data-sp-doc-suffix hidden>
-                      {{- ' ' }}{{ section.settings.selected_suffix -}}
-                    </span>
-                  {%- endif -%}
-                </span>
+                <span class="sp-docs__title">{{ block.settings.title }}</span>
               </span>
               <span class="sp-docs__right">
                 {%- if block.settings.meta != blank -%}
@@ -279,8 +267,7 @@
   "max_blocks": 20,
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "TECHNICAL ARCHIVE" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Documentation" },
-    { "type": "text", "id": "selected_suffix", "label": "Suffix on the configured model's row", "default": "(Selected Model)" }
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Documentation" }
   ],
   "blocks": [
     {
@@ -290,8 +277,7 @@
         { "type": "text", "id": "title", "label": "Title", "default": "Datasheet" },
         { "type": "text", "id": "meta", "label": "Meta", "info": "File type and size, as in PDF · 1.4 MB.", "default": "PDF · 1.4 MB" },
         { "type": "select", "id": "icon", "label": "Icon", "options": [ { "value": "pdf", "label": "PDF" }, { "value": "table", "label": "Table" }, { "value": "book", "label": "Book" } ], "default": "pdf" },
-        { "type": "url", "id": "url", "label": "File", "info": "Upload under Content > Files, then pick it here. Leave blank and the row stays inert rather than linking nowhere." },
-        { "type": "text", "id": "model", "label": "Model", "info": "Optional. Name a model here and this row is highlighted whenever that model is the one configured above. Leave blank for an ordinary row." }
+        { "type": "url", "id": "url", "label": "File", "info": "Upload under Content > Files, then pick it here. Leave blank and the row stays inert rather than linking nowhere." }
       ]
     }
   ],
@@ -299,12 +285,10 @@
     {
       "name": "Documentation",
       "blocks": [
-        { "type": "doc", "settings": { "title": "MA-8005 datasheet", "meta": "PDF · 1.4 MB", "icon": "pdf", "model": "MA-8005" } },
-        { "type": "doc", "settings": { "title": "MA-9000 datasheet", "meta": "PDF · 1.8 MB", "icon": "pdf", "model": "MA-9000" } },
-        { "type": "doc", "settings": { "title": "MA-9100 datasheet", "meta": "PDF · 2.1 MB", "icon": "pdf", "model": "MA-9100" } },
-        { "type": "doc", "settings": { "title": "MA-8500 datasheet", "meta": "PDF · 2.4 MB", "icon": "pdf", "model": "MA-8500" } },
-        { "type": "doc", "settings": { "title": "Manipulator datasheet table", "meta": "PDF · 3.2 MB", "icon": "table", "model": "" } },
-        { "type": "doc", "settings": { "title": "Probe arms technical description", "meta": "PDF · 4.5 MB", "icon": "book", "model": "" } }
+        { "type": "doc", "settings": { "title": "MA-8005 Data Sheet — general purpose DC", "meta": "PDF · 196 KB", "icon": "pdf", "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-8005-Data-Sheet.pdf?v=1791973957" } },
+        { "type": "doc", "settings": { "title": "MA-9000 Data Sheet — multi-purpose DC, HF and opto", "meta": "PDF · 130 KB", "icon": "pdf", "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-9000-Data-Sheet-0117.pdf?v=1791973957" } },
+        { "type": "doc", "settings": { "title": "MA-9100 Data Sheet — submicron DC and HF", "meta": "PDF · 104 KB", "icon": "pdf", "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-9100-Data-Sheet-0117.pdf?v=1791973957" } },
+        { "type": "doc", "settings": { "title": "MA-8500 Data Sheet — heavy-duty high frequency", "meta": "PDF · 373 KB", "icon": "pdf", "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-8500-Data-Sheet-0317.pdf?v=1791973957" } }
       ]
     }
   ]
