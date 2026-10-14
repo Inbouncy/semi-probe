@@ -157,7 +157,9 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 12px 16px;
-    margin: 0;
+    /* 10px on top of the inner's 16px gap, so the rule sits 26px clear of
+       the copy above it rather than crowding the last line. */
+    margin: 10px 0 0;
     border-top: 1px solid var(--sp-border);
     padding-top: 8px;
   }
