@@ -726,11 +726,25 @@
 
   /* Shopify injects the wallet buttons' own markup; this only gives them
      room and keeps their corners with ours. */
+  /* Shopify injects the express buttons as a list, so the markers have to
+     go: left alone they showed as three empty bullets under checkout. */
   .sp-bag__wallets {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
+
+  .sp-bag__wallets ul,
+  .sp-bag__wallets ol {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sp-bag__wallets li { list-style: none; }
 
   .sp-bag__wallets [role="button"],
   .sp-bag__wallets button { border-radius: 24px; }
@@ -841,8 +855,10 @@
       line-height: 44px;
     }
 
+    /* Four children, so four tracks: with three the line total wrapped onto
+       a second row and sat under the photograph instead of beside it. */
     .sp-bag__line {
-      grid-template-columns: 96px minmax(0, 1fr) auto;
+      grid-template-columns: 96px minmax(0, 1fr) auto auto;
       align-items: center;
       gap: 16px 20px;
       padding: 20px;
