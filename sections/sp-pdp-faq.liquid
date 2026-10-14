@@ -45,7 +45,9 @@
             </summary>
             {%- if block.settings.answer != blank -%}
               <div class="sp-faq2__panel">
-                <div class="sp-faq2__answer">{{ block.settings.answer }}</div>
+                <div class="sp-faq2__clip">
+                  <div class="sp-faq2__answer">{{ block.settings.answer }}</div>
+                </div>
               </div>
             {%- endif -%}
           </details>
@@ -168,8 +170,12 @@
     grid-template-rows: 1fr;
   }
 
-  /* A grid item will not shrink below its content without both of these. */
-  .sp-faq2__list.is-animated .sp-faq2__answer {
+  /* A grid item will not shrink below its content without both of these.
+     The clip carries them rather than the answer, because padding ignores a
+     collapsed row: with the answer as the grid item its 16px bottom padding
+     survived the collapse and left that much dead space under every closed
+     question. The padding is now inside something that clips to nothing. */
+  .sp-faq2__list.is-animated .sp-faq2__clip {
     min-height: 0;
     overflow: hidden;
   }
