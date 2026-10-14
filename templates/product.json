@@ -24,8 +24,6 @@
     "product_area": {
       "type": "sp-product-area",
       "settings": {
-        "color_scheme": "scheme-1",
-        "section_width": "full-width",
         "column_gap": 24,
         "inspection_label": "OPTICAL INSPECTION · 100 TPI MICROMETER STAGE",
         "fig_label": "FIG 1.0 · SUB-MICRON RESOLUTION",

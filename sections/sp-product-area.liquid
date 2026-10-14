@@ -124,8 +124,15 @@
   endfor
 -%}
 
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} sp-pdp">
+{%- comment -%}
+  Deliberately NOT Horizon's .section wrapper, which the eleven sections below
+  the fold also skip. Two reasons, both measured: .section is a centred grid
+  whose track pinched this column to 700px between 750 and 1300, and
+  .shopify-section :is(.section:is([class*="color-scheme-"])) forces
+  background: transparent at a specificity this section cannot outrank, which
+  is what lost the grey. The frame lives on .sp-pdp__inner instead.
+{%- endcomment -%}
+<div class="sp-pdp">
   <div
     class="sp-pdp__inner"
     style="--sp-pdp-gap: {{ gap }}px;"
@@ -1631,19 +1638,7 @@
 {
   "name": "Product area",
   "tag": "section",
-  "class": "section-wrapper",
   "settings": [
-    { "type": "color_scheme", "id": "color_scheme", "label": "Colour scheme", "default": "scheme-1" },
-    {
-      "type": "select",
-      "id": "section_width",
-      "label": "t:settings.width",
-      "options": [
-        { "value": "page-width", "label": "t:options.page" },
-        { "value": "full-width", "label": "t:options.full" }
-      ],
-      "default": "full-width"
-    },
     { "type": "range", "id": "column_gap", "label": "Gap between the columns", "min": 16, "max": 48, "step": 4, "unit": "px", "default": 24 },
 
     { "type": "header", "content": "Gallery" },
