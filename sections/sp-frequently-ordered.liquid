@@ -1,0 +1,428 @@
+{%- doc -%}
+  Frequently Ordered With — Figma 42:1204 (Section/Frequently Ordered With
+  39:1366, Card/Product 17:81).
+
+  Accessories grid. It carries id="tips-callout", which is where the
+  "View Compatible Tips →" link in What's Included scrolls to.
+
+  One card is one block, and every card reads the same: none is dressed as
+  already chosen. The featured flag is still there for the client, and still
+  takes the design's treatment - a 2px dark edge, a shadow and the amber
+  button - but no card ships with it set. The badge is independent of it, so
+  a card can be labelled without being singled out.
+
+  The whole card is the hit area. The button's link is stretched over it
+  with a pseudo-element, which keeps exactly one link per card rather than
+  nesting the image, the title and the button as three.
+
+  Figma: 4 columns at >= 1024, 2 at >= 640, 1 on a phone.
+{%- enddoc -%}
+
+<section class="sp-accessories" id="{{ section.settings.anchor_id | default: 'tips-callout' }}">
+  <div class="sp-accessories__inner">
+    <div class="sp-accessories__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="sp-accessories__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sp-accessories__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="sp-accessories__grid" role="list">
+        {%- for block in section.blocks -%}
+          <li
+            class="sp-accessories__card{% if block.settings.featured %} is-featured{% endif %}"
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.badge != blank -%}
+              <span class="sp-accessories__badge">{{ block.settings.badge }}</span>
+            {%- endif -%}
+
+            <div class="sp-accessories__content">
+              <div class="sp-accessories__media">
+                {%- if block.settings.image != blank -%}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 600 }}"
+                    srcset="{{ block.settings.image | image_url: width: 300 }} 300w, {{ block.settings.image | image_url: width: 600 }} 600w"
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 90vw"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                {%- endif -%}
+              </div>
+
+              {%- if block.settings.title != blank -%}
+                <h3 class="sp-accessories__title">
+                  {%- if block.settings.url != blank -%}
+                    <a class="sp-accessories__title-link" href="{{ block.settings.url }}">
+                      {{- block.settings.title -}}
+                    </a>
+                  {%- else -%}
+                    {{- block.settings.title -}}
+                  {%- endif -%}
+                </h3>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <p class="sp-accessories__desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+            </div>
+
+            <div class="sp-accessories__purchase">
+              {%- if block.settings.price != blank -%}
+                <p class="sp-accessories__price">{{ block.settings.price }}</p>
+              {%- endif -%}
+              {%- if block.settings.cta_label != blank -%}
+                {%- if block.settings.url != blank -%}
+                  <a class="sp-accessories__btn" href="{{ block.settings.url }}">{{ block.settings.cta_label }}</a>
+                {%- else -%}
+                  <span class="sp-accessories__btn" role="link" aria-disabled="true" tabindex="0">
+                    {{- block.settings.cta_label -}}
+                  </span>
+                {%- endif -%}
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Frequently Ordered With — Figma 42:1204 / 39:1366.
+     ──────────────────────────────────────────────────────────────────── */
+  /* The inset lives on the inner box, with the max-width, so the two act on
+     the same element - as the header's own columns and the product area do.
+     Padding the full-bleed section instead and capping the inner at 1440
+     makes the inner a full 1440 wide once the viewport passes 1600, which is
+     160px wider than the header's content and puts this section outside it.
+     The two coincide at exactly 1440, which is what hid it. */
+  .sp-accessories {
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-border: #cccccc;
+    --sp-canvas: #efefef;
+    --sp-maroon: #661320;
+    --sp-amber: #e59a2a;
+    --sp-amber-dark: #de8b24;
+    --sp-ink-faint: #a09f9f;
+    --sp-hairline: #e8e8e8;
+
+    border-top: 1px solid var(--sp-border);
+    background: var(--sp-canvas);
+    padding-block: 64px;
+    scroll-margin-top: calc(var(--sp-header-offset, 134px) + 24px);
+  }
+
+  .sp-accessories__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-inline: auto;
+    max-width: 1440px;
+    padding-inline: 24px;
+  }
+
+  .sp-accessories__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-accessories__eyebrow {
+    margin: 0;
+    color: var(--sp-amber);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-accessories__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  /* The badge sits 12px above the featured card's top edge. The design
+     lets it overlap the gap below the heading rather than pushing the row
+     down, which is what kept this section 16px taller than its frame. */
+  .sp-accessories__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sp-accessories__card {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+    border: 1px solid var(--sp-border);
+    border-radius: 4px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  /* Only the name and the button are links. The card still answers a hover,
+     so the photograph and the button have something to react to, but it
+     makes no promise of being clickable itself. */
+  .sp-accessories__card:hover,
+  .sp-accessories__card:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(35 37 44 / 12%);
+    border-color: var(--sp-ink-faint);
+  }
+
+  .sp-accessories__card.is-featured {
+    box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+    border: 2px solid var(--sp-ink);
+    /* The heavier edge would otherwise shift this card's content by a
+       pixel against its neighbours. */
+    padding: 15px;
+  }
+
+  .sp-accessories__badge {
+    position: absolute;
+    top: -12px;
+    left: 14px;
+    border-radius: 2px;
+    background: var(--sp-ink);
+    padding: 2px 8px;
+    color: #ffffff;
+    font-family: var(--font-accent--family);
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 13.5px;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sp-accessories__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* White, not the section's grey. These photographs are shot on white, so
+     a grey tile turned every one of them into a white rectangle with grey
+     bars down either side where contain did not reach. On white the
+     letterboxing disappears and the hairline does the work of saying where
+     the tile ends. */
+  .sp-accessories__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    border: 1px solid var(--sp-hairline);
+    border-radius: 3px;
+    background: #ffffff;
+    padding: 10px;
+    aspect-ratio: 254 / 190.5;
+    overflow: hidden;
+  }
+
+  /* The design fits these with contain, not cover: the wafer chuck is a
+     complete circle with white either side, which cover cannot produce. */
+  .sp-accessories__media img {
+    transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .sp-accessories__card:hover .sp-accessories__media img,
+  .sp-accessories__card:focus-within .sp-accessories__media img {
+    transform: scale(1.07);
+  }
+
+  .sp-accessories__title-link {
+    transition: color 160ms ease;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .sp-accessories__title-link:hover,
+  .sp-accessories__title-link:focus-visible {
+    color: var(--sp-maroon);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .sp-accessories__title {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  .sp-accessories__desc {
+    margin: 4px 0 8px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+  }
+
+  .sp-accessories__purchase {
+    display: flex;
+    flex-direction: column;
+    /* The price was sitting almost on the button; this gives it room. */
+    gap: 12px;
+  }
+
+  .sp-accessories__price {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+  }
+
+  .sp-accessories__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    border: 1px solid var(--sp-border);
+    border-radius: 24px;
+    background: #ffffff;
+    padding: 8px 16px;
+    width: 100%;
+    color: var(--sp-maroon);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  /* Fills on hover instead of only tightening its edge, and answers a hover
+     anywhere on the card so the two do not disagree. */
+  a.sp-accessories__btn:hover,
+  a.sp-accessories__btn:focus-visible,
+  .sp-accessories__card:hover a.sp-accessories__btn,
+  .sp-accessories__card:focus-within a.sp-accessories__btn {
+    border-color: var(--sp-amber);
+    background: var(--sp-amber);
+    color: #ffffff;
+  }
+
+  .sp-accessories__card.is-featured .sp-accessories__btn {
+    border-color: transparent;
+    background: var(--sp-amber);
+    color: #ffffff;
+  }
+
+  .sp-accessories__card.is-featured a.sp-accessories__btn:hover,
+  .sp-accessories__card.is-featured a.sp-accessories__btn:focus-visible,
+  .sp-accessories__card.is-featured:hover a.sp-accessories__btn,
+  .sp-accessories__card.is-featured:focus-within a.sp-accessories__btn {
+    border-color: var(--sp-amber-dark);
+    background: var(--sp-amber-dark);
+  }
+
+  .sp-accessories__btn[aria-disabled="true"] { cursor: default; }
+
+  @media screen and (width >= 640px) {
+    .sp-accessories__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-accessories { padding-block: 70px; }
+
+    .sp-accessories__inner { padding-inline: 48px; }
+
+    .sp-accessories__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+  }
+
+  @media screen and (width >= 1024px) {
+    .sp-accessories__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-accessories__inner { padding-inline: 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-accessories__btn,
+    .sp-accessories__title-link,
+    .sp-accessories__card { transition: none; }
+
+    /* The colour and the shadow still answer; only the movement goes. */
+    .sp-accessories__card:hover,
+    .sp-accessories__card:focus-within { transform: none; }
+
+    .sp-accessories__media img { transition: none; }
+
+    .sp-accessories__card:hover .sp-accessories__media img,
+    .sp-accessories__card:focus-within .sp-accessories__media img { transform: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Frequently ordered with",
+  "tag": "section",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "SYSTEM ACCESSORIES" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Frequently Ordered With" },
+    { "type": "text", "id": "anchor_id", "label": "Anchor id", "info": "What the View Compatible Tips link scrolls to.", "default": "tips-callout" }
+  ],
+  "blocks": [
+    {
+      "type": "accessory",
+      "name": "Accessory",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Photograph" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Accessory" },
+        { "type": "textarea", "id": "description", "label": "Description" },
+        { "type": "text", "id": "price", "label": "Price line", "info": "Written here rather than read from the catalogue, so it can read From $200.00 across a range.", "default": "From $0.00" },
+        { "type": "text", "id": "cta_label", "label": "Button label", "default": "VIEW PRODUCT" },
+        { "type": "url", "id": "url", "label": "Link", "info": "Leave blank to hold the button back." },
+        { "type": "checkbox", "id": "featured", "label": "Featured", "default": false },
+        { "type": "text", "id": "badge", "label": "Badge", "info": "Optional. Pins a small label above the top left of the card. Left empty so no card is singled out." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Frequently ordered with",
+      "blocks": [
+        { "type": "accessory", "settings": { "title": "Probe Tips", "description": "Tungsten & BeCu precision tips for DC, RF and low-current wafer probing.", "price": "From $200.00", "url": "/products/probe-tips", "featured": false } },
+        { "type": "accessory", "settings": { "title": "Wafer Chucks", "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.", "price": "From $1,840.00", "url": "/products/wafer-chucks", "featured": false } },
+        { "type": "accessory", "settings": { "title": "Vacuum Pumps", "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.", "price": "From $740.00", "url": "/products/vacuum-pumps", "featured": false } },
+        { "type": "accessory", "settings": { "title": "Probe Arms", "description": "Individual coaxial, triaxial, Kelvin, and HF probe arms with precision mounts.", "price": "From $500.00", "url": "/products/probe-arms", "featured": false } }
+      ]
+    }
+  ]
+}
+{% endschema %}

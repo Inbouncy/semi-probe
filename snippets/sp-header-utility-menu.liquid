@@ -1,0 +1,100 @@
+{%- doc -%}
+  Renders the utility link row that sits in the header's dark top row.
+
+  Horizon's header supports exactly one menu (`_header-menu`), but the SemiProbe
+  design needs a second, independent row of company links above the primary nav.
+  This snippet supplies that row; `sections/header.liquid` captures it and passes
+  it to `header-row` as the `utility_menu` slot.
+
+  @param {object} menu - A linklist object, from `section.settings.utility_menu`.
+  @param {boolean} links_active - When false the links render with no href, so
+    the row is in place for review before its destinations exist. They keep
+    their styling and hover, and keep keyboard focus through tabindex.
+
+  @example
+  {% render 'sp-header-utility-menu', menu: section.settings.utility_menu, links_active: links_active %}
+{%- enddoc -%}
+
+{%- if menu != blank and menu.links.size > 0 -%}
+  <nav
+    class="sp-utility-menu"
+    aria-label="Company and resources"
+  >
+    <ul
+      class="sp-utility-menu__list"
+      role="list"
+    >
+      {%- for link in menu.links -%}
+        <li class="sp-utility-menu__item">
+          <a
+            class="sp-utility-menu__link"
+            {% if links_active %}
+              href="{{ link.url }}"
+              {%- if link.current %}
+                aria-current="page"
+              {% endif -%}
+            {% else %}
+              role="link"
+              aria-disabled="true"
+              tabindex="0"
+            {% endif %}
+          >
+            {{- link.title -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  /* A link with no href is a placeholder until the client supplies
+     destinations; it still hovers and still takes focus. */
+  .sp-utility-menu__link[aria-disabled="true"] {
+    cursor: default;
+  }
+
+  /* Utility row — Figma 212:6. Labels are Mulish SemiBold 14/20, uppercase,
+     white on the dark bar, hovering to the orange accent. */
+  .sp-utility-menu__list {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    /* The links are inline-block, so each item's line box would otherwise take
+       the inherited 1.6 ratio and make the row 22.4px instead of the design's
+       20 — enough to shift it off Figma's 20px baseline inside the 60px bar. */
+    line-height: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sp-utility-menu__link {
+    display: inline-block;
+    color: var(--color-foreground);
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .sp-utility-menu__link:hover,
+  .sp-utility-menu__link:focus-visible {
+    color: var(--color-primary-button-background);
+  }
+
+  /* Tablet and below: the utility links collapse out of the bar and are
+     reachable from the drawer instead (Figma 212:48 and 212:91 both hide
+     them). They go at the same width as the primary nav — 766px of links
+     plus the search field and cart needs 1223px, so holding them any
+     longer would overlap. */
+  @media screen and (width < 1400px) {
+    .sp-utility-menu {
+      display: none;
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,1484 @@
+
+
+{% liquid
+  assign order = 'utility_menu,logo,menu,localization,search,mobile_search,cta,actions,mobile_menu'
+
+  if shop.customer_accounts_enabled
+    assign order = 'utility_menu,mobile_search,logo,menu,localization,search,cta,actions,mobile_menu'
+  endif
+
+  assign rows = 'top,bottom' | split: ','
+  assign search_style = 'none'
+
+  if section.settings.show_search
+    assign search_style = 'modal'
+  endif
+
+  if section.settings.enable_transparent_header_home and template.name == 'index'
+    assign transparent = 'always'
+    assign transparent_color_scheme = section.settings.home_color_scheme
+  elsif section.settings.enable_transparent_header_product and template.name == 'product'
+    assign transparent = 'always'
+    assign transparent_color_scheme = section.settings.product_color_scheme
+  elsif section.settings.enable_transparent_header_collection and template.name == 'collection'
+    assign transparent = 'always'
+    assign transparent_color_scheme = section.settings.collection_color_scheme
+  endif
+
+  if section.settings.enable_sticky_header == 'always'
+    assign sticky = 'always'
+  elsif section.settings.enable_sticky_header == 'scroll-up'
+    assign sticky = 'scroll-up'
+  endif
+
+  if transparent and sticky
+    assign transparent = 'not-sticky'
+  endif
+
+  if transparent
+    if transparent_color_scheme == 'inverse'
+      assign transparent_color_scheme = 'color-' | append: section.settings.color_scheme_transparent
+    else
+      assign transparent_color_scheme = 'color-' | append: section.settings.color_scheme_top
+    endif
+  endif
+
+  # SemiProbe: the header's destinations are not settled yet, so every link in
+  # it -- the primary nav, its dropdowns and this button -- is held back behind
+  # one setting. The stored URL is kept and simply not rendered, so turning
+  # `nav_links_active` on restores all of them at once.
+  assign cta_link = ''
+  if section.settings.nav_links_active
+    assign cta_link = section.settings.cta_link
+  endif
+
+  capture logo
+    content_for 'block', type: '_header-logo', id: 'header-logo'
+  endcapture
+
+  capture menu
+    content_for 'block', type: '_header-menu', id: 'header-menu'
+  endcapture
+
+  capture mobile_menu
+    content_for 'block', type: '_header-menu', id: 'header-menu', variant: 'mobile'
+  endcapture
+
+  # SemiProbe: below 750px the header has no room for the pill CTA, so a copy
+  # of it goes inside the menu drawer, where the nav has folded to.
+  #
+  # Horizon's drawer is a private block with no slot to pass content into, so
+  # the button is spliced in after the drawer's own </nav>, which puts it
+  # directly under the last menu item. Only the first </nav> is replaced, and
+  # only when the captured drawer actually contains one, so if Horizon ever
+  # restructures the drawer this no-ops and the navigation is untouched.
+  #
+  # When the splice does not fire, drawer_cta survives and header-row renders
+  # it as the drawer's sibling instead, pinned to the open panel in CSS. Either
+  # way exactly one copy exists: the splice clears drawer_cta when it fires.
+  capture drawer_cta
+    render 'sp-header-cta', label: section.settings.cta_label, link: cta_link, in_drawer: true
+  endcapture
+
+  if drawer_cta != blank and mobile_menu contains '</nav>'
+    capture nav_close_with_cta
+      echo '</nav>'
+      echo drawer_cta
+    endcapture
+    assign mobile_menu = mobile_menu | replace_first: '</nav>', nav_close_with_cta
+    assign drawer_cta = ''
+  endif
+
+  capture navigation_bar
+    content_for 'block', type: '_header-menu', id: 'header-menu', variant: 'navigation_bar', transparent: transparent
+  endcapture
+
+  capture actions
+    render 'header-actions'
+  endcapture
+
+  # SemiProbe: utility link row for the dark top bar, and the header pill CTA.
+  # Horizon has no slot for either; both are placed by header-row like the
+  # built-in chunks.
+  capture utility_menu
+    render 'sp-header-utility-menu', menu: section.settings.utility_menu, links_active: section.settings.nav_links_active
+  endcapture
+
+  capture cta
+    render 'sp-header-cta', label: section.settings.cta_label, link: cta_link
+  endcapture
+
+  if shop.customer_accounts_enabled
+    assign search_class = 'mobile:hidden'
+  endif
+
+  if section.settings.search_position == 'left'
+    if shop.customer_accounts_enabled
+      assign order = 'utility_menu,mobile_search,logo,search,menu,localization,cta,actions,mobile_menu'
+    else
+      assign order = 'utility_menu,logo,search,menu,localization,mobile_search,cta,actions,mobile_menu'
+    endif
+  endif
+  capture search
+    render 'search', style: search_style, class: search_class
+  endcapture
+
+  # Skip mobile search under specific conditions:
+  # Always render if search_row is bottom
+  # Don't render when shop.customer_accounts_enabled is false and search_position is left and search_style is not none
+  assign skip_mobile_search = false
+  if shop.customer_accounts_enabled == false and section.settings.search_position == 'left' and search_style != 'none'
+    assign skip_mobile_search = true
+  endif
+
+  if section.settings.search_row == 'bottom' or search_style != 'none' and skip_mobile_search == false
+    # Mobile search duplicate for when search is not in the right order for mobile layout
+    capture mobile_search
+      render 'search', class: 'desktop:hidden', style: search_style
+    endcapture
+  endif
+
+  assign show_language = section.settings.show_language
+  if localization.available_languages.size <= 1
+    assign show_language = false
+  endif
+
+  assign show_country = section.settings.show_country
+  if localization.available_countries.size <= 1
+    assign show_country = false
+  endif
+
+  if show_country or show_language
+    capture localization_markup
+      render 'dropdown-localization', show_country: show_country, show_language: show_language, country_style: section.settings.country_selector_style, localization_position: section.settings.localization_position
+    endcapture
+  endif
+
+  assign bottom_row_blocks = ''
+
+  if section.settings.menu_row == 'bottom'
+    assign bottom_row_blocks = bottom_row_blocks | append: 'menu,'
+  endif
+
+  if section.settings.search_style != 'none'
+    if section.settings.search_row == 'bottom'
+      assign bottom_row_blocks = bottom_row_blocks | append: 'search,'
+    endif
+  endif
+
+  if section.settings.show_country or section.settings.show_language
+    if section.settings.localization_row == 'bottom'
+      assign bottom_row_blocks = bottom_row_blocks | append: 'localization,'
+    endif
+  endif
+
+  assign bottom_row_blocks = bottom_row_blocks | split: ',' | compact
+
+  if section.settings.section_height == 'compact'
+    assign header_height_class = ' header--compact'
+  endif
+
+  if bottom_row_blocks.size > 0 and section.settings.color_scheme_top.settings.background.rgb == section.settings.color_scheme_bottom.settings.background.rgb and section.settings.divider_width == 0
+    assign collapse_header_paddings_class = 'header--collapse-row-paddings'
+  endif
+
+  assign class = 'header'
+
+  if transparent_color_scheme
+    assign class = class | append: ' ' | append: transparent_color_scheme
+  endif
+
+  if section.settings.color_scheme_top.settings.background.alpha != 1
+    assign class = class | append: ' ' | append: 'header--inherit-color-scheme-on-menu-open'
+  endif
+
+  if header_height_class
+    assign class = class | append: ' ' | append: header_height_class
+  endif
+
+  if collapse_header_paddings_class
+    assign class = class | append: ' ' | append: collapse_header_paddings_class
+  endif
+%}
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if settings.logo %}
+      "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+    {% endif %}
+    "url": {{ request.origin | append: page.url | json }}
+  }
+</script>
+
+<header-component
+  id="header-component"
+  class="{{ class }} header--edge-{{ section.settings.bottom_edge }}{% unless section.settings.show_account_icon %} header--hide-account{% endunless %}"
+  {% if transparent %}
+    transparent="{{ transparent }}"
+  {% endif %}
+  {% if sticky %}
+    sticky="{{ sticky }}"
+  {% endif %}
+  data-skip-node-update
+  data-scroll-direction="none"
+>
+  {% for row in rows %}
+    {% liquid
+      assign scheme = 'color_scheme_' | append: row
+      assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', section.settings[scheme] | replace: '[section-width]', section.settings.section_width
+
+      case row
+        when 'top'
+          assign first = ''
+
+          if bottom_row_blocks.size > 0 and section.settings.divider_size == 'page-width'
+            assign class = class | append: ' divider--page-width'
+          endif
+
+          if bottom_row_blocks.size > 0
+            assign border_bottom_setting_id = 'divider_width'
+          else
+            assign border_bottom_setting_id = 'border_width'
+          endif
+        when 'bottom'
+          assign first = ''
+          assign class = class | append: ' mobile:hidden'
+
+          assign border_bottom_setting_id = 'border_width'
+      endcase
+
+      assign style = '--border-bottom-width: [width]px; ' | replace: '[width]', section.settings[border_bottom_setting_id]
+
+      if row == 'top'
+        assign style = style | append: '--border-bottom-width-mobile: [width]px; ' | replace: '[width]', section.settings.border_width
+      endif
+    %}
+
+    {% capture content %}
+      {% render 'header-row',
+        row: row,
+        order: order,
+        settings: section.settings,
+        first: first,
+        logo: logo,
+        menu: menu,
+        actions: actions,
+        localization: localization_markup,
+        search: search,
+        mobile_search: mobile_search,
+        utility_menu: utility_menu,
+        cta: cta,
+        mobile_menu: mobile_menu,
+        drawer_cta: drawer_cta
+      %}
+    {% endcapture %}
+
+    {% assign content = content | strip %}
+    {% if content != blank %}
+      <div
+        class="{{ class | strip }}"
+        ref="headerRowTop"
+        {%- if style != blank -%}
+          style="{{ style | strip }}"
+        {%- endif -%}
+      >
+        <div class="header__columns spacing-style">
+          {{ content }}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  {% if navigation_bar != blank %}
+    <div class="header__row header__row--mobile desktop:hidden color-{{ section.settings.color_scheme_bottom }}">
+      {{ navigation_bar }}
+    </div>
+  {% endif %}
+</header-component>
+
+<script
+  src="{{ 'header.js' | asset_url }}"
+  type="module"
+></script>
+
+{% stylesheet %}
+  body {
+    --header-height: 0px;
+    --header-group-height: var(--header-height);
+  }
+
+  body:has(> #header-group > header) {
+    --header-height: 60px;
+  }
+
+  body:has(> #header-group:empty) {
+    --header-group-height: 0px;
+  }
+
+  /* The sticky header's real height, for the sections the hero's buttons
+     scroll to: they set scroll-margin-top from this so the heading stops below
+     the header instead of under it. Horizon's own --header-height is a flat
+     60px, which does not describe this header's two rows -- measured, it is
+     110 on mobile and 134 from 750px up. */
+  body {
+    --sp-header-offset: 110px;
+  }
+
+  @media screen and (width >= 750px) {
+    body {
+      --sp-header-offset: 134px;
+    }
+  }
+
+  .header[transparent] {
+    --language-button-background-color: transparent;
+    --language-button-border-color: transparent;
+    /* used to apply transparency to .header__row, will only ever be transparent or unset */
+    --header-bg-color: transparent;
+    /* used to display the appropriate logo based on transparency state */
+    --header-logo-display: none;
+    --header-logo-inverse-display: block;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* transparent color scheme on .header should never apply its background color */
+    background-color: transparent;
+    z-index: var(--layer-overlay);
+
+    &[transparent='not-sticky'][data-sticky-state='active'],
+    &:has(
+        .header__row:hover,
+        .mega-menu__list:is(:hover),
+        .header-menu:is([aria-expanded='true']),
+        nav[header-menu]:is(:focus-within),
+        .menu-list__link[data-animating],
+        .account-popover[open],
+        .localization-wrapper:not([hidden])
+      ) {
+      /* should be opaque, negate all transparent properties */
+      --header-logo-display: unset;
+      --header-logo-inverse-display: unset;
+      --header-bg-color: unset;
+      --color-foreground: inherit;
+      --color-background: inherit;
+      --color-border: inherit;
+    }
+
+    .header__row {
+      transition: color var(--animation-speed) var(--animation-easing),
+        border-color var(--animation-speed) var(--animation-easing),
+        background-color var(--animation-speed) var(--animation-easing);
+    }
+  }
+
+  :is(
+      .header[transparent]:not([data-sticky-state='active']),
+      .header[transparent='always'][data-sticky-state='active'],
+      .account-popover[open],
+      .localization-wrapper:not([hidden])
+    )
+    .header__row:not(:hover):not(
+      :has(
+          .header-menu[aria-expanded='true'],
+          .menu-list__link[data-animating],
+          .account-popover[open],
+          .localization-wrapper:not([hidden])
+        )
+    ) {
+    /* while transparent, header-row ignores its color-scheme settings, pull from the header-component */
+    --color-foreground: inherit;
+    --color-border: inherit;
+    --color-primary-button-background: inherit;
+    --color-primary-button-text: inherit;
+  }
+
+  .header--inherit-color-scheme-on-menu-open:has(
+      .mega-menu__list:is(:hover),
+      .header-menu:is([aria-expanded='true']),
+      nav[header-menu]:is(:focus-within),
+      .menu-list__link[data-animating]
+    )
+    .header__row {
+    --color-foreground: inherit;
+    --color-background: inherit;
+    --color-border: inherit;
+  }
+
+  .header-section {
+    position: relative;
+  }
+
+  #header-group:has(#header-component[sticky]) {
+    display: contents;
+  }
+
+  .header-section:has(> #header-component[sticky='always']),
+  .header-section:has(> #header-component[sticky='scroll-up'][data-sticky-state='active']) {
+    position: sticky;
+    /* Use -1 instead of 0 so intersection observer can track sticky state */
+    top: -1px;
+    z-index: var(--layer-sticky);
+  }
+
+  .header[data-sticky-state] {
+    transition: opacity var(--animation-speed) var(--animation-easing);
+    opacity: 1;
+  }
+
+  .header[data-sticky-state='active'] {
+    view-transition-name: sticky-header;
+  }
+
+  .header[data-sticky-state='idle'],
+  .header[data-sticky-state='active'][data-animating] {
+    opacity: 0;
+  }
+
+  .header__row {
+    position: relative;
+    /* will default to bg from its color scheme unless --header-bg-color is transparent */
+    background-color: var(--header-bg-color, var(--color-background));
+  }
+
+  .header__row--top:not(.divider--page-width),
+  .header__row--top.divider--page-width .header__columns,
+  .header__row--bottom {
+    border-bottom: var(--border-bottom-width) solid var(--color-border);
+  }
+
+  @media screen and (width < 750px) {
+    .header__row--top:not(.divider--page-width),
+    .header__row--top.divider--page-width .header__columns {
+      border-bottom-width: var(--border-bottom-width-mobile);
+    }
+  }
+
+  .header__row.divider--page-width:not(.section--page-width) .header__columns {
+    @media screen and (width >= 750px) {
+      padding-inline-start: 0;
+      padding-inline-end: 0;
+      margin-inline-start: var(--page-margin);
+      margin-inline-end: var(--page-margin);
+    }
+  }
+
+  .header__column {
+    display: flex;
+    align-items: center;
+    /* on mobile, header__column nodes are ignored to create a new grid-template-area based on all visible content */
+    @media screen and (width < 750px) {
+      display: contents;
+    }
+  }
+
+  .header__column--left,
+  .header__column--center {
+    gap: var(--gap-xl);
+    grid-area: left;
+  }
+
+  .header__column--center {
+    justify-content: center;
+    grid-area: center;
+
+    header-menu:only-child .overflow-menu::part(list) {
+      justify-content: center;
+    }
+  }
+
+  .header__column--right {
+    gap: var(--gap-xl);
+    justify-content: flex-end;
+    grid-area: right;
+
+    .overflow-menu::part(list) {
+      justify-content: flex-end;
+    }
+  }
+
+  .header__columns {
+    display: grid;
+    grid-template-areas: 'left center right';
+    grid-gap: var(--gap-xl);
+    grid-template-columns: var(--header-template-columns);
+
+    /* Three column layout */
+    --header-left: 1fr;
+    --header-center: auto;
+    --header-right: 1fr;
+    --header-template-columns: var(--header-left) var(--header-center) var(--header-right);
+
+    /* Mobile layout */
+    --header-mobile-bookend: 44px;
+
+    /* If menu is in center column */
+    &:has(.header__column--center header-menu) {
+      --header-center: auto;
+      --header-left: minmax(max-content, 1fr);
+      --header-right: minmax(max-content, 1fr);
+    }
+
+    /* If there is no center column, make the column the menu is in grow eagerly */
+    &:where(:not(:has(.header__column--center))) {
+      @media screen and (width >= 750px) {
+        grid-template-areas: 'left right';
+        --header-template-columns: var(--header-left) var(--header-right);
+      }
+
+      /* If the header-menu is in the right column */
+      &:has(.header__column--right header-menu) {
+        --header-right: auto;
+        --header-left: minmax(max-content, 1fr);
+      }
+      /* If the header-menu is in the left column */
+      &:has(.header__column--left header-menu) {
+        --header-left: auto;
+        --header-right: minmax(max-content, 1fr);
+      }
+    }
+
+    @media screen and (width < 750px) {
+      --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
+        var(--header-mobile-bookend) var(--header-mobile-bookend);
+      grid-template-areas: 'leftA leftB center rightA rightB';
+      grid-column: span 3;
+      column-gap: 0;
+      align-items: center;
+      padding-block: 0;
+      padding-inline: 0 var(--padding-3xs);
+
+      .header-logo {
+        grid-area: center;
+      }
+
+      &:not(:has(header-actions)) .search-action {
+        grid-area: leftB;
+      }
+
+      &:not(:has(.account-actions)) .search-action {
+        grid-area: rightA;
+      }
+
+      .search-action {
+        grid-area: leftB;
+      }
+
+      header-actions {
+        grid-area: rightB;
+      }
+    }
+  }
+
+  /* Single column layout if there are no columns within */
+  .header__columns:not(:has(.header__column)) {
+    grid-template-columns: 1fr;
+  }
+
+  /* Set header paddings based on height setting */
+  .header {
+    --header-padding: var(--padding-sm);
+    --font-paragraph--line-height: 1;
+  }
+
+  .header.header--compact {
+    --header-padding: var(--padding-2xs);
+  }
+
+  .header__columns {
+    --padding-block-start: var(--header-padding);
+    --padding-block-end: var(--header-padding);
+  }
+
+  .header:not(.header--compact) .header__row--bottom {
+    --header-padding: var(--padding-xs);
+  }
+
+  .header--collapse-row-paddings {
+    .header__row--top .header__columns {
+      --padding-block-end: 0px;
+    }
+    .header__row--bottom .header__columns {
+      --padding-block-start: 0px;
+    }
+  }
+
+  /* When the header is transparent, add a margin to a potential header-section below it */
+  .header-section:has(.header[transparent]) + .shopify-section {
+    margin-top: var(--header-height);
+  }
+
+  /* When the header is transparent, and when there is no header-section below it, offset the first main-section with
+   * the height of the header
+   */
+  body:has(> #header-group #header-component[transparent]):not(:has(> #header-group .header-section + .shopify-section))
+    > main
+    > .shopify-section:first-child
+    .section:not(.disable-section-top-offset) {
+    &.spacing-style,
+    .spacing-style {
+      --section-top-offset: var(--header-height);
+
+      /* Any nested sections should not be offset */
+      :is(.spacing-style, .inherit-spacing) {
+        --section-top-offset: 0px;
+      }
+    }
+
+    /* Make sticky content immediately stick to the top of the page */
+    .sticky-content {
+      margin-top: calc(var(--header-height) * -1);
+    }
+  }
+  /* ─────────────────────────────────────────────────────────────────────
+     SemiProbe header geometry.
+
+     The design gives three headers, and they are not the same layout: the
+     primary nav and the utility links only exist on the widest one, and the
+     narrowest one reflows into two differently sized rows. Each band below is
+     one of Figma's breakpoints.
+
+     The switch from nav to menu button sits at 1400px rather than at Figma's
+     1024px frame: the nav needs the width to clear the CTA, and anything
+     narrower would collide before the menu button took over. It was 1300 while
+     the header was inset 30px; the page container below widens that inset to
+     80, which costs 100px of row, so the whole tablet band moves with it. The
+     same 1400 is used by the search field and the utility links, which share
+     this band -- at 1300 the top row's links, field and cart need 1179px of a
+     1140px row.
+     ──────────────────────────────────────────────────────────────────── */
+
+  /* ── The page container ────────────────────────────────────────────────
+     Every section and the footer lay their content in a 1440 wrapper, centred
+     above that width and inset 24 / 48 / 80. The header was drawn flush to a
+     30px inset at every frame instead, which put it out of line with
+     everything below it: 50px at 1440, and 290 at 1920, where the sections cap
+     at 1440 and the header did not. The design file has it the same way; this
+     follows the page rather than the file, at the client's direction.
+
+     `justify-self` rather than `margin-inline: auto`, because this element is
+     a grid item in the row's own section grid and auto margins would make it
+     shrink to its content instead of centring at full width -- which collapsed
+     the nav row to 1386px and pulled the logo 27px off the edge.
+
+     The rows' backgrounds stay full-bleed; only the columns inside move. */
+  .header__row .header__columns {
+    width: 100%;
+    max-width: 1440px;
+    justify-self: center;
+    padding-inline: 24px;
+  }
+
+  @media screen and (width >= 750px) {
+    .header__row .header__columns {
+      padding-inline: 48px;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .header__row .header__columns {
+      padding-inline: 80px;
+    }
+  }
+
+  /* Desktop and tablet share their rows: a 60px dark bar over a 74px nav row,
+     inset 30px (Figma 212:5 and 212:46). */
+  @media screen and (width >= 750px) {
+    .header__row--top .header__columns {
+      min-height: 60px;
+    }
+
+    .header__row--bottom .header__columns {
+      min-height: 74px;
+    }
+
+    .header__row--bottom .header__column--left {
+      gap: 39px;
+    }
+
+    .header__row--top .header__column--right {
+      gap: 14px;
+    }
+
+    /* 16px between the CTA and the menu button on tablet (Figma 212:84). */
+    .header__row--bottom .header__column--right {
+      gap: 16px;
+    }
+  }
+
+  /* Tablet — Figma 212:46 hides the primary nav (212:73) and the utility links
+     (212:48), and puts the menu button beside the CTA (212:87). */
+  @media screen and (750px <= width < 1400px) {
+    .header__row--bottom .header-menu {
+      display: none;
+    }
+
+    /* The button carries Horizon's `desktop:hidden`, which is !important, so
+       overriding it needs both the extra class and the flag. */
+    .header__row--bottom .header__drawer.desktop\:hidden {
+      display: flex !important;
+    }
+
+    /* 220 x 35.6 in the design; the height alone gets there, because the
+       intrinsic ratio supplies the width. */
+    .header-logo img {
+      width: auto;
+      height: 35.6px;
+    }
+  }
+
+  /* Mobile — Figma 212:90. Horizon folds the header into one five-column row
+     (menu button, logo centred, icons) and hides the second row outright. The
+     design instead keeps two rows of its own heights: search and cart over
+     logo and menu button. So restore a plain left/right pair — which also
+     makes Horizon's grid-area rules inert, since the columns are boxes again
+     rather than `display: contents`. */
+  @media screen and (width < 750px) {
+    .header__row--bottom.mobile\:hidden {
+      display: block !important;
+    }
+
+    .header__columns {
+      grid-template-areas: 'left right';
+      --header-template-columns: 1fr auto;
+      column-gap: 8px;
+    }
+
+    .header__column {
+      display: flex;
+    }
+
+    .header__row--top .header__columns {
+      min-height: 54px;
+    }
+
+    .header__row--bottom .header__columns {
+      min-height: 56px;
+    }
+
+    /* The CTA is absent here, so the button is the only thing on the right. */
+    .header__row--bottom .header__column--right {
+      gap: 0;
+    }
+
+    /* Horizon floors the menu button at 60px, since in its own layout that
+       button alone carries the height of the single mobile row. Here the row
+       has its own 56px, so the floor only made it 4px too tall. */
+    .header__row--bottom .header__drawer {
+      min-height: 0;
+    }
+  }
+
+  /* The menu button is a 40px square at both widths that show it, holding a
+     24px glyph (Figma 211:61). Horizon's own padding is 16px, which would
+     squeeze the icon down to 8px. */
+  .header__row--bottom .header__drawer .header__icon--menu {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+
+  .header__row--bottom .header__drawer .header-drawer-icon,
+  .header__row--bottom .header__drawer .header-drawer-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* The nav's resting colour is set in `menu-font-styles.liquid`, not here:
+     Horizon writes --menu-top-level-font-color into an inline style attribute,
+     which no stylesheet rule can outrank.
+
+     This undoes the other half of it. Horizon fades every sibling link once one
+     is the current page, and on this page "Shop Parts and Accessories" always
+     is — leaving four dim links beside one solid one. Figma's Header/Nav Link
+     has only a default and a hover state, so hold them all at full strength. */
+  .header__row--bottom .menu-list {
+    --opacity-subdued-text: 1;
+  }
+
+  .header__row--bottom .menu-list__link:hover .menu-list__link-title,
+  .header__row--bottom .menu-list__link:focus-visible .menu-list__link-title {
+    color: var(--color-primary);
+  }
+
+  /* The cart box supplies its own padding and white background, so strip
+     the trigger button's. */
+  .header-actions__action:has(.sp-cart) {
+    padding: 0;
+    background: transparent;
+  }
+
+  /* Figma's header carries no account icon. The setting brings it back for a
+     client who later turns on customer accounts. */
+  .header--hide-account .header-actions__action.account-button {
+    display: none;
+  }
+
+  /* Horizon pulls header-actions 14.4px to the left so that bare icon buttons
+     optically align with the row's edge. The cart here is a filled box with
+     its own padding, so that offset is wrong twice over: it is not needed, and
+     it swallows the 14px Figma leaves between the search field and the cart. */
+  .header__row--top .header__column--right > header-actions {
+    margin-inline-start: 0;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Bottom edge.
+
+     The design draws the header flush against the page, which works in Figma
+     because every frame below it is shown in isolation. On the live page the
+     nav row is white and so is the hero under it, so the two run together and
+     the header loses its edge. This is the one treatment on the page that is
+     not in the design file, and it is a setting rather than a fixed rule, so
+     the client can take it off or swap it from the Theme Editor.
+
+     Both variants are drawn as box-shadow layers rather than a border: a
+     border would add a pixel to the header's height and move every section
+     below it, and the row's own border-bottom is already driven by the
+     `border_width` setting through an inline custom property, which a
+     stylesheet cannot override. A shadow changes no geometry at all.
+
+     The colour is the page's own ink (#0e1017) at low alpha rather than flat
+     black, so it reads as a soft edge instead of a grey smear, and it is held
+     off a transparent header, where there is no edge to separate.
+     ──────────────────────────────────────────────────────────────────── */
+  .header:not([transparent]) {
+    --sp-edge-hairline: 0 1px 0 0 rgb(14 16 23 / 8%);
+    --sp-edge-shadow: 0 1px 2px rgb(14 16 23 / 6%), 0 4px 12px rgb(14 16 23 / 8%);
+  }
+
+  .header--edge-hairline:not([transparent]) .header__row--bottom {
+    box-shadow: var(--sp-edge-hairline);
+  }
+
+  .header--edge-shadow:not([transparent]) .header__row--bottom {
+    box-shadow: var(--sp-edge-shadow);
+  }
+
+  .header--edge-both:not([transparent]) .header__row--bottom {
+    box-shadow: var(--sp-edge-hairline), var(--sp-edge-shadow);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     The primary nav's dropdowns.
+
+     Horizon's submenu is a full-bleed mega menu pinned to the header's whole
+     width. The design's is a narrow dark card under its own parent item with a
+     caret pointing back up at it, so the parent becomes the positioning
+     context and the card centres on it. The card itself is styled in
+     snippets/sp-header-submenu.liquid.
+
+     It opens on hover and on focus-within in CSS rather than relying on
+     Horizon's header-menu.js, so it works before that script runs, with
+     JavaScript unavailable, and for anyone arriving by keyboard.
+     ──────────────────────────────────────────────────────────────────── */
+  .header__row--bottom .menu-list__list-item {
+    --sp-submenu-drop: 10px;
+    position: relative;
+    /* The item fills the row's height so the card can hang from the row's
+       bottom edge rather than from the middle of the text. */
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* The row is 74px and the link's own line box is 22, so the item sat 15px
+     short of the row's bottom edge and the card hung inside the header. The
+     padding takes the item down to that edge, which is where the design drops
+     the card from, and it gives the pointer a full-height target so moving
+     from the label into the card never crosses a dead strip. */
+  .header__row--bottom .menu-list__list-item > .menu-list__link {
+    display: flex;
+    align-items: center;
+    padding-block: 15px;
+  }
+
+  /* The card hangs from the row's bottom edge, not from the item's.
+     Measured: the row's content box is 74px, .header__columns pads it 8px top
+     and bottom, and the menu centres inside the 58px that leaves, so the
+     item's own bottom lands 10px short of the row's. Nothing in the chain
+     between the item and the row stretches, so that 10px is added here rather
+     than chased through five levels of height: 100%.
+
+     The card is this theme's own element and carries none of Horizon's
+     submenu classes, so nothing here is fighting an inherited rule. */
+  .header__row--bottom .sp-submenu {
+    position: absolute;
+    z-index: var(--layer-header-menu, 20);
+    top: calc(100% + var(--sp-submenu-drop));
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 160ms ease,
+      visibility 160ms;
+  }
+
+  .header__row--bottom .menu-list__list-item:hover > .sp-submenu,
+  .header__row--bottom .menu-list__list-item:focus-within > .sp-submenu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* A top-level item with no href is a placeholder until the client supplies
+     links. It still hovers and still takes focus; it is just not a target. */
+  .header__row--bottom .menu-list__link[aria-disabled="true"] {
+    cursor: default;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header__row--bottom .sp-submenu {
+      transition: none;
+    }
+  }
+
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.header",
+  "tag": "header",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.logo"
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "logo_row",
+      "label": "Row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "header",
+      "content": "t:content.menu"
+    },
+    {
+      "type": "select",
+      "id": "menu_position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "menu_row",
+      "label": "t:settings.row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "header",
+      "content": "t:content.customer_account"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.manage_customer_accounts"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account_icon",
+      "label": "Show account icon",
+      "info": "Off in the approved design. Turn it on to give signed-in customers a link to their account from the header.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.search"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "t:settings.search_icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "search_position",
+      "label": "t:settings.search_position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "right",
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "select",
+      "id": "search_row",
+      "label": "t:settings.search_row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top",
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.localization"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country",
+      "label": "t:settings.country_region",
+      "info": "t:info.manage_countries_regions",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "country_selector_style",
+      "label": "t:settings.flag",
+      "default": true,
+      "visible_if": "{{ section.settings.show_country }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language",
+      "label": "t:settings.language_selector",
+      "info": "t:info.manage_languages",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "localization_position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "right",
+      "visible_if": "{{ section.settings.show_country or section.settings.show_language }}"
+    },
+    {
+      "type": "select",
+      "id": "localization_row",
+      "label": "t:settings.row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top",
+      "visible_if": "{{ section.settings.show_country or section.settings.show_language }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "compact",
+          "label": "t:options.compact"
+        },
+        {
+          "value": "standard",
+          "label": "t:options.standard"
+        }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "enable_sticky_header",
+      "label": "t:settings.sticky_header",
+      "options": [
+        {
+          "value": "always",
+          "label": "t:options.always"
+        },
+        {
+          "value": "scroll-up",
+          "label": "t:options.on_scroll_up"
+        },
+        {
+          "value": "never",
+          "label": "t:options.never"
+        }
+      ],
+      "default": "always"
+    },
+    {
+      "type": "range",
+      "id": "divider_width",
+      "label": "t:settings.divider_thickness",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.menu_row == 'bottom' or section.settings.localization_row == 'bottom' or section.settings.search_row == 'bottom' }}"
+    },
+    {
+      "type": "select",
+      "id": "divider_size",
+      "label": "t:settings.divider_width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "visible_if": "{{ section.settings.divider_width > 0 and section.settings.menu_row == 'bottom' or section.settings.localization_row == 'bottom' or section.settings.search_row == 'bottom' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "t:settings.border_width",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "nav_links_active",
+      "label": "Navigation links active",
+      "info": "Off while the header's destinations are still being decided: the utility row, the nav, its dropdowns and the call-to-action all render without links, but keep their styling and hover. Turn on to restore every link from the menus and the button setting. The menu drawer below 1400px is Horizon's own and still links.",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "bottom_edge",
+      "label": "Bottom edge",
+      "info": "Separates the header from the page below it. The design draws none, which leaves the white nav row running into a white section under it.",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "hairline", "label": "Hairline" },
+        { "value": "shadow", "label": "Shadow" },
+        { "value": "both", "label": "Hairline and shadow" }
+      ],
+      "default": "shadow"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_top",
+      "label": "t:settings.default",
+      "default": "primary"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_bottom",
+      "label": "t:settings.bottom_row",
+      "default": "primary",
+      "visible_if": "{{ section.settings.menu_row == 'bottom' or section.settings.localization_row == 'bottom' or section.settings.search_row == 'bottom' }}"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_transparent",
+      "label": "t:settings.inverse",
+      "default": "primary",
+      "visible_if": "{{ section.settings.enable_transparent_header_home or section.settings.enable_transparent_header_product or section.settings.enable_transparent_header_collection }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.home_page"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_transparent_header_home",
+      "label": "t:settings.transparent_background",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "home_color_scheme",
+      "label": "t:settings.color_scheme",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "inverse",
+          "label": "t:options.inverse"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.enable_transparent_header_home }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.product_page"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_transparent_header_product",
+      "label": "t:settings.transparent_background",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "product_color_scheme",
+      "label": "t:settings.color_scheme",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "inverse",
+          "label": "t:options.inverse"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.enable_transparent_header_product }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.collection_page"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_transparent_header_collection",
+      "label": "t:settings.transparent_background",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "collection_color_scheme",
+      "label": "t:settings.color_scheme",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "inverse",
+          "label": "t:options.inverse"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.enable_transparent_header_collection }}"
+    },
+    {
+      "type": "header",
+      "content": "Utility bar"
+    },
+    {
+      "type": "link_list",
+      "id": "utility_menu",
+      "label": "Utility menu",
+      "info": "Company and resource links shown in the top row. Leave empty to hide the row."
+    },
+    {
+      "type": "select",
+      "id": "utility_menu_row",
+      "label": "Row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "select",
+      "id": "utility_menu_position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "info": "Leave empty to hide the button.",
+      "default": "Request a Discovery Call"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_row",
+      "label": "Row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_row",
+      "label": "Menu button row",
+      "options": [
+        { "value": "top", "label": "t:options.top" },
+        { "value": "bottom", "label": "t:options.bottom" }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "select",
+      "id": "mobile_menu_position",
+      "label": "Menu button position",
+      "options": [
+        { "value": "left", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "right", "label": "t:options.right" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "cta_position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "right"
+    }
+  ],
+  "presets": []
+}
+{% endschema %}

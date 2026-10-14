@@ -1,0 +1,145 @@
+{%- doc -%}
+  Renders the header search field.
+
+  SemiProbe override. Horizon ships an icon button that opens a search modal;
+  the design (Figma 212:21) calls for an inline 288x33 field with a visible
+  placeholder sitting in the dark utility bar. This renders that as a real
+  GET form to the search route, so it works with no JavaScript.
+
+  @param {string} [style] - 'none' suppresses the field entirely.
+  @param {string} [class] - Extra classes, passed through by header.liquid.
+
+  @example
+  {% render 'search', style: 'modal', class: 'desktop:hidden' %}
+{%- enddoc -%}
+
+{%- liquid
+  # Horizon renders this snippet twice — once per breakpoint — so the field
+  # needs an id unique to each instance or the <label for> is ambiguous.
+  assign instance = class | default: 'default' | handleize
+  assign input_id = 'sp-search-input-' | append: instance
+-%}
+
+{% unless style == 'none' %}
+  <form
+    class="sp-search{% if class != blank %} {{ class | strip }}{% endif %}"
+    action="{{ routes.search_url }}"
+    method="get"
+    role="search"
+  >
+    <label
+      class="visually-hidden"
+      for="{{ input_id }}"
+    >
+      {{ 'actions.search' | t }}
+    </label>
+    <span
+      class="sp-search__icon svg-wrapper"
+      aria-hidden="true"
+    >
+      {{- 'icon-search.svg' | inline_asset_content -}}
+    </span>
+    <input
+      id="{{ input_id }}"
+      class="sp-search__input"
+      type="search"
+      name="q"
+      value="{{ search.terms | escape }}"
+      placeholder="Search parts, SKU or family..."
+      autocomplete="off"
+    >
+  </form>
+{% endunless %}
+
+{% stylesheet %}
+  /* Figma 212:21 — white field on the dark bar, 288x33, 4px radius, 8px inset,
+     4px gap, 14px icon. Placeholder is 13/18 in the neutral-600 grey. */
+  .sp-search {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 288px;
+    max-width: 100%;
+    height: 33px;
+    padding-inline: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+  }
+
+  .sp-search__icon {
+    display: flex;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+  }
+
+  .sp-search__icon svg {
+    width: 14px;
+    height: 14px;
+    color: #23252c;
+  }
+
+  /* The background is restated on :hover and :focus because the theme's base
+     `input:hover { background-color: var(--color-input-hover-background) }` is
+     an element-plus-pseudo-class rule, which outranks a single class and would
+     otherwise win. On the dark top bar that token resolves to a charcoal
+     (rgb(49, 52, 61)), so pointing at the field filled it with the bar's own
+     colour and it stayed filled through focus and typing. The design gives the
+     field no hover state at all, so all three keep it clear and the white comes
+     from .sp-search below. */
+  .sp-search__input,
+  .sp-search__input:hover,
+  .sp-search__input:focus {
+    background: transparent;
+  }
+
+  .sp-search__input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    color: #23252c;
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    line-height: 18px;
+    appearance: none;
+  }
+
+  .sp-search__input::placeholder {
+    color: #a09f9f;
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .sp-search__input:focus {
+    outline: none;
+  }
+
+  .sp-search:focus-within {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+
+  /* Clear the native search affordances so the field matches the design. */
+  .sp-search__input::-webkit-search-decoration,
+  .sp-search__input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  /* Tablet trims the field to 250px (Figma 212:62). */
+  @media screen and (750px <= width < 1400px) {
+    .sp-search {
+      width: 250px;
+    }
+  }
+
+  /* Mobile: the field spans its column rather than sitting at a fixed width.
+     Figma 212:92 puts it at 255px, which is what the column measures once the
+     cart and the 16px insets are taken out of 390. */
+  @media screen and (width < 750px) {
+    .sp-search {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}

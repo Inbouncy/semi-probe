@@ -1,0 +1,237 @@
+{%- doc -%}
+  One application card — Figma 68:3145 / 76:860 / 80:3.
+
+  One application is one block with five fields, so the client edits the
+  photograph, title, description and the related-hardware line, and reorders or
+  removes an application from the Theme Editor without touching code.
+
+  The card's palette is the design's own rather than the theme's colour scheme:
+  this section is drawn with its own greys (#0e1017, #46464b, #77777c, #c7c6cb)
+  which do not correspond to any scheme the theme ships, so they are written
+  out here. The section's own background stays a scheme.
+
+  The wrapper below is the card. A block whose schema sets `tag: null` gets no
+  wrapper from Shopify, so — as Horizon's own group, text and image blocks do —
+  it renders its own and carries `shopify_attributes` for the editor.
+{%- enddoc -%}
+
+{%- liquid
+  assign img = block.settings.image
+-%}
+
+<div class="sp-app-card" {{ block.shopify_attributes }}>
+  <div class="sp-app-card__media">
+    {%- if img != blank -%}
+      <img
+        class="sp-app-card__image"
+        src="{{ img | image_url: width: 912 }}"
+        srcset="
+          {{ img | image_url: width: 456 }} 456w,
+          {{ img | image_url: width: 684 }} 684w,
+          {{ img | image_url: width: 912 }} 912w
+        "
+        sizes="(min-width: 1300px) 361px, (min-width: 750px) 405px, calc(100vw - 98px)"
+        alt="{{ img.alt | escape }}"
+        width="{{ img.width }}"
+        height="{{ img.height }}"
+        loading="lazy"
+      >
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'sp-app-card__image sp-app-card__image--placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="sp-app-card__text">
+    {%- if block.settings.title != blank -%}
+      <p class="sp-app-card__title">{{ block.settings.title }}</p>
+    {%- endif -%}
+    {%- if block.settings.body != blank -%}
+      <p class="sp-app-card__body">{{ block.settings.body }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if block.settings.related != blank -%}
+    <div class="sp-app-card__related">
+      {%- if block.settings.related_label != blank -%}
+        <p class="sp-app-card__related-label">{{ block.settings.related_label }}</p>
+      {%- endif -%}
+      <p class="sp-app-card__related-text">{{ block.settings.related }}</p>
+    </div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  /* Figma 68:3145 — white card, 1px #c7c6cb hairline, 6px radius, 25px
+     padding, and the design's drop shadow.
+
+     The three children sit top, centre and bottom: the photograph is pinned to
+     the top, the related-hardware strip to the bottom, and the title and
+     description centre in whatever is left. That is `justify-content:
+     space-between` on three items, which is what the design uses, and it is
+     why the text block sits at a different y in every card. */
+  .sp-app-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    /* 24px against the design's 25: a Figma stroke does not consume layout, so
+       its 25px inset leaves 292px of content inside a 342px card on mobile.
+       With a 1px CSS border inside the box, 24px of padding gives both. */
+    padding: 24px;
+    min-height: 420px;
+    border: 1px solid #c7c6cb;
+    border-radius: 6px;
+    background-color: #fff;
+    /* Figma: drop shadow, no offset, 43.55 blur, 25% black. */
+    box-shadow: 0 0 43.55px rgb(0 0 0 / 25%);
+  }
+
+  /* ── The photograph, and the only thing that reacts to the pointer ──────
+     The card itself is deliberately inert: the hover belongs to the image, so
+     the frame stays put and only the picture moves inside it. */
+  .sp-app-card__media {
+    flex: none;
+    width: 100%;
+    height: 112px;
+    border-radius: 4px;
+    /* Holds the zoom inside the frame. */
+    overflow: hidden;
+  }
+
+  .sp-app-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition:
+      transform 600ms cubic-bezier(0.2, 0.6, 0.2, 1),
+      filter 600ms ease;
+  }
+
+  .sp-app-card__media:hover .sp-app-card__image,
+  .sp-app-card__media:focus-within .sp-app-card__image {
+    transform: scale(1.07);
+    filter: brightness(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-app-card__image {
+      transition: none;
+    }
+
+    .sp-app-card__media:hover .sp-app-card__image,
+    .sp-app-card__media:focus-within .sp-app-card__image {
+      transform: none;
+    }
+  }
+
+  /* ── Title and description ─────────────────────────────────────────────
+     The design splits the 12px between the two as a 7.5px gap and 4.5px of
+     padding on the description; the pair is the same thing. */
+  .sp-app-card__text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding-block: 6.5px 16px;
+  }
+
+  .sp-app-card__title {
+    margin: 0;
+    color: #0e1017;
+    font-family: var(--font-body--family);
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 32px;
+  }
+
+  .sp-app-card__body {
+    margin: 0;
+    color: #46464b;
+    font-family: var(--font-body--family);
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  /* ── Related hardware ──────────────────────────────────────────────────
+     16px of padding over the 1px rule gives the design's 17px, for the same
+     reason the card's padding is 24 against 25. */
+  .sp-app-card__related {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    width: 100%;
+    padding-block-start: 16px;
+    border-block-start: 1px solid rgb(199 198 203 / 40%);
+  }
+
+  .sp-app-card__related-label {
+    margin: 0;
+    color: #77777c;
+    font-family: var(--font-body--family);
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 14px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-app-card__related-text {
+    margin: 0;
+    color: #0e1017;
+    font-family: var(--font-body--family);
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-app-card {
+      min-height: 410px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Application",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photograph"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "DC Characterization & Parametric Test"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Description",
+      "default": "DC and low-frequency probing. Coaxial arms handle general purpose DC and AC measurement; triaxial arms are used where low noise and low level signals matter."
+    },
+    {
+      "type": "text",
+      "id": "related_label",
+      "label": "Related hardware label",
+      "default": "Related hardware"
+    },
+    {
+      "type": "text",
+      "id": "related",
+      "label": "Related hardware",
+      "default": "Manual Manipulators • Coaxial & Triaxial Probe Arms • Tungsten Probe Tips"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Application"
+    }
+  ]
+}
+{% endschema %}

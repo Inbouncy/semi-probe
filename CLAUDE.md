@@ -21,11 +21,48 @@ Homepage build from the approved Figma design into the SemiProbe Shopify storefr
 | Figma | `hncStujO2oDCc3Q4Wvlrrw` — pages `0:1` (Homepage), `211:2` (Components) |
 | Deploy | Shopify Admin GraphQL `themeFilesUpsert` via the Shopify connector |
 
-### Known environment limits
+### Verifying rendered output
 
-- `www.figma.com` and `semiprobe.myshopify.com` are **denied by the container network policy**. Figma asset downloads and storefront render verification are not possible from inside a session until that policy is widened. Figma MCP tools still work (they route through the MCP proxy); only direct HTTP to those hosts is blocked.
-- Consequence: **visual QA must be performed by a human on the preview URL.** Do not claim a section renders correctly without a human confirming it.
-- `fonts.googleapis.com` is reachable.
+The storefront is password-protected and `shopifypreview.com` subdomains are not in the
+environment's allowed domains, but `semiprobe.myshopify.com` is. So render verification goes
+through the storefront password on the allowed host, not through a share-preview link:
+
+```bash
+UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+curl -sS -o /dev/null -c cj.txt -b cj.txt -A "$UA" https://semiprobe.myshopify.com/password
+curl -sS -o /dev/null -c cj.txt -b cj.txt -A "$UA" \
+  --data-urlencode form_type=storefront_password \
+  --data-urlencode "utf8=✓" \
+  --data-urlencode "password=$STOREFRONT_PASSWORD" \
+  https://semiprobe.myshopify.com/password
+curl -sS -o staging.html -L -c cj.txt -b cj.txt -A "$UA" \
+  "https://semiprobe.myshopify.com/?preview_theme_id=148248461430"
+```
+
+Confirm the response is the staging theme by checking `Shopify.theme` in the HTML for
+`"id":148248461430` and `"role":"unpublished"`.
+
+**The password is never committed.** Ask the user for it, or read it from Online Store →
+Preferences → Password protection.
+
+Network access is **Limited**, allowing `www.figma.com`, `semiprobe.myshopify.com`,
+`shopifypreview.com` (exact host only — subdomains are not matched) and
+`fonts.googleapis.com`. The allowlist matches exact hostnames, not subdomains.
+
+### Verified token state (staging, 2026-10-12)
+
+Read back from the rendered page, not assumed:
+
+| | |
+|---|---|
+| `--font-heading--family/weight` | `Muli` / **200** |
+| `--font-body--family/weight` | `Muli` / **300** |
+| `--font-subheading--family/weight` | `Muli` / **600** |
+| `--font-accent--family/weight` | `Muli` / **700** |
+| `--font-size--h2` | `2.5rem` = 40px — exactly the design |
+| `--font-size--h1` | `clamp(2.75rem, 4.8vw, 3rem)` = 44–48px; hero H1 needs 50px pinned on its block |
+| primary button | `#e59a2a`, radius 24px, uppercase, weight 600 |
+| secondary button | `#661320`, radius 24px, uppercase, weight 600 |
 
 ## Store/theme boundary
 
