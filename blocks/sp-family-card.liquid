@@ -147,13 +147,20 @@
     text-decoration: none;
   }
 
-  .sp-family__title-link:hover,
-  .sp-family__title-link:focus-visible {
+  /* Three classes deep on purpose. The theme carries
+       :is(p:not(.h1, ...) a:where(:not(.button, ...)), .rte ...):hover
+       { text-decoration-color: transparent }
+     for its own reveal-on-hover underline, which is (0,2,2) and matches
+     here because the name is an <a> inside a <p>. A plain
+     .sp-family__title-link:hover is only (0,2,0), so the line was being
+     painted in nothing - computed style said "underline" throughout, and
+     only the decoration colour gave it away. This selector is (0,4,0).
+     The PDP's accessory name needs none of this: it sits in an <h3>, so
+     the theme's p-scoped rule never reaches it. */
+  .sp-family .sp-family__title .sp-family__title-link:hover,
+  .sp-family .sp-family__title .sp-family__title-link:focus-visible {
     color: var(--color-primary-hover);
-    text-decoration: underline;
-    /* The theme sets text-decoration-color: transparent on links, for its
-       own reveal-on-hover underline, and the shorthand above does not
-       outrank it - so the line was being drawn in nothing. Stated here. */
+    text-decoration-line: underline;
     text-decoration-color: currentcolor;
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
