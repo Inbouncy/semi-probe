@@ -1,0 +1,337 @@
+{%- doc -%}
+  Choosing a Configuration — Figma 42:975 (Section/Choosing a Configuration
+  35:1430, Card/Guide 17:37).
+
+  Three guide cards and a review bar. One card is one block, and the
+  eyebrow's leading number comes from the card's position so the sequence
+  cannot fall out of order when one is added or removed; the client writes
+  only the word after it.
+
+  Figma: 3 columns at >= 768, 1 on a phone; the review bar is a row at
+  >= 640 and stacks below that.
+{%- enddoc -%}
+
+<section class="sp-choose">
+  <div class="sp-choose__inner">
+    <div class="sp-choose__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="sp-choose__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sp-choose__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="sp-choose__grid" role="list">
+        {%- for block in section.blocks -%}
+          <li class="sp-choose__card" {{ block.shopify_attributes }}>
+            {%- if block.settings.tag != blank -%}
+              <p class="sp-choose__tag">
+                {{- forloop.index | prepend: '0' | slice: -2, 2 }} · {{ block.settings.tag -}}
+              </p>
+            {%- endif -%}
+            {%- if block.settings.title != blank -%}
+              <h3 class="sp-choose__title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <p class="sp-choose__desc">{{ block.settings.description }}</p>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- liquid
+      assign has_bar = false
+      if section.settings.bar_text != blank or section.settings.bar_cta_label != blank
+        assign has_bar = true
+      endif
+      if section.settings.bar_call_label != blank
+        assign has_bar = true
+      endif
+    -%}
+    {%- if has_bar -%}
+      <div class="sp-choose__bar">
+        {%- if section.settings.bar_text != blank -%}
+          <p class="sp-choose__bar-text">{{ section.settings.bar_text }}</p>
+        {%- endif -%}
+        <div class="sp-choose__actions">
+          {%- if section.settings.bar_call_label != blank -%}
+            {%- if section.settings.bar_call_url != blank -%}
+              <a class="sp-choose__call" href="{{ section.settings.bar_call_url }}">
+                {{- section.settings.bar_call_label -}}
+              </a>
+            {%- else -%}
+              <span class="sp-choose__call" role="link" aria-disabled="true" tabindex="0">
+                {{- section.settings.bar_call_label -}}
+              </span>
+            {%- endif -%}
+          {%- endif -%}
+          {%- if section.settings.bar_cta_label != blank -%}
+            {%- if section.settings.bar_cta_url != blank -%}
+              <a class="sp-choose__cta" href="{{ section.settings.bar_cta_url }}">
+                {{- section.settings.bar_cta_label -}}
+              </a>
+            {%- else -%}
+              <span class="sp-choose__cta" role="link" aria-disabled="true" tabindex="0">
+                {{- section.settings.bar_cta_label -}}
+              </span>
+            {%- endif -%}
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Choosing a Configuration — Figma 42:975 / 35:1430.
+     ──────────────────────────────────────────────────────────────────── */
+  /* The inset lives on the inner box, with the max-width, so the two act on
+     the same element - as the header's own columns and the product area do.
+     Padding the full-bleed section instead and capping the inner at 1440
+     makes the inner a full 1440 wide once the viewport passes 1600, which is
+     160px wider than the header's content and puts this section outside it.
+     The two coincide at exactly 1440, which is what hid it. */
+  .sp-choose {
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-border: #cccccc;
+    --sp-canvas: #efefef;
+    --sp-maroon: #661320;
+    --sp-maroon-dark: #4d0e18;
+    --sp-amber-dark: #de8b24;
+
+    border-top: 1px solid var(--sp-border);
+    background: var(--sp-canvas);
+    padding-block: 64px;
+  }
+
+  .sp-choose__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-inline: auto;
+    max-width: 1440px;
+    padding-inline: 24px;
+  }
+
+  .sp-choose__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-choose__eyebrow {
+    margin: 0;
+    color: var(--sp-amber-dark);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-choose__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-choose__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sp-choose__card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .sp-choose__tag {
+    margin: 0;
+    color: #e59a2a;
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-choose__title {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    text-transform: uppercase;
+  }
+
+  .sp-choose__desc {
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22.75px;
+  }
+
+  /* Figma: a row from 640 up, stacked and centred below. */
+  .sp-choose__bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: #ffffff;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .sp-choose__bar-text {
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 22px;
+  }
+
+  .sp-choose__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .sp-choose__call {
+    transition: color 160ms ease;
+    color: var(--sp-maroon);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  a.sp-choose__call:hover,
+  a.sp-choose__call:focus-visible { color: var(--sp-amber-dark); }
+
+  .sp-choose__cta {
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 160ms ease;
+    border-radius: 24px;
+    background: var(--sp-maroon);
+    padding: 8px 16px;
+    color: #ffffff;
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.88px;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  a.sp-choose__cta:hover,
+  a.sp-choose__cta:focus-visible { background: var(--sp-maroon-dark); }
+
+  .sp-choose__call[aria-disabled="true"],
+  .sp-choose__cta[aria-disabled="true"] { cursor: default; }
+
+  @media screen and (width >= 640px) {
+    .sp-choose__bar {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      text-align: left;
+    }
+
+    .sp-choose__bar-text { flex: 1 1 auto; }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-choose { padding-block: 70px; }
+
+    .sp-choose__inner { padding-inline: 48px; }
+
+    .sp-choose__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+
+    .sp-choose__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-choose__inner { padding-inline: 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-choose__call,
+    .sp-choose__cta { transition: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Choosing a configuration",
+  "tag": "section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "SELECTION ARCHITECTURE" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Choosing a Configuration" },
+    { "type": "header", "content": "Review bar" },
+    { "type": "textarea", "id": "bar_text", "label": "Text", "default": "Probing at sub-micron feature sizes, or unsure which model fits your application?" },
+    { "type": "text", "id": "bar_call_label", "label": "Call label", "default": "Call (802) 860-7000" },
+    { "type": "text", "id": "bar_call_url", "label": "Call link", "default": "tel:+18028607000" },
+    { "type": "text", "id": "bar_cta_label", "label": "Button label", "default": "REQUEST REVIEW" },
+    { "type": "text", "id": "bar_cta_url", "label": "Button link", "info": "An anchor such as /#product-inquiry, or a full URL. Leave blank to hold the button back.", "default": "/#product-inquiry" }
+  ],
+  "blocks": [
+    {
+      "type": "guide",
+      "name": "Guide card",
+      "settings": [
+        { "type": "text", "id": "tag", "label": "Eyebrow word", "info": "The leading number is added automatically from the card's position.", "default": "GEOMETRY" },
+        { "type": "text", "id": "title", "label": "Title", "default": "START WITH FEATURE SIZE" },
+        { "type": "textarea", "id": "description", "label": "Description", "default": "Determine the smallest pad or trace geometry you need to probe." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Choosing a configuration",
+      "blocks": [
+        { "type": "guide", "settings": { "tag": "GEOMETRY", "title": "START WITH FEATURE SIZE", "description": "Determine the smallest pad or trace geometry you need to probe. For features ≥5 µm, the MA-8005 provides rugged, cost-effective performance. For 1 µm to 5 µm, select the MA-9000. For sub-micron structures (<1 µm), the 100 TPI resolution of the MA-9100 is essential." } },
+        { "type": "guide", "settings": { "tag": "ENVELOPE", "title": "CHECK YOUR TRAVEL REQUIREMENT", "description": "Evaluate the necessary repositioning envelope across your wafer or die. The MA-8005 provides 10 mm travel on all three axes; the MA-9000, MA-9100, and MA-8500 offer an expanded 13 mm X, Y, and Z envelope." } },
+        { "type": "guide", "settings": { "tag": "FIXATION", "title": "MATCH THE BASE TO YOUR SETUP", "description": "Magnetic bases offer quick, secure positioning on ferromagnetic platens. Vacuum bases are ideal for non-magnetic surfaces with available house vacuum. Bolt-down configurations are recommended for high-frequency installations where ultimate mechanical rigidity is critical." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

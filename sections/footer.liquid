@@ -1,0 +1,698 @@
+
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="
+    section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} sp-footer
+    {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
+  "
+>
+  {% render 'background-media',
+    background_media: section.settings.background_media,
+    background_video: section.settings.video,
+    background_video_position: section.settings.video_position,
+    background_image: section.settings.background_image,
+    background_image_position: section.settings.background_image_position
+  %}
+
+  <div
+    class="
+      spacing-style
+      layout-panel-flex
+      layout-panel-flex--{{ section.settings.content_direction }}
+      section-content-wrapper
+      {% if section.settings.vertical_on_mobile %} mobile-column{% endif %}
+    "
+    style="
+      {% render 'layout-panel-style', settings: section.settings %}
+      {%  render 'spacing-style', settings: section.settings %}
+    "
+  >
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{%- liquid
+  # The design sets the address and the legal links in Mulish Medium 500, which
+  # is not one of the four weights the theme's font slots load. If Shopify's
+  # library has the variant, pull it in for just those two places; if it does
+  # not, nothing is emitted and they keep the subheading weight below.
+  assign font_500 = settings.type_body_font | font_modify: 'weight', '500'
+-%}
+
+{%- if font_500 != blank -%}
+  <style>
+    {{ font_500 | font_face: font_display: 'swap' }}
+
+    .sp-footer [class*="__address"] p,
+    .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a {
+      font-family: {{ font_500.family }}, {{ font_500.fallback_families }};
+      font-weight: 500;
+    }
+  </style>
+{%- endif -%}
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     SemiProbe footer — Figma 213:28 (desktop), 213:97 (tablet),
+     213:165 (mobile).
+
+     The footer's content is not here: the logo, the blurb, the address,
+     the copyright, the social destinations and all four link lists are
+     block settings and menus, editable from the Theme Editor.
+
+     What lives here is only what those settings cannot express — the side
+     insets (the footer section has no padding-inline setting), the fixed
+     column widths, the direction changes between breakpoints, and the
+     colours, weights and letter case the menu block does not expose.
+
+     Horizon writes the text blocks' type into inline custom properties,
+     so these rules set the CSS property itself rather than the variable;
+     that is why they read `color: …` and not `--color: …`.
+     ──────────────────────────────────────────────────────────────────── */
+
+  /* Side insets: 24 / 48 / 80 across the three frames. */
+  .sp-footer > .section-content-wrapper {
+    padding-block: 48px 24px;
+    padding-inline: 24px;
+  }
+
+  /* ── Company column ──────────────────────────────────────────────── */
+
+  /* 212 x 34 (Figma 213:31). Horizon derives --logo-width inline from the
+     block's height setting, which steps in 8px and so cannot reach 34. */
+  .sp-footer .logo-block {
+    --logo-width: 212px !important;
+  }
+
+  .sp-footer [class*="__blurb"] p {
+    line-height: 20px;
+  }
+
+  /* The design sets the address in Mulish Medium 500. The theme loads 200,
+     300, 600 and 700, and a request for 500 resolves to 600 anyway, so the
+     subheading slot is used deliberately rather than adding a fifth face
+     for two lines of text. */
+  .sp-footer [class*="__address"] p {
+    line-height: 22px;
+  }
+
+  .sp-footer .icon-block svg {
+    transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  /* Both social glyphs come from the design (Figma 211:15 and 211:18), masked
+     in rather than forking snippets/icon.liquid, which is 133KB. Masking only
+     Facebook was a mistake: Horizon draws its glyphs on a 20px grid, so the
+     two marks ended up different sizes. Taking both from the same 24px source
+     makes them identical.
+
+     The mask paints with currentColor, so the hover to orange still works. */
+  .sp-footer .icon-block svg[class*="__facebook"],
+  .sp-footer .icon-block svg[class*="__linkedin"] {
+    background-color: currentColor;
+  }
+
+  .sp-footer .icon-block svg[class*="__facebook"] {
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20fill%3D%27black%27%20d%3D%27M22.12%201H1.88C1.39325%201%201%201.39325%201%201.88V22.12C1%2022.6068%201.39325%2023%201.88%2023H22.12C22.6068%2023%2023%2022.6068%2023%2022.12V1.88C23%201.39325%2022.6068%201%2022.12%201ZM19.579%207.42125H17.8218C16.444%207.42125%2016.1773%208.07575%2016.1773%209.03825V11.1585H19.4662L19.0373%2014.4777H16.1773V23H12.748V14.4805H9.87975V11.1585H12.748V8.711C12.748%205.87025%2014.4832%204.322%2017.0187%204.322C18.2342%204.322%2019.2765%204.41275%2019.5818%204.454V7.42125H19.579Z%27%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  }
+
+  .sp-footer .icon-block svg[class*="__linkedin"] {
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20fill%3D%27black%27%20fill-rule%3D%27evenodd%27%20d%3D%27M1%202.838C1.00053%202.3507%201.19435%201.8835%201.53892%201.53892C1.8835%201.19435%202.35069%201.00053%202.838%201H21.16C21.4016%200.999608%2021.6409%201.04687%2021.8641%201.13907C22.0874%201.23127%2022.2903%201.36661%2022.4612%201.53734C22.6322%201.70807%2022.7677%201.91083%2022.8602%202.13401C22.9526%202.3572%2023.0001%202.59643%2023%202.838V21.16C23%2021.6478%2022.8063%2022.1157%2022.4614%2022.4607C22.1166%2022.8058%2021.6488%2022.9997%2021.161%2023H2.838C2.35052%2022.9995%201.88318%2022.8055%201.53857%2022.4607C1.19396%2022.1159%201.00026%2021.6485%201%2021.161V2.838ZM9.708%209.388H12.687V10.884C13.117%2010.024%2014.217%209.25%2015.87%209.25C19.039%209.25%2019.79%2010.963%2019.79%2014.106V19.928H16.583V14.822C16.583%2013.032%2016.153%2012.022%2015.061%2012.022C13.546%2012.022%2012.916%2013.111%2012.916%2014.822V19.928H9.708V9.388ZM4.208%2019.791H7.416V9.25H4.208V19.791ZM7.875%205.812C7.88105%206.08668%207.83217%206.35979%207.73124%206.61532C7.63031%206.87084%207.47935%207.10364%207.28723%207.30003C7.09511%207.49643%206.8657%207.65248%206.61245%207.75901C6.35921%207.86554%206.08724%207.92042%205.8125%207.92042C5.53776%207.92042%205.26579%207.86554%205.01255%207.75901C4.7593%207.65248%204.52989%207.49643%204.33777%207.30003C4.14565%207.10364%203.99469%206.87084%203.89376%206.61532C3.79283%206.35979%203.74395%206.08668%203.75%205.812C3.76187%205.27286%203.98439%204.75979%204.36989%204.38269C4.75539%204.00558%205.27322%203.79442%205.8125%203.79442C6.35178%203.79442%206.86961%204.00558%207.25511%204.38269C7.64061%204.75979%207.86313%205.27286%207.875%205.812Z%27%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  }
+
+  .sp-footer .icon-block svg[class*="__facebook"] > *,
+  .sp-footer .icon-block svg[class*="__linkedin"] > * {
+    display: none;
+  }
+
+
+  .sp-footer .icon-block a:hover svg,
+  .sp-footer .icon-block a:focus-visible svg,
+  .sp-footer .icon-block:hover svg {
+    color: var(--color-primary-button-background);
+  }
+
+  /* ── Link columns ────────────────────────────────────────────────── */
+
+  /* Figma 213:47 — Bold, uppercase, on the orange accent. The scheme's
+     primary-button background is that orange, so it stays editable. */
+  .sp-footer .menu__heading {
+    padding-block: 0;
+    color: var(--color-primary-button-background);
+    font-family: var(--font-accent--family);
+    font-weight: var(--font-accent--weight);
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+  }
+
+  /* The heading text sits in a `display: contents` span, so the line box is
+     the span's own — setting it on the summary alone leaves it at 22.4px and
+     every column 2.4px too tall. */
+  .sp-footer .menu__heading__default {
+    color: var(--color-primary-button-background);
+    font-family: var(--font-accent--family);
+    font-weight: var(--font-accent--weight);
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+  }
+
+  /* Figma 211:35 — Light, uppercase, white, hovering to orange. The list is
+     a plain block list in Horizon, so the 10px rhythm is set here: 20px of
+     line plus 10px of gap is the design's 30px step. */
+  .sp-footer .menu .list-unstyled {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sp-footer .menu .list-unstyled > li {
+    margin: 0;
+    line-height: 20px;
+  }
+
+  .sp-footer .menu .list-unstyled a {
+    display: inline-block;
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-weight: var(--font-body--weight);
+    font-size: 14px;
+    line-height: 20px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .sp-footer .menu .list-unstyled a:hover,
+  .sp-footer .menu .list-unstyled a:focus-visible {
+    color: var(--color-primary-button-background);
+  }
+
+  /* ── Legal bar ───────────────────────────────────────────────────── */
+
+  .sp-footer .divider__line {
+    background-color: var(--color-border);
+  }
+
+  .sp-footer [class*="__copyright"] p {
+    color: #b0afaf;
+    line-height: 19px;
+    white-space: nowrap;
+  }
+
+  /* The legal menu is the one inside the group that carries the divider.
+     Horizon stacks menu links; these two sit side by side, in title case,
+     and hover to white rather than orange (Figma 211:45). */
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu {
+    flex: 0 0 auto;
+    width: fit-content;
+  }
+
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled {
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled > li {
+    line-height: 19px;
+  }
+
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a {
+    color: #b0afaf;
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 12px;
+    line-height: 19px;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a:hover,
+  .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled a:focus-visible {
+    color: var(--color-foreground);
+  }
+
+  /* ── Tablet: the company block goes full width above the three columns,
+        which share the row equally (Figma 213:98 / 213:113). ─────────── */
+  @media screen and (width >= 750px) {
+    .sp-footer > .section-content-wrapper {
+      padding-block: 52px 28px;
+      padding-inline: 48px;
+      gap: 34px;
+    }
+
+    /* Stacked, so both halves span the full width and the three columns
+       share the row equally. */
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) {
+      width: 100%;
+    }
+
+    /* Main stacks, so its two halves sit one above the other. */
+    .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
+      flex-direction: column;
+      gap: 34px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) > .group-block-content {
+      gap: 36px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) .menu {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  /* ── Desktop: four columns on one row (Figma 213:29). ─────────────── */
+  @media screen and (width >= 1300px) {
+    .sp-footer > .section-content-wrapper {
+      padding-block: 80px 54px;
+      padding-inline: 80px;
+      gap: 62px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) {
+      width: fit-content;
+    }
+
+    .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
+      flex-direction: row;
+      gap: 70px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .logo-block) {
+      flex: 0 0 240px;
+      max-width: 240px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) > .group-block-content {
+      gap: 70px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) .menu {
+      flex: 0 0 240px;
+    }
+  }
+
+  /* ── Mobile: everything stacks. The blocks' own vertical_on_mobile does
+        the flipping; only the rhythm and the centred legal bar are set
+        here (Figma 213:166 / 213:181 / 213:226). ───────────────────── */
+  @media screen and (width < 750px) {
+    .sp-footer > .section-content-wrapper {
+      gap: 28px;
+    }
+
+    .sp-footer > .section-content-wrapper > .group-block:not(:has(.divider)) > .group-block-content {
+      gap: 28px;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) {
+      width: 100%;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .menu ~ .menu) > .group-block-content {
+      gap: 24px;
+    }
+
+    /* The whole legal bar is centred here, not just the links (Figma 213:226).
+       Three things stood in the way: the block is fit-content, so there was
+       nothing to centre in; its paragraph carries its own fit-content width,
+       so it hugged the text; and the block is a *column* flex container, where
+       justify-content runs down the page rather than across it. Widening the
+       paragraph is what actually does the work — the align-items is there so
+       the box agrees with it. */
+    .sp-footer [class*="__copyright"] {
+      width: 100%;
+      align-items: center;
+    }
+
+    .sp-footer [class*="__copyright"] p {
+      width: 100%;
+      text-align: center;
+      white-space: normal;
+    }
+
+    .sp-footer .group-block:has(> .group-block-content > .divider) .menu .list-unstyled {
+      justify-content: center;
+      gap: 18px;
+    }
+
+    /* Centred on its own row here (Figma 213:228), which needs the menu to
+       span the width — the desktop rule shrink-wraps it to sit on the right. */
+    .sp-footer .group-block:has(> .group-block-content > .divider) .menu {
+      align-self: stretch;
+      width: 100%;
+    }
+  }
+
+  /* The design is drawn at 1440. Above that the content holds its width rather
+     than stretching, so the cards and columns keep the proportions they were
+     designed with; the section's background stays full-bleed. */
+  .sp-footer > .section-content-wrapper {
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.footer",
+  "class": "section-wrapper",
+  "tag": "footer",
+  "blocks": [
+    {
+      "type": "_divider"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "email-signup"
+    },
+    {
+      "type": "follow-on-shop"
+    },
+    {
+      "type": "footer-utilities"
+    },
+    {
+      "type": "group"
+    },
+    {
+      "type": "icon"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "menu"
+    },
+    {
+      "type": "payment-icons"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "logo"
+    },
+    {
+      "type": "jumbo-text"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "t:settings.vertical_on_mobile",
+      "default": true,
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ section.settings.vertical_alignment == 'flex-end' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'column' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:options.full_screen"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "background_media",
+      "label": "t:settings.background_media",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "video_position",
+      "label": "t:settings.video_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "t:settings.image_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "fit",
+          "label": "t:options.fit"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ section.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

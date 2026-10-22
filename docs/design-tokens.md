@@ -95,29 +95,42 @@ Mobile Product Families is a **vertical stack, not a carousel** — the Figma is
 
 Horizon's own breakpoint is `750px` (used throughout `base.css`). The design implies a second break near `1100px` for the 4→2 column shifts. Use Horizon's 750 for mobile and add one project breakpoint at 1100 rather than inventing a third system. Prefer `repeat(auto-fit, minmax(…, 1fr))` so grids degrade between the three designed widths.
 
-## Hero image
+## Photography — extracted from Figma ✅
 
-The Figma hero is a full probe-station photograph (SA-12 system with monitors and instrument rack). **Nothing in the Shopify catalog matches it** — the catalog holds isolated component shots only. Closest existing asset is `manipulator_joystick.jpg` (5086×3491) as a working stand-in.
+The hero and all six Applications photographs **exist in the Figma file at well above the required resolution** and are committed under `design-assets/`. This removes what was previously the project's longest-lead item; no new photography is needed for these seven.
 
-Required output: `1040×720` (2× of 520×360), WebP with JPEG fallback. Marketing asset → Shopify Files, **not** product media.
+| Asset | Required | Extracted | Headroom | File |
+|---|---|---|---|---|
+| Hero | 1040 × 720 | **3802 × 2535** JPEG | 3.7× | `design-assets/hero/hero-probe-station.jpg` |
+| Applications ×6 | 720 × 224 | **1584 × 672** JPEG | 2.2× | `design-assets/applications/application-raw-{1..6}.jpg` |
 
-## Logos
+The hero is an SA-12 probe station with instrument rack and dual monitors. The application images are cinematic macro photography — `application-raw-1.jpg` is confirmed as a probe tip on a wafer bond pad with `DC_TEST_PAD` / `PROBE_4` legible, matching the "DC Characterization & Parametric Test" card.
+
+> **Card mapping not yet confirmed.** Filenames are download order, not card order. Figma's `download_assets` also returned a parallel set of six 512×217 PNGs (lower-resolution variants). Verify which image belongs to which of the six cards when building the Applications section, and rename then.
+
+These are marketing assets. They belong in **Shopify Files**, referenced through `image_picker` settings so the client can swap them — **not** in `assets/` and **not** attached as product media.
+
+## Logos — still required ❌
 
 | Asset | Figma node | Required |
 |---|---|---|
-| Brand/Logo | `211:19` | 278×45, SVG |
-| Brand/Logo Inverse | `211:20` | 212×34, SVG |
+| Brand/Logo | `211:19` | 278 × 45, SVG |
+| Brand/Logo Inverse | `211:20` | 212 × 34, SVG |
 
-> ⚠️ **Not yet obtained.** Figma asset URLs are blocked by the container network policy. Both nodes also report embedded raster `rawImages`, which suggests the Figma logo is a **placed bitmap rather than vector paths** — in which case an SVG export would just wrap a PNG. The canonical vector logo should come from SemiProbe directly.
+The Figma SVG exports were downloaded and **rejected** (kept as `*.REJECTED` for reference). They are not usable logos:
 
-## Images still required
+- `logo.svg` — one `<image>` tag with a base64 bitmap payload; its only two `<path>` elements are component-frame artifacts at negative coordinates, not letterforms
+- `logo-inverse.svg` — two embedded bitmaps
+- both carry a baked-in `<rect fill="#F5F5F5"/>` frame background, so the logo is not even transparent
 
-| Asset | Count | Output size | Note |
-|---|---|---|---|
-| Hero | 1 | 1040×720 | Nothing comparable in catalog |
-| Applications editorial | 6 | 720×224 | None exist — largest gap |
-| Air Compressors card | 1 | 538×300 | Current file is 128×136, unusable |
-| Probe Tips card | 1 | 538×300 | Current file is 234×242, marginal |
+The Figma logo is a **placed bitmap, not vector artwork**. Obtain the canonical vector files from SemiProbe. An SVG is required at 278×45 — a raster logo will be visibly soft on retina displays at that width.
+
+## Product images still required
+
+| Asset | Output size | Note |
+|---|---|---|
+| Air Compressors card | 538 × 300 | Current file is 128 × 136 — **unusable at any card size** |
+| Probe Tips card | 538 × 300 | Current file is 234 × 242 — fails at 2× |
 
 Two more need no new photography — just promoting a higher-resolution file already on the product to featured:
 

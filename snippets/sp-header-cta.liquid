@@ -1,0 +1,156 @@
+{%- doc -%}
+  Renders the header's pill call-to-action ("Request a Discovery Call").
+
+  Horizon's header schema has no button slot, so `sections/header.liquid`
+  captures this and passes it to `header-row` as the `cta` slot.
+
+  It reuses the theme's native `.button` class, so its colour, radius, weight
+  and text case all come from the active colour scheme's primary-button tokens
+  rather than being hardcoded here.
+
+  @param {string} label - Button text. Renders nothing when blank.
+  @param {string} link - Destination URL.
+  @param {boolean} [in_drawer] - Render the copy that lives inside the mobile
+    menu drawer. The two are complementary: the header one shows from 750px up,
+    the drawer one only below it, so exactly one is ever on screen.
+
+  @example
+  {% render 'sp-header-cta', label: section.settings.cta_label, link: section.settings.cta_link %}
+{%- enddoc -%}
+
+{%- if label != blank -%}
+  <a
+    class="button sp-header-cta{% if in_drawer %} sp-header-cta--drawer{% endif %}"
+    {% if link == blank %}
+      role="link"
+      aria-disabled="true"
+    {% else %}
+      href="{{ link }}"
+    {% endif %}
+  >
+    {{- label -}}
+  </a>
+{%- endif -%}
+
+{% stylesheet %}
+  /* Pill CTA — Figma 211:59. Padding and radius are the design's; every colour
+     comes from the scheme's primary-button tokens (orange #e59a2a, hover
+     #de8b24, uppercase, weight 600), so it restyles with the scheme. */
+  .sp-header-cta {
+    padding: 12px 22px;
+    /* Figma 211:56 sets the label on a 20px line, which is what makes the pill
+       44px tall; Horizon's button line-height would leave it at 38px. */
+    line-height: 20px;
+    white-space: nowrap;
+  }
+
+  /* Horizon dims any .button carrying aria-disabled to half opacity and gives
+     it a not-allowed cursor. Here the attribute means "this link has no
+     destination yet", not "this control is unavailable", so the button keeps
+     its own appearance and hover while the header's links are held back.
+     Measured at rest, it was rendering at opacity 0.5. The third class is to
+     outrank Horizon's rule, which is otherwise the same weight. */
+  .button.sp-header-cta[aria-disabled="true"] {
+    opacity: 1;
+    cursor: default;
+  }
+
+  /* Tablet: the CTA stays in the header, the nav collapses beside it
+     (Figma 212:46 — "hides them and adds the hamburger beside the CTA").
+     Below 750px the header has no room for it, so the copy inside the drawer
+     takes over. The two rules are complementary — exactly one is on screen at
+     any width, so the duplicate link is never both visible and focusable. */
+  @media screen and (width < 750px) {
+    .sp-header-cta:not(.sp-header-cta--drawer) {
+      display: none;
+    }
+  }
+
+  /* ── The drawer's copy ───────────────────────────────────────
+     Two placements, and only one of them is ever in the page: header.liquid
+     splices the button into the drawer after its own </nav>, and keeps the
+     sibling copy only if that splice cannot fire.
+
+     Spliced in, it is an ordinary child of the drawer directly under the last
+     menu item, which is where it belongs: it reads as the menu's action rather
+     than as a bar floating over it. */
+  .sp-header-cta--drawer {
+    display: none;
+  }
+
+  @media screen and (width < 750px) {
+    .menu-drawer .sp-header-cta--drawer {
+      display: flex;
+      justify-content: center;
+      /* The theme's .button is `width: fit-content`, which in the header is
+         what keeps the pill wrapped to its label. In the drawer it is the
+         only action on screen, so it runs the full width of the menu
+         instead; `auto` hands the sizing back to the panel's own flex
+         column, which stretches its children.
+
+         With the drawer's inline inset as the margin, that lands the button
+         on exactly the box of the links above it: same left edge, same
+         width, measured at 18.19 / 334.13 against the last link's 18.19 /
+         334.13 at 390px. */
+      width: auto;
+      margin: var(--margin-lg, 1.5rem) var(--drawer-padding) 0;
+    }
+
+    /* Horizon fades each drawer element in on a delay indexed off its position
+       in the list. The button is not one of those elements, so without this it
+       would be on screen before the links it sits under. */
+    .menu-drawer-container[open] .sp-header-cta--drawer {
+      animation: menu-drawer-nav-open var(--drawer-animation-speed) ease-in-out;
+      animation-delay: calc(var(--drawer-animation-speed) + 0.5s);
+      animation-fill-mode: backwards;
+    }
+  }
+
+  /* ── Fallback: the sibling copy ──────────────────────────────────
+     Only reached if the splice above cannot fire, in which case the button is
+     rendered beside the drawer rather than inside it and has to be pinned to
+     the open panel, which is itself fixed to the viewport. Scoped to a copy
+     that is NOT inside .menu-drawer, so the two can never both apply. */
+  @media screen and (width < 750px) {
+    /* `[open]` rather than `.menu-open`: Horizon drops .menu-open first and
+       only removes `open` once the panel has slid out, so keying the box on
+       `open` and the slide on .menu-open lets the button travel with the
+       drawer in both directions instead of vanishing as it closes. */
+    .header__column:has(.menu-drawer-container[open]) > .sp-header-cta--drawer {
+      display: flex;
+      position: fixed;
+      /* One layer above the panel, which is on --layer-menu-drawer. */
+      z-index: calc(var(--layer-menu-drawer) + 1);
+      /* The panel's own geometry: 95vw capped at 500px, inset by the same
+         --drawer-padding the menu links use. */
+      inset-inline-start: var(--drawer-padding);
+      /* env() rather than Horizon's --safe-area-inset-bottom: that variable is
+         not defined in this theme's version, and an undefined var inside the
+         value invalidates the whole declaration. */
+      inset-block-end: calc(var(--padding-xl) + env(safe-area-inset-bottom, 0px));
+      width: calc(min(var(--drawer-width), var(--drawer-max-width)) - 2 * var(--drawer-padding));
+      justify-content: center;
+      transform: translateX(-100%);
+      opacity: 0;
+      transition:
+        transform var(--drawer-animation-speed) ease,
+        opacity var(--drawer-animation-speed) ease;
+    }
+
+    [dir="rtl"] .header__column:has(.menu-drawer-container[open]) > .sp-header-cta--drawer {
+      transform: translateX(100%);
+    }
+
+    .header__column:has(.menu-drawer-container.menu-open) > .sp-header-cta--drawer {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-header-cta--drawer {
+      animation: none !important;
+      transition: none;
+    }
+  }
+{% endstylesheet %}

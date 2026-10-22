@@ -1,0 +1,123 @@
+{%- doc -%}
+  One dropdown panel of child links under a primary navigation item.
+
+  This replaces Horizon's `mega-menu` for this theme's header. The design's
+  dropdown is a narrow dark panel of plain links anchored under its parent --
+  see semiprobe.com -- not a full-width mega menu of product and collection
+  cards, and none of the mega menu's content types are reachable anyway while
+  the menu block's style is `text`.
+
+  The card renders its own wrapper and carries none of Horizon's submenu
+  classes. Reusing `menu-list__submenu` meant inheriting a full-width mega-menu
+  backdrop, which painted a white band the height of the card right across the
+  page and hid the section behind it, plus a grid, a width, a visibility, an
+  opacity and padding that each had to be overridden. Placement is in
+  sections/header.liquid; everything else is here.
+
+  @param {object} parent_link - The linklist item whose children to render.
+  @param {boolean} links_active - When false, children render with no href, so
+    they are inert but still hover and still take keyboard focus.
+{%- enddoc -%}
+
+<div class="sp-submenu">
+  <ul class="sp-submenu__list list-unstyled">
+    {%- for child in parent_link.links -%}
+      <li class="sp-submenu__item">
+        <a
+          class="sp-submenu__link"
+          {% if links_active %}
+            href="{{ child.url }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+            tabindex="0"
+          {% endif %}
+        >
+          {{- child.title -}}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% stylesheet %}
+  /* ── The card ──────────────────────────────────────────────────────────
+     A narrow dark card under its parent item. sections/header.liquid places
+     it and opens it; this file is its appearance. */
+  .sp-submenu {
+    width: max-content;
+    min-width: 230px;
+    max-width: 320px;
+    /* The page's own card radius -- the Applications and Why SemiProbe cards
+       are both 6px -- so the dropdown sits in the same system rather than
+       introducing a third corner. The caret is centred on the top edge, well
+       clear of the corners. */
+    border-radius: 6px;
+    background-color: #23252c;
+  }
+
+  /* The caret that points back up at the parent item. */
+  .sp-submenu::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    inset-inline-start: 50%;
+    width: 0;
+    height: 0;
+    border-inline: 8px solid transparent;
+    border-block-end: 8px solid #23252c;
+    transform: translateX(-50%);
+  }
+
+  .sp-submenu__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 18px 0;
+    list-style: none;
+  }
+
+  /* ── The links ─────────────────────────────────────────────────────────
+     Set like the primary nav above them -- same family, weight, size and
+     uppercase -- so the card reads as part of the same menu.
+
+     The resting grey and the white on hover are the main site's own, and they
+     are what the dark card allows: the primary nav hovers to the brand maroon
+     (#661320), which against #23252c measures 1.22:1 and would be unreadable.
+     White is 15.3:1 and the resting grey 5.8:1. */
+  .sp-submenu__link {
+    display: block;
+    padding: 9px 26px;
+    color: #a09f9f;
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 160ms ease;
+  }
+
+  .sp-submenu__link:hover,
+  .sp-submenu__link:focus-visible {
+    color: #ffffff;
+  }
+
+  .sp-submenu__link:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: -2px;
+  }
+
+  /* A child with no href is a placeholder until the client supplies links; it
+     still hovers and still takes focus, but it is not a pointer target. */
+  .sp-submenu__link[aria-disabled="true"] {
+    cursor: default;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-submenu__link {
+      transition: none;
+    }
+  }
+{% endstylesheet %}

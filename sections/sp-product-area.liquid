@@ -1,0 +1,1766 @@
+{%- doc -%}
+  Product Area — Manual Manipulators PDP.
+
+  Figma 42:13 (desktop 1280), 43:1435 (tablet 768), 43:2528 (mobile 390).
+  Gallery Card 19:36, Inspection Viewport 15:58, Thumbnail Strip 104:246,
+  Trace Bar 32:94, Buy Box 22:57.
+
+  Two columns on wide screens (gallery 699 : buy box 493, 24px gutter in the
+  Figma), stacked below 1100px exactly as the Figma's tablet and mobile frames
+  stack them. The buy box sticks under the header on the two-column layout.
+
+  CLIENT EDITABILITY
+  ------------------
+  Everything the client would reasonably change is a Theme Editor setting:
+  every label, descriptor, spec value, badge, bullet and button caption.
+
+  The three dependent dropdowns are not Shopify options — this product has a
+  single 21-value option, and the catalog is not being touched before launch.
+  So the three axes are reconstructed here from a plain-text map the client
+  edits in the Theme Editor (Configurator > Variant map), one line per SKU:
+
+      SKU | MODEL | BASE | ARM
+
+  and three more tables give each key its display label, its helper text and,
+  for the model, its spec values. No Liquid, CSS or JS edit is ever needed to
+  rename an option, fix a spec or re-point a SKU.
+
+  A variant whose SKU is missing from the map still sells: it falls through to
+  the catch-all group so nothing silently disappears from the store. In the
+  Theme Editor those variants are named in a warning strip.
+{%- enddoc -%}
+
+<script src="{{ 'sp-product-area.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign p = product
+
+  comment
+  # --- Parse the four client-editable tables -------------------------------
+  # newline_to_br then split is the only reliable way to split a textarea
+  # setting on its line breaks inside a liquid tag.
+  endcomment
+
+  assign map_rows = section.settings.variant_map | newline_to_br | split: '<br />'
+  assign model_rows = section.settings.model_table | newline_to_br | split: '<br />'
+  assign base_rows = section.settings.base_table | newline_to_br | split: '<br />'
+  assign arm_rows = section.settings.arm_table | newline_to_br | split: '<br />'
+
+  assign unmapped = ''
+  assign gap = section.settings.column_gap
+-%}
+
+{%- comment -%}
+  Gallery order. The client sets the running order here rather than in the
+  catalogue, because reordering a product's media changes the product itself
+  and so changes the page it is selling from today. Positions are the
+  catalogue's own 1-based order; anything left out keeps its place at the end,
+  so the strip can never lose an image.
+{%- endcomment -%}
+{%- liquid
+  assign order_csv = ','
+  assign order_tokens = section.settings.image_order | split: ','
+  for token in order_tokens
+    assign n = token | strip | times: 1
+    if n >= 1 and n <= p.images.size
+      assign marker = n | prepend: ',' | append: ','
+      unless order_csv contains marker
+        assign order_csv = order_csv | append: n | append: ','
+      endunless
+    endif
+  endfor
+  for img in p.images
+    assign marker = forloop.index | prepend: ',' | append: ','
+    unless order_csv contains marker
+      assign order_csv = order_csv | append: forloop.index | append: ','
+    endunless
+  endfor
+  assign gallery_order = order_csv | remove_first: ',' | split: ','
+  assign hero_index = gallery_order[0] | times: 1 | minus: 1
+  assign hero_image = p.images[hero_index]
+-%}
+
+{%- comment -%} Resolve the variant the page loaded on. {%- endcomment -%}
+{%- liquid
+  assign current = p.selected_or_first_available_variant
+  assign cur_model = ''
+  assign cur_base = ''
+  assign cur_arm = ''
+  for row in map_rows
+    assign cells = row | strip_newlines | strip | split: '|'
+    if cells.size < 4
+      continue
+    endif
+    assign row_sku = cells[0] | strip
+    if row_sku == current.sku
+      assign cur_model = cells[1] | strip
+      assign cur_base = cells[2] | strip
+      assign cur_arm = cells[3] | strip
+      break
+    endif
+  endfor
+-%}
+
+{%- comment -%}
+  How many of this product's variants the map covers. This template is the
+  theme's default product template, so it also renders products the map says
+  nothing about; on those the three axes are meaningless and the catch-all
+  carries every variant instead.
+{%- endcomment -%}
+{%- liquid
+  assign mapped_count = 0
+  for v in p.variants
+    for row in map_rows
+      assign cells = row | strip_newlines | strip | split: '|'
+      if cells.size < 4
+        continue
+      endif
+      assign row_sku = cells[0] | strip
+      if row_sku == v.sku
+        assign mapped_count = mapped_count | plus: 1
+        break
+      endif
+    endfor
+  endfor
+-%}
+
+{%- comment -%}
+  Deliberately NOT Horizon's .section wrapper, which the eleven sections below
+  the fold also skip. Two reasons, both measured: .section is a centred grid
+  whose track pinched this column to 700px between 750 and 1300, and
+  .shopify-section :is(.section:is([class*="color-scheme-"])) forces
+  background: transparent at a specificity this section cannot outrank, which
+  is what lost the grey. The frame lives on .sp-pdp__inner instead.
+{%- endcomment -%}
+<div class="sp-pdp">
+  <div
+    class="sp-pdp__inner"
+    style="--sp-pdp-gap: {{ gap }}px;"
+  >
+    {%- if request.design_mode -%}
+      {%- liquid
+        for v in p.variants
+          assign found = false
+          for row in map_rows
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 4
+              continue
+            endif
+            assign row_sku = cells[0] | strip
+            if row_sku == v.sku
+              assign found = true
+              break
+            endif
+          endfor
+          unless found
+            assign unmapped = unmapped | append: v.sku | append: ', '
+          endunless
+        endfor
+      -%}
+      {%- if unmapped != blank -%}
+        <p class="sp-pdp__notice">
+          These SKUs are not in the variant map, so they appear under the
+          catch-all group instead of the three dropdowns:
+          {{ unmapped | split: ', ' | join: ', ' }}.
+        </p>
+      {%- endif -%}
+    {%- endif -%}
+
+    <div class="sp-pdp__grid">
+      {%- comment -%} ───────────── Gallery column ───────────── {%- endcomment -%}
+      <div class="sp-pdp__col sp-pdp__col--gallery">
+        <div
+          class="sp-gallery"
+          data-sp-gallery
+          data-rotate-ms="{{ section.settings.rotate_seconds | times: 1000 }}"
+          data-autorotate="{{ section.settings.autorotate }}"
+          style="--sp-zoom: {{ section.settings.zoom_factor }};"
+        >
+          <div class="sp-gallery__card">
+            {%- comment -%} Inspection header — Figma 19:37 {%- endcomment -%}
+            {%- if section.settings.inspection_label != blank or section.settings.fig_label != blank -%}
+              <div class="sp-gallery__header">
+                <div class="sp-gallery__label-group">
+                  <span class="sp-gallery__dot" aria-hidden="true"></span>
+                  <p class="sp-gallery__label">{{ section.settings.inspection_label }}</p>
+                </div>
+                <p class="sp-gallery__fig">{{ section.settings.fig_label }}</p>
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Inspection viewport — Figma 15:58.
+              The zoom source is a separate, much larger rendition, fetched
+              only once the visitor actually hovers. The resting page stays
+              light; the magnifier gets real pixels to show. {%- endcomment -%}
+            {%- liquid
+              assign hero_zoom_w = 2800
+              if hero_image.width < hero_zoom_w
+                assign hero_zoom_w = hero_image.width
+              endif
+            -%}
+            <div class="sp-gallery__viewport" data-sp-viewport>
+              <div class="sp-gallery__hero">
+                {%- if hero_image != blank -%}
+                  <img
+                    data-sp-hero
+                    src="{{ hero_image | image_url: width: 1200 }}"
+                    srcset="
+                      {{ hero_image | image_url: width: 400 }} 400w,
+                      {{ hero_image | image_url: width: 800 }} 800w,
+                      {{ hero_image | image_url: width: 1200 }} 1200w,
+                      {{ hero_image | image_url: width: 1600 }} 1600w
+                    "
+                    sizes="(min-width: 1100px) 56vw, 92vw"
+                    width="{{ hero_image.width }}"
+                    height="{{ hero_image.height }}"
+                    alt="{{ hero_image.alt | default: p.title | escape }}"
+                    data-zoom-src="{{ hero_image | image_url: width: hero_zoom_w }}"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                  >
+                {%- endif -%}
+              </div>
+
+              {%- if section.settings.zoom_badge != blank -%}
+                <div class="sp-gallery__badge">
+                  <svg class="sp-gallery__badge-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14m2.5-4h-2v2H9v-2H7V9h2V7h1v2h2z"/>
+                  </svg>
+                  <span
+                    class="sp-gallery__badge-text"
+                    data-sp-badge
+                    data-touch-label="{{ section.settings.zoom_badge_touch | escape }}"
+                  >{{ section.settings.zoom_badge }}</span>
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} Thumbnail strip — Figma 104:246. Sliding window at
+              every width; the arrows sit over the window so the row itself
+              keeps the Figma's geometry. {%- endcomment -%}
+            {%- if p.images.size > 1 -%}
+              <div class="sp-gallery__strip">
+                <button
+                  type="button"
+                  class="sp-gallery__arrow sp-gallery__arrow--prev"
+                  data-sp-prev
+                  aria-label="{{ section.settings.prev_label | escape }}"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                  </svg>
+                </button>
+
+                <div class="sp-gallery__window" data-sp-window>
+                  <ul class="sp-gallery__row" data-sp-row role="list">
+                    {%- for pos in gallery_order -%}
+                      {%- liquid
+                        assign idx = pos | times: 1 | minus: 1
+                        assign img = p.images[idx]
+                        assign zoom_w = 2800
+                        if img.width < zoom_w
+                          assign zoom_w = img.width
+                        endif
+                      -%}
+                      <li class="sp-gallery__item">
+                        <button
+                          type="button"
+                          class="sp-gallery__thumb{% if forloop.first %} is-selected{% endif %}"
+                          data-sp-thumb
+                          data-full="{{ img | image_url: width: 1200 }}"
+                          data-srcset="{{ img | image_url: width: 400 }} 400w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1200 }} 1200w"
+                          data-alt="{{ img.alt | default: p.title | escape }}"
+                          data-zoom="{{ img | image_url: width: zoom_w }}"
+                          aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                        >
+                          <span class="sp-gallery__thumb-media">
+                            <img
+                              src="{{ img | image_url: width: 220 }}"
+                              srcset="{{ img | image_url: width: 220 }} 220w, {{ img | image_url: width: 440 }} 440w"
+                              sizes="110px"
+                              width="{{ img.width }}"
+                              height="{{ img.height }}"
+                              alt=""
+                              loading="lazy"
+                              decoding="async"
+                            >
+                          </span>
+                          <span class="sp-sr">
+                            {{ section.settings.thumb_label | replace: '[n]', forloop.index }}
+                          </span>
+                        </button>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+
+                <button
+                  type="button"
+                  class="sp-gallery__arrow sp-gallery__arrow--next"
+                  data-sp-next
+                  aria-label="{{ section.settings.next_label | escape }}"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+                  </svg>
+                </button>
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Trace bar — Figma 32:94 {%- endcomment -%}
+          {%- if section.settings.trace_1 != blank or section.settings.trace_2 != blank or section.settings.trace_3 != blank -%}
+            <div class="sp-trace">
+              {%- for i in (1..3) -%}
+                {%- liquid
+                  case i
+                    when 1
+                      assign trace_text = section.settings.trace_1
+                    when 2
+                      assign trace_text = section.settings.trace_2
+                    else
+                      assign trace_text = section.settings.trace_3
+                  endcase
+                -%}
+                {%- if trace_text != blank -%}
+                  <span class="sp-trace__item{% if i == 3 %} sp-trace__item--muted{% endif %}">
+                    {%- if i < 3 -%}
+                      <svg class="sp-trace__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                        <path d="m23 12-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69zm-12.91 4.72-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48z"/>
+                      </svg>
+                    {%- endif -%}
+                    <span>{{ trace_text }}</span>
+                  </span>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} ───────────── Buy box — Figma 22:57 ───────────── {%- endcomment -%}
+      <div class="sp-pdp__col sp-pdp__col--buy">
+        <div class="sp-buy" data-sp-buy>
+          {%- comment -%} Title block — Figma 22:58 {%- endcomment -%}
+          <div class="sp-buy__title-block">
+            {%- if section.settings.eyebrow != blank or section.settings.chip != blank -%}
+              <div class="sp-buy__eyebrow-row">
+                <p class="sp-buy__eyebrow">{{ section.settings.eyebrow }}</p>
+                {%- if section.settings.chip != blank -%}
+                  <span class="sp-buy__chip">{{ section.settings.chip | replace: '[count]', p.variants.size }}</span>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            <h1 class="sp-buy__title">{{ section.settings.title_override | default: p.title }}</h1>
+            {%- if section.settings.subtitle != blank -%}
+              <p class="sp-buy__subtitle">{{ section.settings.subtitle }}</p>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Price row — Figma 22:65 {%- endcomment -%}
+          <div class="sp-buy__price-row">
+            <div class="sp-buy__price">
+              <span class="sp-buy__price-value" data-sp-price>
+                {{- current.price | money_without_trailing_zeros -}}
+              </span>
+              {%- if section.settings.price_suffix != blank -%}
+                <span class="sp-buy__price-suffix">{{ section.settings.price_suffix }}</span>
+              {%- endif -%}
+            </div>
+            <div class="sp-buy__availability">
+              {%- if section.settings.stock_label != blank -%}
+                <span class="sp-buy__stock" data-sp-stock>{{ section.settings.stock_label }}</span>
+              {%- endif -%}
+              {%- if section.settings.ships_label != blank -%}
+                <span class="sp-buy__ships">{{ section.settings.ships_label }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+
+          {%- form 'product', p, id: 'sp-buy-form', class: 'sp-buy__form', novalidate: 'novalidate' -%}
+            <input type="hidden" name="id" value="{{ current.id }}" data-sp-variant-id>
+
+            {%- comment -%} Dependent selectors — Figma 22:72 {%- endcomment -%}
+            <div class="sp-buy__selectors">
+              {%- if mapped_count > 0 -%}
+              {%- for axis in (1..3) -%}
+                {%- liquid
+                  case axis
+                    when 1
+                      assign axis_key = 'model'
+                      assign axis_rows = model_rows
+                      assign axis_label = section.settings.model_label
+                      assign axis_current = cur_model
+                    when 2
+                      assign axis_key = 'base'
+                      assign axis_rows = base_rows
+                      assign axis_label = section.settings.base_label
+                      assign axis_current = cur_base
+                    else
+                      assign axis_key = 'arm'
+                      assign axis_rows = arm_rows
+                      assign axis_label = section.settings.arm_label
+                      assign axis_current = cur_arm
+                  endcase
+                -%}
+                <div class="sp-field" data-sp-field="{{ axis_key }}">
+                  <div class="sp-field__label-row">
+                    <label class="sp-field__label" for="sp-select-{{ axis_key }}-{{ section.id }}">
+                      {{- axis_label -}}
+                    </label>
+                    <span class="sp-field__descriptor" data-sp-descriptor="{{ axis_key }}"></span>
+                  </div>
+                  <div class="sp-field__control">
+                    <select
+                      class="sp-field__select"
+                      id="sp-select-{{ axis_key }}-{{ section.id }}"
+                      data-sp-select="{{ axis_key }}"
+                    >
+                      {%- for row in axis_rows -%}
+                        {%- liquid
+                          assign cells = row | strip_newlines | strip | split: '|'
+                          if cells.size < 2
+                            continue
+                          endif
+                          assign opt_key = cells[0] | strip
+                          assign opt_label = cells[1] | strip
+                        -%}
+                        <option
+                          value="{{ opt_key | escape }}"
+                          {% if opt_key == axis_current %}selected{% endif %}
+                        >
+                          {{- opt_label -}}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+                    <svg class="sp-field__chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                      <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                    </svg>
+                  </div>
+                </div>
+              {%- endfor -%}
+              {%- endif -%}
+
+              {%- comment -%} Catch-all: only rendered when a SKU is missing
+                from the map, so no variant is ever unreachable. {%- endcomment -%}
+              {%- liquid
+                assign orphans = ''
+                for v in p.variants
+                  assign found = false
+                  for row in map_rows
+                    assign cells = row | strip_newlines | strip | split: '|'
+                    if cells.size < 4
+                      continue
+                    endif
+                    assign row_sku = cells[0] | strip
+                    if row_sku == v.sku
+                      assign found = true
+                      break
+                    endif
+                  endfor
+                  unless found
+                    assign orphans = orphans | append: v.id | append: ','
+                  endunless
+                endfor
+              -%}
+              {%- if orphans != blank -%}
+                <div class="sp-field" data-sp-field="other">
+                  <div class="sp-field__label-row">
+                    <label class="sp-field__label" for="sp-select-other-{{ section.id }}">
+                      {{- section.settings.other_label -}}
+                    </label>
+                  </div>
+                  <div class="sp-field__control">
+                    <select class="sp-field__select" id="sp-select-other-{{ section.id }}" data-sp-select="other">
+                      {%- assign orphan_ids = orphans | split: ',' -%}
+                      {%- for v in p.variants -%}
+                        {%- assign vid = v.id | append: '' -%}
+                        {%- if orphan_ids contains vid -%}
+                          <option value="{{ v.id }}" {% if v.id == current.id %}selected{% endif %}>
+                            {{- v.title -}}
+                          </option>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </select>
+                    <svg class="sp-field__chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                      <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                    </svg>
+                  </div>
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} Configuration summary — Figma 22:97 {%- endcomment -%}
+            <div class="sp-summary">
+              <div class="sp-summary__header">
+                <span class="sp-summary__title">{{ section.settings.summary_title }}</span>
+                <span class="sp-summary__token" data-sp-tpi></span>
+              </div>
+              <div class="sp-summary__grid">
+                <div class="sp-summary__row">
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_res_label }}</span>
+                    <span class="sp-summary__value" data-sp-res></span>
+                  </p>
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_travel_label }}</span>
+                    <span class="sp-summary__value" data-sp-travel></span>
+                  </p>
+                </div>
+                <div class="sp-summary__row">
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_base_label }}</span>
+                    <span class="sp-summary__value" data-sp-base></span>
+                  </p>
+                  <p class="sp-summary__cell">
+                    <span class="sp-summary__key">{{ section.settings.summary_arm_label }}</span>
+                    <span class="sp-summary__value" data-sp-arm></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {%- comment -%} Part number — Figma 22:116 {%- endcomment -%}
+            <div class="sp-buy__part">
+              <span class="sp-buy__part-label">{{ section.settings.part_label }}</span>
+              <span class="sp-buy__sku" data-sp-sku>{{ current.sku }}</span>
+            </div>
+
+            {%- comment -%} Actions — Figma 22:120 {%- endcomment -%}
+            <div class="sp-buy__actions">
+              <button type="submit" name="add" class="sp-btn sp-btn--cart" data-sp-add>
+                <svg class="sp-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                  <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2M1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2"/>
+                </svg>
+                <span data-sp-add-text>{{ section.settings.cart_label }}</span>
+              </button>
+
+              {%- if section.settings.quote_url != blank -%}
+                <a href="{{ section.settings.quote_url }}" class="sp-btn sp-btn--quote">
+              {%- else -%}
+                <span class="sp-btn sp-btn--quote" role="link" aria-disabled="true" tabindex="0">
+              {%- endif -%}
+                <svg class="sp-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                  <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m0 16H5V5h14zM7.5 7.5h9V9h-9zm0 3.5h9v1.5h-9zm0 3.5h5.5V16H7.5z"/>
+                </svg>
+                <span>{{ section.settings.quote_label }}</span>
+              {%- if section.settings.quote_url != blank -%}
+                </a>
+              {%- else -%}
+                </span>
+              {%- endif -%}
+            </div>
+          {%- endform -%}
+
+          {%- comment -%} Purchase confidence — Figma 22:129 {%- endcomment -%}
+          {%- liquid
+            assign has_confidence = false
+            if section.settings.bullet_1 != blank or section.settings.bullet_2 != blank
+              assign has_confidence = true
+            endif
+            if section.settings.bullet_3 != blank or section.settings.contact_line != blank
+              assign has_confidence = true
+            endif
+          -%}
+          {%- if has_confidence -%}
+            <div class="sp-buy__confidence">
+              {%- for i in (1..3) -%}
+                {%- liquid
+                  case i
+                    when 1
+                      assign bullet = section.settings.bullet_1
+                    when 2
+                      assign bullet = section.settings.bullet_2
+                    else
+                      assign bullet = section.settings.bullet_3
+                  endcase
+                -%}
+                {%- if bullet != blank -%}
+                  <p class="sp-check">
+                    <svg class="sp-check__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                      <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    <span>{{ bullet }}</span>
+                  </p>
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if section.settings.contact_line != blank -%}
+                <div class="sp-buy__contact">{{ section.settings.contact_line }}</div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Configurator data for the client-side logic. Rendered as
+    JSON rather than inlined into script source so nothing needs escaping and
+    the Theme Editor can re-render it on every setting change. {%- endcomment -%}
+  <script type="application/json" data-sp-config>
+    {
+      "variants": [
+        {%- for v in p.variants -%}
+          {%- liquid
+            assign v_model = ''
+            assign v_base = ''
+            assign v_arm = ''
+            for row in map_rows
+              assign cells = row | strip_newlines | strip | split: '|'
+              if cells.size < 4
+                continue
+              endif
+              assign row_sku = cells[0] | strip
+              if row_sku == v.sku
+                assign v_model = cells[1] | strip
+                assign v_base = cells[2] | strip
+                assign v_arm = cells[3] | strip
+                break
+              endif
+            endfor
+          -%}
+          {
+            "id": {{ v.id | json }},
+            "sku": {{ v.sku | json }},
+            "model": {{ v_model | json }},
+            "base": {{ v_base | json }},
+            "arm": {{ v_arm | json }},
+            "price": {{ v.price | money_without_trailing_zeros | strip_html | json }},
+            "available": {{ v.available | json }},
+            {%- comment -%}
+              null unless Shopify is counting this variant. A variant with no
+              inventory management cannot run out, so it must never be able to
+              read as sold out whatever else happens.
+            {%- endcomment -%}
+            "tracked": {{ v.inventory_management | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "models": [
+        {%- for row in model_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }},
+            "tpi": {{ cells[3] | default: '' | strip | json }},
+            "res": {{ cells[4] | default: '' | strip | json }},
+            "travel": {{ cells[5] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "bases": [
+        {%- for row in base_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "arms": [
+        {%- for row in arm_rows -%}
+          {%- liquid
+            assign cells = row | strip_newlines | strip | split: '|'
+            if cells.size < 2
+              continue
+            endif
+          -%}
+          {
+            "key": {{ cells[0] | strip | json }},
+            "label": {{ cells[1] | strip | json }},
+            "descriptor": {{ cells[2] | default: '' | strip | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "soldOutLabel": {{ section.settings.sold_out_label | json }},
+      "cartLabel": {{ section.settings.cart_label | json }},
+      "updateUrl": {{ section.settings.update_url | json }}
+    }
+  </script>
+</div>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Product Area — Figma 42:13 / 43:1435 / 43:2528.
+
+     Figma specifies Manrope throughout. The site runs on Muli/Mulish only,
+     so every Manrope style is carried by the theme's own font variables at
+     the matching weight: SemiBold -> --font-subheading--family 600,
+     Medium -> --font-body--family 500, Bold -> --font-accent--family 700.
+     ──────────────────────────────────────────────────────────────────── */
+
+  .sp-pdp {
+    --sp-surface: #ffffff;
+    --sp-canvas: #efefef;
+    --sp-border: #cccccc;
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-ink-faint: #a09f9f;
+    --sp-maroon: #661320;
+    --sp-amber: #e59a2a;
+    --sp-amber-dark: #de8b24;
+    --sp-low: #f2f3f9;
+    --sp-high: #e6e8ee;
+
+    /* Sampled from Figma 42:13 - the grey behind the gallery and buy box is
+       what makes both of them read as cards. */
+    background: var(--sp-canvas);
+    scroll-margin-top: calc(var(--sp-header-offset, 134px) + 24px);
+  }
+
+  .sp-pdp .sp-sr {
+    position: absolute;
+    overflow: hidden;
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+  }
+
+  /* The Theme Editor warning strip. Never rendered on the live storefront. */
+  .sp-pdp__notice {
+    margin-block-end: 16px;
+    border: 1px solid var(--sp-amber);
+    border-radius: 2px;
+    background: #fff8ec;
+    padding: 8px 12px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  /* ── Page frame ──────────────────────────────────────────────────────
+     The insets match the header, the homepage sections and the footer so
+     the PDP lines up with them. The Figma's own 1280 frame uses a flat 32px
+     inset; following it here would misalign this page against every other
+     one, which is the inconsistency we already fixed in the header.
+
+     The section runs full-bleed, as every homepage section does, and the
+     max-width and the insets live here. Letting Horizon's page-width
+     modifier do it instead would centre a 1360px box first and then inset
+     inside that, putting this page's content 40px further in than the
+     header's at 1440. */
+  .sp-pdp__inner {
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-block: 14px 40px;
+    padding-inline: 24px;
+  }
+
+  .sp-pdp__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-pdp-gap, 24px);
+  }
+
+  /* ── Gallery card — Figma 19:36 ──────────────────────────────────── */
+  .sp-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sp-gallery__card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--sp-border);
+    border-radius: 4px;
+    background: var(--sp-surface);
+    padding: 16px;
+    overflow: clip;
+  }
+
+  .sp-gallery__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 12px;
+    border-bottom: 1px solid var(--sp-canvas);
+    padding-bottom: 8px;
+  }
+
+  .sp-gallery__label-group {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .sp-gallery__dot {
+    flex: none;
+    border-radius: 50%;
+    background: var(--sp-amber);
+    width: 8px;
+    height: 8px;
+  }
+
+  .sp-gallery__label {
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-gallery__fig {
+    margin: 0;
+    flex: 0 1 auto;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    text-align: right;
+  }
+
+  /* ── Inspection viewport — Figma 15:58 ───────────────────────────── */
+  .sp-gallery__viewport {
+    position: relative;
+    aspect-ratio: 665 / 498.75;
+    background: var(--sp-canvas);
+    overflow: clip;
+  }
+
+  .sp-gallery__hero {
+    position: absolute;
+    inset: 3.21% 2.41%;
+    overflow: clip;
+  }
+
+  .sp-gallery__hero img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 300ms ease;
+  }
+
+  /* The badge promises an inspection enlargement, so the hover gives one:
+     the image scales by --sp-zoom about the point under the cursor, which
+     the script tracks by setting transform-origin. Only the origin moves
+     while the pointer does, and it is not a transitioned property, so the
+     magnified view follows the cursor without lag while the scale itself
+     still eases in and out.
+
+     Figma's own note on this component says 105%, which reads as a hover
+     affordance rather than the 4x the badge inside it advertises. The badge
+     is the stronger promise and the one a visitor acts on. */
+  .sp-gallery__viewport.is-zooming .sp-gallery__hero img {
+    transform: scale(var(--sp-zoom, 4));
+  }
+
+  /* While a finger holds the lens open the page must not scroll out from
+     under it, and iOS must not offer to save the photograph instead. Both
+     are scoped to the engaged state, so an ordinary swipe over the image
+     still scrolls the page. */
+  .sp-gallery__viewport.is-zooming {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sp-gallery__viewport { cursor: zoom-in; }
+  }
+
+  .sp-gallery__badge {
+    display: flex;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.9;
+    border-radius: 2px;
+    background: var(--sp-ink);
+    padding: 4px 8px;
+    color: var(--sp-surface);
+  }
+
+  .sp-gallery__badge-icon {
+    flex: none;
+    width: 14px;
+    height: 14px;
+  }
+
+  .sp-gallery__badge-text {
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0.12px;
+    white-space: nowrap;
+  }
+
+  /* ── Thumbnail strip — Figma 104:246 ─────────────────────────────────
+     A sliding window at every width, per the agreed gallery behaviour.
+     The row is exactly as wide as the window and its children overflow it,
+     so one integer custom property (--sp-offset, set by the script) slides
+     the window without the script ever measuring anything. */
+  .sp-gallery__strip {
+    position: relative;
+    padding-top: 8px;
+  }
+
+  .sp-gallery__window {
+    overflow: clip;
+    /* A thumb can land exactly on the clip boundary, which shaves the 1px
+       its selected edge needs. */
+    overflow-clip-margin: 1px;
+  }
+
+  .sp-gallery__row {
+    --sp-gap: 8px;
+    --sp-thumbs: 3;
+    --sp-thumb-w: calc((100% - (var(--sp-thumbs) - 1) * var(--sp-gap)) / var(--sp-thumbs));
+
+    display: flex;
+    gap: var(--sp-gap);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    list-style: none;
+    transform: translateX(calc(-1 * var(--sp-offset, 0) * (var(--sp-thumb-w) + var(--sp-gap))));
+    transition: transform 400ms ease;
+  }
+
+  .sp-gallery__item {
+    flex: 0 0 var(--sp-thumb-w);
+    min-width: 0;
+  }
+
+  .sp-gallery__thumb {
+    display: block;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: var(--sp-surface);
+    cursor: pointer;
+    padding: 3px;
+    width: 100%;
+  }
+
+  /* Figma's selected thumb takes a 2px border. Doubling the border would
+     reflow the row every time the selection moves, so the second pixel is
+     an inset shadow instead — same 2px edge, no layout shift. */
+  .sp-gallery__thumb.is-selected {
+    border-color: var(--sp-ink);
+    box-shadow: inset 0 0 0 1px var(--sp-ink);
+    background: var(--sp-low);
+  }
+
+  /* Figma 104:93 (unselected, hover): the 1px edge turns from #ccc to the
+     ink. The selected thumb already carries that edge, so it does not move. */
+  .sp-gallery__thumb:hover {
+    border-color: var(--sp-ink);
+  }
+
+  .sp-gallery__thumb-media {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+
+  .sp-gallery__thumb-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .sp-gallery__arrow {
+    display: grid;
+    position: absolute;
+    top: calc(50% + 4px);
+    transform: translateY(-50%);
+    z-index: 2;
+    opacity: 0;
+    border: 1px solid var(--sp-border);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 94%);
+    cursor: pointer;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    color: var(--sp-ink);
+    transition: opacity 160ms ease;
+    place-items: center;
+  }
+
+  .sp-gallery__arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sp-gallery__arrow--prev { left: -6px; }
+  .sp-gallery__arrow--next { right: -6px; }
+
+  .sp-gallery__strip:hover .sp-gallery__arrow:not([disabled]),
+  .sp-gallery__arrow:focus-visible {
+    opacity: 1;
+  }
+
+  .sp-gallery__arrow[disabled] {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* Touch devices have no hover, so the arrows stay visible there. */
+  @media (hover: none) {
+    .sp-gallery__arrow:not([disabled]) { opacity: 1; }
+  }
+
+  /* ── Trace bar — Figma 32:94 ─────────────────────────────────────── */
+  .sp-trace {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: var(--sp-surface);
+    padding: 8px 16px;
+  }
+
+  .sp-trace__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-trace__item--muted { color: var(--sp-ink-faint); }
+
+  .sp-trace__icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--sp-amber);
+  }
+
+  /* ── Buy box — Figma 22:57 ───────────────────────────────────────── */
+  .sp-buy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+    border: 1px solid var(--sp-border);
+    border-radius: 4px;
+    background: var(--sp-surface);
+    padding: 24px;
+  }
+
+  .sp-buy__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+  }
+
+  .sp-buy__title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-buy__eyebrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .sp-buy__eyebrow {
+    margin: 0;
+    color: var(--sp-amber);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-buy__chip {
+    flex: none;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: var(--sp-canvas);
+    padding: 2px 4px;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-accent--family);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 0.88px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sp-buy__title {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 28px;
+    font-weight: 200;
+    line-height: 34px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-buy__subtitle {
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+  }
+
+  .sp-buy__price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 12px;
+    border-bottom: 1px solid var(--sp-border);
+    padding-top: 4px;
+    padding-bottom: 8px;
+  }
+
+  .sp-buy__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .sp-buy__price-value {
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-buy__price-suffix {
+    color: var(--sp-ink-faint);
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: 0.12px;
+    white-space: nowrap;
+  }
+
+  .sp-buy__availability {
+    display: flex;
+    flex: none;
+    margin-left: auto;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .sp-buy__stock {
+    color: var(--sp-maroon);
+    font-family: var(--font-accent--family);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 0.275px;
+    text-transform: uppercase;
+  }
+
+  .sp-buy__ships {
+    color: var(--sp-ink-faint);
+    font-family: var(--font-accent--family);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 15px;
+  }
+
+  /* ── Dependent selectors — Figma 22:72 ───────────────────────────── */
+  .sp-buy__selectors {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-field[hidden] { display: none; }
+
+  .sp-field__label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .sp-field__label {
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-field__descriptor {
+    color: var(--sp-ink-faint);
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-align: right;
+    text-transform: lowercase;
+  }
+
+  .sp-field__control { position: relative; }
+
+  .sp-field__select {
+    appearance: none;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: var(--sp-surface);
+    cursor: pointer;
+    padding: 9px 34px 9px 8px;
+    width: 100%;
+    color: var(--sp-ink);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    text-overflow: ellipsis;
+  }
+
+  /* Figma: "Open = focused (border #23252C)". */
+  .sp-field__select:hover,
+  .sp-field__select:focus-visible {
+    border-color: var(--sp-ink);
+    outline: none;
+  }
+
+  .sp-field__chevron {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--sp-ink);
+    pointer-events: none;
+  }
+
+  /* ── Configuration summary — Figma 22:97 ─────────────────────────── */
+  .sp-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: var(--sp-canvas);
+    padding: 8px;
+  }
+
+  .sp-summary__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid var(--sp-border);
+    padding-bottom: 4px;
+  }
+
+  .sp-summary__title {
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-summary__token {
+    color: var(--sp-amber-dark);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.88px;
+    white-space: nowrap;
+  }
+
+  .sp-summary__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 4px;
+  }
+
+  .sp-summary__row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sp-summary__cell {
+    display: flex;
+    flex: 1 0 0;
+    flex-wrap: wrap;
+    gap: 0 3px;
+    margin: 0;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .sp-summary__key {
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-weight: 500;
+  }
+
+  .sp-summary__value {
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-weight: 700;
+    letter-spacing: -0.12px;
+  }
+
+  /* ── Part number — Figma 22:116 ──────────────────────────────────── */
+  .sp-buy__part {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-inline: 4px;
+  }
+
+  .sp-buy__part-label {
+    color: var(--sp-ink-faint);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-buy__sku {
+    border-radius: 2px;
+    background: var(--sp-high);
+    padding: 2px 8px;
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+    letter-spacing: 0.325px;
+  }
+
+  /* ── Actions — Figma 22:120 ──────────────────────────────────────── */
+  /* Figma sets these 4px apart, which reads as one control split in two.
+     10px separates them without loosening the group. */
+  .sp-buy__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 4px;
+  }
+
+  .sp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 24px;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    font-family: var(--font-subheading--family);
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .sp-btn__icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  .sp-btn--cart {
+    box-shadow: 0 1px 1px rgb(0 0 0 / 10%), 0 1px 1.5px rgb(0 0 0 / 10%);
+    border: 0;
+    background: var(--sp-amber);
+    cursor: pointer;
+    padding: 12px 16px;
+    color: var(--sp-surface);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.28px;
+  }
+
+  .sp-btn--cart:hover { background: var(--sp-amber-dark); }
+
+  .sp-btn--cart[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: var(--sp-ink-faint);
+  }
+
+  .sp-btn--quote {
+    border: 1px solid var(--sp-border);
+    background: var(--sp-surface);
+    padding: 10px 16px;
+    color: var(--sp-maroon);
+    font-size: 13px;
+    line-height: 19.5px;
+    letter-spacing: 0.26px;
+  }
+
+  .sp-btn--quote:hover { border-color: var(--sp-maroon); }
+
+  /* Held back until the client supplies the quote destination — same
+     treatment the header CTA uses while its link is pending. */
+  .sp-btn--quote[aria-disabled="true"] { cursor: default; }
+
+  /* ── Purchase confidence — Figma 22:129 ──────────────────────────── */
+  .sp-buy__confidence {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px solid var(--sp-border);
+    padding-top: 8px;
+  }
+
+  .sp-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .sp-check__icon {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    color: var(--sp-maroon);
+  }
+
+  .sp-buy__contact {
+    border-top: 1px solid var(--sp-canvas);
+    padding-top: 8px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: -0.12px;
+  }
+
+  .sp-buy__contact p { margin: 0; }
+
+  .sp-buy__contact a {
+    color: var(--sp-maroon);
+    font-family: var(--font-accent--family);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
+  }
+
+  /* A text link is underlined; the phone number is not, which is what the
+     design's Link/Text note asks for. Keyed off the href rather than a
+     class, because Shopify's rich text strips classes - so the client can
+     rewrite this sentence in the Theme Editor and the rule still holds.
+
+     The underline is drawn in the link's own colour and fades to
+     transparent on hover rather than switching off, so it leaves with the
+     colour change instead of snapping away. */
+  .sp-buy__contact a:not([href^="tel:"]) {
+    text-decoration: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  /* Horizon colours rich-text link hovers through a broad
+     :is(p:not(.h1, ...) a:where(...), .rte ...):hover rule which outweighs
+     a two-class selector, so the orange here never applied - the link went
+     to the theme's darkened maroon instead. Confirmed against the matched
+     rules rather than guessed. These carry the extra weight they need; an
+     !important would win too, but it would also be the first on the page
+     and the next override would have to escalate again. */
+  .sp-pdp .sp-buy .sp-buy__contact a:hover,
+  .sp-pdp .sp-buy .sp-buy__contact a:focus-visible {
+    color: var(--sp-amber-dark);
+  }
+
+  .sp-pdp .sp-buy .sp-buy__contact a:not([href^="tel:"]):hover,
+  .sp-pdp .sp-buy .sp-buy__contact a:not([href^="tel:"]):focus-visible {
+    text-decoration-color: transparent;
+  }
+
+  /* ── Narrow phones ───────────────────────────────────────────────────
+     Both halves of the inspection header are long enough to wrap at 390,
+     and space-between then strands the figure label mid-row. Stacking them
+     left-aligned reads as one caption block instead. */
+  @media screen and (width < 600px) {
+    .sp-gallery__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .sp-gallery__label-group { align-items: flex-start; }
+
+    /* Centre the dot on the first line rather than on the wrapped block. */
+    .sp-gallery__dot { margin-top: 4px; }
+
+    .sp-gallery__fig { text-align: left; }
+
+    /* The second button's label needs 246px of the 234px a phone leaves
+       inside the pill, so it wrapped with one word alone on a second line
+       and the button grew to 61px against the cart's 44. Easing the type
+       and the tracking buys back the 12px, so the pair stays level. The
+       balance is a safety net for a label longer still: two even lines
+       rather than an orphan.
+
+       This has to sit here, after the base .sp-btn--quote rule: a media
+       query adds no specificity, so the same selector earlier in the file
+       simply loses. */
+    .sp-btn--quote {
+      font-size: 12px;
+      letter-spacing: 0.1px;
+      text-wrap: balance;
+    }
+  }
+
+  /* Figma centres the tick against a single-line bullet. Once the text
+     wraps the tick floats in the middle of the block, so below the two
+     column layout it sits on the first line instead. */
+  @media screen and (width < 1100px) {
+    .sp-check { align-items: flex-start; }
+    .sp-check__icon { margin-top: 1.5px; }
+  }
+
+  /* ── Tablet ──────────────────────────────────────────────────────── */
+  @media screen and (width >= 600px) {
+    .sp-gallery__row { --sp-thumbs: 4; }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-pdp__inner {
+      padding-block: 22px 56px;
+      padding-inline: 48px;
+    }
+
+    .sp-gallery__row { --sp-thumbs: 6; }
+
+    .sp-buy__title {
+      font-size: 36px;
+      line-height: 42px;
+    }
+
+    .sp-buy__price-value {
+      font-size: 36px;
+      line-height: 44px;
+    }
+  }
+
+  /* ── Two columns — Figma 42:13 (699 : 493, 24px gutter) ───────────────
+     The Figma splits at its 1280 desktop frame and stacks at its 768 tablet
+     frame; 1100px is the width at which both columns still hold their
+     content comfortably. */
+  @media screen and (width >= 1100px) {
+    .sp-pdp__grid {
+      grid-template-columns: minmax(0, 699fr) minmax(0, 493fr);
+      align-items: start;
+    }
+
+    .sp-pdp__col--buy {
+      position: sticky;
+      top: calc(var(--sp-header-offset, 134px) + 16px);
+      scroll-margin-top: calc(var(--sp-header-offset, 134px) + 24px);
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-pdp__inner {
+      padding-block: 22px 72px;
+      padding-inline: 80px;
+    }
+  }
+
+  /* ── Reduced motion ──────────────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .sp-gallery__row,
+    .sp-gallery__hero img,
+    .sp-gallery__arrow,
+    .sp-btn {
+      transition: none;
+    }
+
+    /* The magnifier stays: it is a tool, not decoration. Only its easing
+       goes, so the enlargement appears at once instead of animating. */
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product area",
+  "tag": "section",
+  "settings": [
+    { "type": "range", "id": "column_gap", "label": "Gap between the columns", "min": 16, "max": 48, "step": 4, "unit": "px", "default": 24 },
+
+    { "type": "header", "content": "Gallery" },
+    { "type": "text", "id": "inspection_label", "label": "Inspection label", "default": "OPTICAL INSPECTION · 100 TPI MICROMETER STAGE" },
+    { "type": "text", "id": "fig_label", "label": "Figure label", "default": "FIG 1.0 · SUB-MICRON RESOLUTION" },
+    { "type": "text", "id": "zoom_badge", "label": "Zoom badge (mouse)", "default": "INSPECTION 4X ENLARGEMENT" },
+    {
+      "type": "text",
+      "id": "zoom_badge_touch",
+      "label": "Zoom badge (touch)",
+      "info": "Shown instead on phones and tablets, where there is no hover to discover. Leave blank to show the same text on both.",
+      "default": "PRESS & HOLD TO INSPECT · 4X"
+    },
+    {
+      "type": "text",
+      "id": "image_order",
+      "label": "Image order",
+      "info": "Positions from the product's own image order, separated by commas. The first one is the large image on load. Anything left out keeps its place at the end. Leave blank to use the catalogue's order. Changing this changes only this page, never the product.",
+      "default": "2,1,3,4,5,6,7,8,9"
+    },
+    {
+      "type": "range",
+      "id": "zoom_factor",
+      "label": "Hover enlargement",
+      "info": "How far the large image magnifies under the cursor. Keep the zoom badge text in step with this.",
+      "min": 2, "max": 6, "step": 1, "unit": "x", "default": 4
+    },
+    { "type": "checkbox", "id": "autorotate", "label": "Slide the thumbnails automatically", "default": true },
+    { "type": "range", "id": "rotate_seconds", "label": "Seconds between slides", "min": 2, "max": 10, "step": 1, "unit": "s", "default": 3 },
+    { "type": "text", "id": "prev_label", "label": "Previous button label (for screen readers)", "default": "Previous images" },
+    { "type": "text", "id": "next_label", "label": "Next button label (for screen readers)", "default": "Next images" },
+    { "type": "text", "id": "thumb_label", "label": "Thumbnail label (for screen readers)", "info": "[n] is replaced with the image number.", "default": "Show image [n]" },
+
+    { "type": "header", "content": "Trace bar" },
+    { "type": "text", "id": "trace_1", "label": "Item 1", "default": "NIST-Traceable Calibrated Vernier Drums" },
+    { "type": "text", "id": "trace_2", "label": "Item 2", "default": "Zero-Backlash Preloaded Bearings" },
+    { "type": "text", "id": "trace_3", "label": "Item 3", "default": "MIL-STD-883 Compliant" },
+
+    { "type": "header", "content": "Buy box — heading" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "MANUAL MANIPULATORS" },
+    { "type": "text", "id": "chip", "label": "Chip", "info": "[count] is replaced with the number of configurations.", "default": "[count] CONFIGURATIONS" },
+    { "type": "text", "id": "title_override", "label": "Title", "info": "Leave blank to use the product title from the catalogue.", "default": "Manual Manipulators" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "X, Y and Z probe positioning for probe systems — analytical, production and bench." },
+
+    { "type": "header", "content": "Buy box — price and availability" },
+    { "type": "text", "id": "price_suffix", "label": "Price suffix", "default": "USD MSRP" },
+    { "type": "text", "id": "stock_label", "label": "Stock line", "default": "Ready to Assemble" },
+    { "type": "text", "id": "ships_label", "label": "Shipping line", "default": "Ships in 2-3 Weeks" },
+    { "type": "text", "id": "sold_out_label", "label": "Sold out button label", "default": "SOLD OUT" },
+
+    { "type": "header", "content": "Buy box — dropdown labels" },
+    { "type": "text", "id": "model_label", "label": "Dropdown 1 label", "default": "Model Series" },
+    { "type": "text", "id": "base_label", "label": "Dropdown 2 label", "default": "Mounting Base" },
+    { "type": "text", "id": "arm_label", "label": "Dropdown 3 label", "default": "Probe Arm Assembly" },
+    { "type": "text", "id": "other_label", "label": "Catch-all dropdown label", "info": "Only shown when a variant's SKU is missing from the variant map below.", "default": "Other Configurations" },
+
+    { "type": "header", "content": "Buy box — summary" },
+    { "type": "text", "id": "summary_title", "label": "Summary heading", "default": "SELECTED CONFIGURATION" },
+    { "type": "text", "id": "summary_res_label", "label": "Resolution label", "default": "Feature Resolution:" },
+    { "type": "text", "id": "summary_travel_label", "label": "Travel label", "default": "Travel (X,Y,Z):" },
+    { "type": "text", "id": "summary_base_label", "label": "Base label", "default": "Base:" },
+    { "type": "text", "id": "summary_arm_label", "label": "Probe arm label", "default": "Probe Arm:" },
+    { "type": "text", "id": "part_label", "label": "Part number label", "default": "PART NUMBER:" },
+
+    { "type": "header", "content": "Buy box — buttons" },
+    { "type": "text", "id": "cart_label", "label": "Add to cart label", "default": "ADD TO CART" },
+    { "type": "text", "id": "quote_label", "label": "Second button label", "default": "DOWNLOAD THE SPECIFICATION PDF" },
+    { "type": "url", "id": "quote_url", "label": "Second button link", "info": "The specification PDF. Upload it under Content > Files, then pick it here. Leave blank to hold the button back until the file exists." },
+    { "type": "checkbox", "id": "update_url", "label": "Update the page address when a configuration is picked", "default": true },
+
+    { "type": "header", "content": "Buy box — purchase confidence" },
+    { "type": "text", "id": "bullet_1", "label": "Bullet 1", "default": "Complete assembly — body, base, faceplate and probe arm included" },
+    { "type": "text", "id": "bullet_2", "label": "Bullet 2", "default": "5% academic, non-profit & government institution discount available" },
+    { "type": "text", "id": "bullet_3", "label": "Bullet 3", "default": "Net 30 Purchase Orders (PO) accepted upon credit clearance" },
+    {
+      "type": "richtext",
+      "id": "contact_line",
+      "label": "Contact line",
+      "info": "Any link here is maroon and loses its underline on hover. A tel: link carries no underline to begin with, matching the design.",
+      "default": "<p>Questions about configuration or want to receive your discount? <a href=\"/#product-inquiry\">Fill out our quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a>.</p>"
+    },
+
+    { "type": "header", "content": "Configurator" },
+    {
+      "type": "paragraph",
+      "content": "The three dropdowns are built from the four tables below. Each row is one line, and the fields on a line are separated by a vertical bar. Edit the text here to rename an option, change a spec or re-point a SKU — nothing else needs to change."
+    },
+    {
+      "type": "textarea",
+      "id": "variant_map",
+      "label": "Variant map",
+      "info": "SKU | Model key | Base key | Arm key. One line per variant. A SKU missing from this list still sells, through the catch-all dropdown.",
+      "default": "A-MAN-MA-8005-M-C-S | MA-8005 | MAG | CS\nA-MAN-MA-8005-V-C-S | MA-8005 | VAC | CS\nA-MAN-MA-8005-M-T-S | MA-8005 | MAG | TS\nA-MAN-MA-8005-V-T-S | MA-8005 | VAC | TS\nA-MAN-MA-9000-80-M-C-L | MA-9000 | MAG | CL\nA-MAN-MA-9000-80-V-C-L | MA-9000 | VAC | CL\nA-MAN-MA-9000-80-M-T-L | MA-9000 | MAG | TL\nA-MAN-MA-9000-80-V-T-L | MA-9000 | VAC | TL\nA-MAN-MA-9000-80-M-HFWE | MA-9000 | MAG | WE\nA-MAN-MA-9000-80-M-HFNS | MA-9000 | MAG | NS\nA-MAN-MA-9100-M-C-L | MA-9100 | MAG | CL\nA-MAN-MA-9100-V-C-L | MA-9100 | VAC | CL\nA-MAN-MA-9100-M-T-L | MA-9100 | MAG | TL\nA-MAN-MA-9100-V-T-L | MA-9100 | VAC | TL\nA-MAN-MA-9100-M-HFWE | MA-9100 | MAG | WE\nA-MAN-MA-9100-M-HFNS | MA-9100 | MAG | NS\nA-MAN-MA-8500-MB-HF-WE | MA-8500 | MAG | WE\nA-MAN-MA-8500-MB-HF-NS | MA-8500 | MAG | NS\nA-MAN-MA-8500-BD-HF-WE | MA-8500 | BLT | WE\nA-MAN-MA-8500-BD-HF-NS | MA-8500 | BLT | NS\nA-MAN-MA8500-EMWE-BD-0001 | MA-8500 | FEM | WE"
+    },
+    {
+      "type": "textarea",
+      "id": "model_table",
+      "label": "Model series table",
+      "info": "Key | Dropdown label | Helper text | TPI | Resolution | Travel. The labels and the TPI, resolution and travel figures are the design's own, from the Compare Models matrix. Only the helper text is written here rather than drawn.",
+      "default": "MA-8005 | MA-8005 (40 TPI, 5.0 µm resolution, 10mm Travel) | general-purpose 40 TPI | 40 TPI | 5 µm | 10 x 10 x 10 mm\nMA-9000 | MA-9000 (80 TPI, 1.0 µm resolution, 13mm Travel) | high resolution 80 TPI | 80 TPI | 1 µm | 13 x 13 x 13 mm\nMA-9100 | MA-9100 (100 TPI, 0.35 µm resolution, 13mm Travel) | ultra-high resolution 100 TPI | 100 TPI | 0.35 µm | 13 x 13 x 13 mm\nMA-8500 | MA-8500 (80 TPI, High-Frequency / Bolt-down) | high-frequency RF platform | 80 TPI | 1 µm | 13 x 13 x 13 mm"
+    },
+    {
+      "type": "textarea",
+      "id": "base_table",
+      "label": "Mounting base table",
+      "info": "Key | Dropdown label | Helper text. The labels are the design's own, from the Base Menu. Only the helper text is written here rather than drawn.",
+      "default": "MAG | Magnetic (High-field toggle switch) | ferromagnetic platen clamp\nVAC | Vacuum (Direct laboratory house suction) | house vacuum hold-down\nBLT | Bolt-down (MA-8500 only) | fixed mechanical mount\nFEM | Bolt-down with Frequency Extender Module (MA-8500 only) | extended-frequency bolt-down"
+    },
+    {
+      "type": "textarea",
+      "id": "arm_table",
+      "label": "Probe arm table",
+      "info": "Key | Dropdown label | Helper text. The labels and their order are the design's own, from the Arm Menu. Only the helper text is written here rather than drawn.",
+      "default": "CS | Coaxial – Short (MA-8005 only) | coaxial short-reach\nCL | Coaxial – Long | coaxial long-reach\nTS | Triaxial – Short (MA-8005 only) | low-noise 3-lug triax\nTL | Triaxial – Long | low-noise 3-lug triax\nWE | HF – West/East (Magnetic base only) | high-frequency west/east\nNS | HF – North/South (Magnetic base only) | high-frequency north/south"
+    }
+  ],
+  "presets": [{ "name": "Product area" }]
+}
+{% endschema %}

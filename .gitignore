@@ -17,3 +17,6 @@ npm-debug.log*
 .env
 .env.*
 shopify.theme.toml
+
+# cached upstream Horizon files, pulled for reference only
+.reference/
