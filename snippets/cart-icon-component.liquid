@@ -76,11 +76,34 @@
 
      The asset's viewBox is square, so the glyph letterboxes to 14x14 inside
      the design's 14x17 box rather than stretching. That is the same ink it
-     drew before; only its position changes. */
+     drew before; only its position changes.
+
+     `mask` rides here too, and unconditionally. Horizon cuts a donut out of
+     this svg whenever the cart is non-empty, clearing room for the count
+     bubble that this design replaced with a text label:
+
+       radial-gradient(22px at calc(100% - 2.5px) 4.5px,
+                       transparent 45.45%, white 45.45%, white 100%)
+
+     which is a 10px fully transparent core centred at (11.5, 4.5) of the
+     14x17 box. The bag's top-left corner lies 9.31px from that centre and
+     its bottom-right 8.90px, so the mask erases both; only the bottom-left
+     corner, at 12.75px, survives -- collapsing the glyph to an "L". The
+     reset this replaces was scoped `.sp-cart.header-actions__cart-icon
+     --has-cart svg`, which ties Horizon's own rule at (0,2,1) and is
+     declared ~25KB earlier in the compiled sheet, so order handed Horizon
+     the win and the reset never took. At (0,3,1) this one outranks it
+     whatever the source order.
+
+     It is unconditional because `cart-icon.js` re-adds the --has-cart class
+     on every cart update, so keying the reset to that class only invites the
+     mask back. With no bubble to clear, there is never a donut to cut. */
   .header-actions__action .sp-cart .sp-cart__icon svg {
     width: 14px;
     height: 17px;
     color: #23252c;
+    -webkit-mask: none;
+    mask: none;
   }
 
   .sp-cart__label {
@@ -94,14 +117,10 @@
     white-space: nowrap;
   }
 
-  /* The box replaces the floating bubble, so suppress the bubble and the
-     donut mask Horizon cuts out of the icon to make room for it. */
+  /* The box replaces the floating bubble, so suppress the bubble. The donut
+     mask that went with it is reset on the icon rule above. */
   .sp-cart .cart-bubble {
     display: none;
-  }
-
-  .sp-cart.header-actions__cart-icon--has-cart svg {
-    mask: none;
   }
 
 {% endstylesheet %}
