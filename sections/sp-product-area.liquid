@@ -856,17 +856,34 @@
     overflow: clip;
   }
 
+  /* The plate the photograph sits on. A contained image leaves margins of
+     its own, and the catalogue's renderings are cut out on white, so the
+     plate is white too and the two read as one surface rather than as a
+     picture pasted onto a grey card. */
   .sp-gallery__hero {
     position: absolute;
     inset: 3.21% 2.41%;
     overflow: clip;
+    background: var(--sp-surface);
   }
 
+  /* `contain`, not `cover`. The catalogue's photographs run from 0.89 to
+     3.9 in aspect ratio against this viewport's 4:3, so cover was cutting
+     a third of the height off the portrait renderings — a vacuum pump
+     arrived looking like a detail shot of itself. Contain shows the whole
+     instrument at every ratio, which is what someone comparing part
+     numbers is here to look at.
+
+     The element still fills the hero box; only the pixels inside it are
+     letterboxed. That matters: the magnifier sets transform-origin as a
+     percentage of the viewport, so the box it scales about has to keep the
+     geometry it had under cover or the lens would stop tracking the
+     cursor. */
   .sp-gallery__hero img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 300ms ease;
   }
 
@@ -993,13 +1010,18 @@
   .sp-gallery__thumb-media {
     display: block;
     aspect-ratio: 4 / 3;
+    background: var(--sp-surface);
   }
 
+  /* Matches the hero. A thumbnail cropped differently from the plate it
+     opens is a thumbnail that misrepresents what the visitor is about to
+     see. The selected tint still shows, in the 3px ring around this
+     plate. */
   .sp-gallery__thumb-media img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .sp-gallery__arrow {
