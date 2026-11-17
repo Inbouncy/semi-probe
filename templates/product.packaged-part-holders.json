@@ -1,0 +1,251 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "sp-pdp-breadcrumb",
+      "settings": {
+        "aria_label": "Breadcrumb",
+        "separator": "›",
+        "crumb_1_label": "SHOP",
+        "crumb_1_url": "/",
+        "crumb_2_label": "",
+        "crumb_2_url": "",
+        "current_label": "Packaged Part Holders"
+      }
+    },
+    "product_area": {
+      "type": "sp-product-area",
+      "settings": {
+        "column_gap": 24,
+        "inspection_label": "OPTICAL INSPECTION · SINGLE LEADSCREW JAWS",
+        "fig_label": "FIG 1.0 · 6 INCH AND 8 INCH OPENINGS",
+        "zoom_badge": "INSPECTION 3X ENLARGEMENT",
+        "zoom_badge_touch": "PRESS & HOLD TO INSPECT · 3X",
+        "image_order": "1,2,3,4,5,6,7,8,9",
+        "zoom_factor": 3,
+        "autorotate": true,
+        "rotate_seconds": 3,
+        "prev_label": "Previous images",
+        "next_label": "Next images",
+        "thumb_label": "Show image [n]",
+        "trace_1": "Single Leadscrew Jaw Action",
+        "trace_2": "Mounts on Standard Vacuum Chucks",
+        "trace_3": "X, Y, Z and Theta Movement",
+        "eyebrow": "PACKAGED PART HOLDERS",
+        "chip": "[count] CONFIGURATIONS",
+        "title_override": "Packaged Part Holders",
+        "subtitle": "Leadscrew jaw holders for packaged parts, substrates and printed circuit boards.",
+        "price_suffix": "USD MSRP",
+        "stock_label": "Ready to Assemble",
+        "ships_label": "Ships in 2-3 Weeks",
+        "sold_out_label": "SOLD OUT",
+        "model_label": "Model Series",
+        "base_label": "Mounting Base",
+        "arm_label": "Probe Arm Assembly",
+        "other_label": "Jaw Opening Size",
+        "summary_title": "SELECTED CONFIGURATION",
+        "summary_res_label": "Feature Resolution:",
+        "summary_travel_label": "Travel (X,Y,Z):",
+        "summary_base_label": "Base:",
+        "summary_arm_label": "Probe Arm:",
+        "part_label": "PART NUMBER:",
+        "cart_label": "ADD TO CART",
+        "quote_label": "DOWNLOAD THE SPECIFICATION PDF",
+        "quote_url": "",
+        "update_url": true,
+        "bullet_1": "Comes with an adapter to mount on standard vacuum chucks",
+        "bullet_2": "5% academic, non-profit & government institution discount available",
+        "bullet_3": "Net 30 Purchase Orders (PO) accepted upon credit clearance",
+        "contact_line": "<p>Probing an unusual package or board size? <a href=\"/#product-inquiry\">Fill out our quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a>.</p>",
+        "variant_map": "",
+        "model_table": "",
+        "base_table": "",
+        "arm_table": ""
+      }
+    },
+    "overview": {
+      "type": "sp-pdp-overview",
+      "settings": {
+        "eyebrow": "PRODUCT FAMILY",
+        "heading": "Overview",
+        "body": "<p>The Packaged Part Holder (PPH) is available in 6 inch and 8 inch opening versions. A single leadscrew opens and closes the jaws, holding a variety of die, packaged parts, substrates, printed circuit boards and similar devices for probing applications.</p><p>Each holder comes with an adapter to mount on standard vacuum chucks and the wafer stage. It can also mount directly onto the wafer stage. The user has the option to move the PPH in X, Y, Z and theta. The jaws will also hold a wafer chuck, making it straightforward to test die, partial wafers and whole wafers.</p>",
+        "spec_1_label": "Jaw Action",
+        "spec_1_value": "Single Leadscrew",
+        "spec_2_label": "Mounting",
+        "spec_2_value": "Vacuum Chuck or Wafer Stage",
+        "spec_3_label": "Movement",
+        "spec_3_value": "X, Y, Z and Theta"
+      }
+    },
+    "compare": {
+      "type": "sp-compare-models",
+      "settings": {
+        "eyebrow": "SYSTEM SELECTION MATRIX",
+        "heading": "Compare Models",
+        "description": "Two opening sizes, matched to the largest part or board you need to hold.",
+        "table_caption": "Packaged part holders compared by jaw opening",
+        "spec_heading": "SPECIFICATION",
+        "columns": "6 Inch | 8 Inch",
+        "highlight_column": 2,
+        "badge_label": "POPULAR",
+        "accent_row": "Jaw Opening",
+        "rows": "Price From | $3,825.00 | $3,945.00\nJaw Opening | 6 inch | 8 inch\nShipping Weight | 3 lb | 3 lb\nJaw Action | Single leadscrew | Single leadscrew\nMounting | Vacuum chuck adapter or wafer stage | Vacuum chuck adapter or wafer stage\nHolds | Die, packaged parts, substrates, PCBs, wafer chucks | Die, packaged parts, substrates, PCBs, wafer chucks\nTypically Used For | Packaged device and small board probing | Larger boards and panel-level probing",
+        "show_actions": false,
+        "action_label": "Action",
+        "select_label": "SELECT",
+        "selected_label": "SELECTED"
+      }
+    },
+    "specs": {
+      "type": "sp-specifications",
+      "settings": {
+        "eyebrow": "ENGINEERING DATA",
+        "heading": "Specifications",
+        "headline": "Showing the selected jaw opening",
+        "note": "Choose the opening that covers the largest part or board you handle.",
+        "change_label": "Change configuration ↑",
+        "group_1_title": "PART HOLDER",
+        "group_1_icon": "tune",
+        "group_1_rows": "Jaw opening: | Selected above | bold\nJaw action: | Single leadscrew, opens and closes\nMovement: | X, Y, Z and theta\nHolds: | Die, packaged parts, substrates, PCBs | bold",
+        "group_2_title": "MOUNTING",
+        "group_2_icon": "cable",
+        "group_2_rows": "Adapter: | Included, for standard vacuum chucks\nDirect mount: | Onto the wafer stage\nWafer chuck: | Jaws will also hold a wafer chuck",
+        "group_3_title": "ORDERING",
+        "group_3_icon": "inventory",
+        "group_3_rows": "SKU: | [sku] | bold\nShipping weight: | 3 lb\nLead time: | 2–3 weeks ARO\nCountry of Origin: | USA (Burlington, VT)"
+      }
+    },
+    "faq": {
+      "type": "sp-pdp-faq",
+      "settings": {
+        "eyebrow": "COMMON INQUIRIES",
+        "heading": "Questions About Packaged Part Holders"
+      },
+      "blocks": {
+        "faq_1": {
+          "type": "qa",
+          "settings": {
+            "question": "Which opening size should I choose?",
+            "answer": "<p>Size for the largest part or board you need to hold. The 6 inch opening suits packaged devices and smaller boards; the 8 inch opening covers larger boards and panel-level work. A larger opening will still hold smaller parts.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "qa",
+          "settings": {
+            "question": "How does the holder mount to my station?",
+            "answer": "<p>It comes with an adapter to mount on standard vacuum chucks and the wafer stage, and it can also mount directly onto the wafer stage. From there you can move it in X, Y, Z and theta.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "qa",
+          "settings": {
+            "question": "Can it hold a wafer chuck?",
+            "answer": "<p>Yes. The jaws will hold a wafer chuck, which makes it straightforward to move between testing die, partial wafers and whole wafers without changing fixturing.</p>"
+          }
+        },
+        "faq_4": {
+          "type": "qa",
+          "settings": {
+            "question": "What can the jaws hold?",
+            "answer": "<p>Die, packaged parts, substrates, printed circuit boards and similar devices for probing applications — and a wafer chuck when you need one.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4"
+      ]
+    },
+    "cta": {
+      "type": "sp-cta-band",
+      "settings": {
+        "eyebrow": "BESPOKE LABORATORY INTEGRATION",
+        "heading": "Probing Something Unusual?",
+        "body": "SemiProbe builds fixturing to order — custom jaw geometries, adapters and holders for packages, boards and substrates that standard fixturing will not take.",
+        "primary_label": "REQUEST A QUOTE",
+        "primary_url": "/#product-inquiry",
+        "secondary_label": "CALL (802) 860-7000",
+        "secondary_url": "tel:+18028607000"
+      }
+    },
+    "related": {
+      "type": "sp-frequently-ordered",
+      "settings": {
+        "eyebrow": "SYSTEM ACCESSORIES",
+        "heading": "Frequently Ordered With",
+        "anchor_id": "tips-callout"
+      },
+      "blocks": {
+        "related_1": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/StandardWaferChuck.jpg",
+            "title": "Wafer Chucks",
+            "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.",
+            "price": "From $1,840.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/wafer-chucks",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_2": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/Vacuum_Pump_-_115_V.png",
+            "title": "Vacuum Pumps",
+            "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.",
+            "price": "From $740.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/vacuum-pumps",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_3": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/product-pic-2-1.webp",
+            "title": "Probe Tips",
+            "description": "Tungsten & BeCu precision tips for DC, RF and low-current wafer probing.",
+            "price": "From $200.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/probe-tips",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_4": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/MA-9000_Magnetic_Base_Coaxial_Probe_Arm_Long.png",
+            "title": "Manual Manipulators",
+            "description": "X, Y and Z probe positioning across four model series, 5 µm to 0.35 µm.",
+            "price": "From $1,990.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/manual-manipulators",
+            "featured": false,
+            "badge": ""
+          }
+        }
+      },
+      "block_order": [
+        "related_1",
+        "related_2",
+        "related_3",
+        "related_4"
+      ]
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "product_area",
+    "overview",
+    "compare",
+    "specs",
+    "faq",
+    "cta",
+    "related"
+  ]
+}

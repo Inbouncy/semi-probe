@@ -1,0 +1,275 @@
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "sp-pdp-breadcrumb",
+      "settings": {
+        "aria_label": "Breadcrumb",
+        "separator": "›",
+        "crumb_1_label": "SHOP",
+        "crumb_1_url": "/",
+        "crumb_2_label": "",
+        "crumb_2_url": "",
+        "current_label": "Probe Tips"
+      }
+    },
+    "product_area": {
+      "type": "sp-product-area",
+      "settings": {
+        "column_gap": 24,
+        "inspection_label": "OPTICAL INSPECTION · TUNGSTEN TIP GEOMETRY",
+        "fig_label": "FIG 1.0 · BOX OF 10 PRECISION TIPS",
+        "zoom_badge": "INSPECTION 3X ENLARGEMENT",
+        "zoom_badge_touch": "PRESS & HOLD TO INSPECT · 3X",
+        "image_order": "1,2,3,4,5,6,7,8,9",
+        "zoom_factor": 3,
+        "autorotate": true,
+        "rotate_seconds": 3,
+        "prev_label": "Previous images",
+        "next_label": "Next images",
+        "thumb_label": "Show image [n]",
+        "trace_1": "Consistent Tip Geometry",
+        "trace_2": "High-Grade Tungsten",
+        "trace_3": "Sold in Boxes of 10",
+        "eyebrow": "PROBE TIPS",
+        "chip": "[count] CONFIGURATIONS",
+        "title_override": "Probe Tips",
+        "subtitle": "Tungsten probe tips for manipulators and positioners on probing systems.",
+        "price_suffix": "USD MSRP",
+        "stock_label": "Ready to Assemble",
+        "ships_label": "Ships in 2-3 Weeks",
+        "sold_out_label": "SOLD OUT",
+        "model_label": "Model Series",
+        "base_label": "Mounting Base",
+        "arm_label": "Probe Arm Assembly",
+        "other_label": "Tip Radius",
+        "summary_title": "SELECTED CONFIGURATION",
+        "summary_res_label": "Feature Resolution:",
+        "summary_travel_label": "Travel (X,Y,Z):",
+        "summary_base_label": "Base:",
+        "summary_arm_label": "Probe Arm:",
+        "part_label": "PART NUMBER:",
+        "cart_label": "ADD TO CART",
+        "quote_label": "DOWNLOAD THE SPECIFICATION PDF",
+        "quote_url": "",
+        "update_url": true,
+        "bullet_1": "Each box contains 10 precision-milled probe tips",
+        "bullet_2": "5% academic, non-profit & government institution discount available",
+        "bullet_3": "Net 30 Purchase Orders (PO) accepted upon credit clearance",
+        "contact_line": "<p>Need another material, radius or a custom tip geometry? <a href=\"/#product-inquiry\">Fill out our quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a>.</p>",
+        "variant_map": "",
+        "model_table": "",
+        "base_table": "",
+        "arm_table": ""
+      }
+    },
+    "overview": {
+      "type": "sp-pdp-overview",
+      "settings": {
+        "eyebrow": "PRODUCT FAMILY",
+        "heading": "Overview",
+        "body": "<p>Engineered for accuracy, durability, and compatibility with a wide range of probing systems, SemiProbe tungsten probe tips are built for precise electrical measurements and microcircuit testing. High-quality tungsten delivers hardness, conductivity and wear resistance for demanding work in semiconductor, microelectronics and materials research environments.</p><p>Each box contains 10 precision-milled probe tips, available in radii from 1 µm for high-resolution probing up to 25 µm for more robust testing. Please call or email SemiProbe if other materials or sizes are required.</p>",
+        "spec_1_label": "Tip Material",
+        "spec_1_value": "High-Grade Tungsten",
+        "spec_2_label": "Radii Available",
+        "spec_2_value": "1 µm to 25 µm",
+        "spec_3_label": "Pack Quantity",
+        "spec_3_value": "Box of 10 Tips"
+      }
+    },
+    "specs": {
+      "type": "sp-specifications",
+      "settings": {
+        "eyebrow": "ENGINEERING DATA",
+        "heading": "Specifications",
+        "headline": "Showing the selected tip radius",
+        "note": "Choose a radius above. Each part number is a box of ten tips.",
+        "change_label": "Change configuration ↑",
+        "group_1_title": "PROBE TIP",
+        "group_1_icon": "tune",
+        "group_1_rows": "Material: | High-grade tungsten | bold\nRadius: | Selected above | bold\nGeometry: | Precision-milled, consistent tip profile\nApplication: | DC and low-frequency probing\nDurability: | High hardness and wear resistance",
+        "group_2_title": "PACKAGING",
+        "group_2_icon": "inventory",
+        "group_2_rows": "Pack quantity: | Box of 10 probe tips | bold\nShipping weight: | 1 lb per box",
+        "group_3_title": "ORDERING",
+        "group_3_icon": "inventory",
+        "group_3_rows": "SKU: | [sku] | bold\nLead time: | 2–3 weeks ARO\nCountry of Origin: | USA (Burlington, VT)\nOther materials and radii: | Available on request"
+      }
+    },
+    "choosing": {
+      "type": "sp-choosing",
+      "settings": {
+        "eyebrow": "SELECTION ARCHITECTURE",
+        "heading": "Choosing a Configuration",
+        "bar_text": "Probing sub-micron features, or need a tip material we do not list?",
+        "bar_call_label": "Call (802) 860-7000",
+        "bar_call_url": "tel:+18028607000",
+        "bar_cta_label": "REQUEST REVIEW",
+        "bar_cta_url": "/#product-inquiry"
+      },
+      "blocks": {
+        "choosing_1": {
+          "type": "guide",
+          "settings": {
+            "tag": "GEOMETRY",
+            "title": "START WITH FEATURE SIZE",
+            "description": "Match the tip radius to the smallest pad or trace you need to contact. Finer radii of 1 µm to 5 µm suit high-resolution probing on small structures; 10 µm to 25 µm give a more robust tip for bond pads and larger test structures."
+          }
+        },
+        "choosing_2": {
+          "type": "guide",
+          "settings": {
+            "tag": "DURABILITY",
+            "title": "BALANCE RESOLUTION AGAINST TIP LIFE",
+            "description": "A finer radius contacts smaller features but wears faster and is more easily damaged by overtravel. Where your pads allow it, the larger radius will survive more touchdowns and hold its geometry longer."
+          }
+        },
+        "choosing_3": {
+          "type": "guide",
+          "settings": {
+            "tag": "MATERIALS",
+            "title": "ASK IF YOU NEED SOMETHING ELSE",
+            "description": "The radii listed here are tungsten, which covers most DC and low-frequency probing. If your application calls for another material or a radius outside this range, contact SemiProbe and we will quote it."
+          }
+        }
+      },
+      "block_order": [
+        "choosing_1",
+        "choosing_2",
+        "choosing_3"
+      ]
+    },
+    "faq": {
+      "type": "sp-pdp-faq",
+      "settings": {
+        "eyebrow": "COMMON INQUIRIES",
+        "heading": "Questions About Probe Tips"
+      },
+      "blocks": {
+        "faq_1": {
+          "type": "qa",
+          "settings": {
+            "question": "How many probe tips come in a box?",
+            "answer": "<p>Every part number on this page is a box of ten precision-milled probe tips. The price shown is for the complete box, not an individual tip.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "qa",
+          "settings": {
+            "question": "Which radius should I choose?",
+            "answer": "<p>Match the radius to the smallest feature you need to probe. Radii from 1 µm to 5 µm suit high-resolution work on small structures, while 10 µm to 25 µm give a more durable tip for bond pads and larger test structures. See the selection guidance above.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "qa",
+          "settings": {
+            "question": "Are other materials available?",
+            "answer": "<p>The tips listed here are high-grade tungsten. SemiProbe can supply other materials and sizes on request — call or email us with your application and we will quote it.</p>"
+          }
+        },
+        "faq_4": {
+          "type": "qa",
+          "settings": {
+            "question": "Do these tips fit my probe arms?",
+            "answer": "<p>They are designed for use with SemiProbe manipulators and positioners and fit a wide range of probe stations and probe arms. If you are probing with a non-SemiProbe arm, send us the details and we will confirm fit before you order.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4"
+      ]
+    },
+    "cta": {
+      "type": "sp-cta-band",
+      "settings": {
+        "eyebrow": "BESPOKE LABORATORY INTEGRATION",
+        "heading": "Need a Tip Geometry That Isn't Listed?",
+        "body": "SemiProbe manufactures probe tips in other materials, radii and custom geometries for proprietary test environments. Tell us your pad size, probing force and measurement type and we will quote the right tip.",
+        "primary_label": "REQUEST A QUOTE",
+        "primary_url": "/#product-inquiry",
+        "secondary_label": "CALL (802) 860-7000",
+        "secondary_url": "tel:+18028607000"
+      }
+    },
+    "related": {
+      "type": "sp-frequently-ordered",
+      "settings": {
+        "eyebrow": "SYSTEM ACCESSORIES",
+        "heading": "Frequently Ordered With",
+        "anchor_id": "tips-callout"
+      },
+      "blocks": {
+        "related_1": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/3_coaxarm.jpg",
+            "title": "Probe Arms",
+            "description": "Individual coaxial, triaxial, Kelvin, and HF probe arms with precision mounts.",
+            "price": "From $500.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/probe-arms",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_2": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/MA-9000_Magnetic_Base_Coaxial_Probe_Arm_Long.png",
+            "title": "Manual Manipulators",
+            "description": "X, Y and Z probe positioning across four model series, 5 µm to 0.35 µm.",
+            "price": "From $1,990.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/manual-manipulators",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_3": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/StandardWaferChuck.jpg",
+            "title": "Wafer Chucks",
+            "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.",
+            "price": "From $1,840.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/wafer-chucks",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_4": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/Vacuum_Pump_-_115_V.png",
+            "title": "Vacuum Pumps",
+            "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.",
+            "price": "From $740.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/vacuum-pumps",
+            "featured": false,
+            "badge": ""
+          }
+        }
+      },
+      "block_order": [
+        "related_1",
+        "related_2",
+        "related_3",
+        "related_4"
+      ]
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "product_area",
+    "overview",
+    "specs",
+    "choosing",
+    "faq",
+    "cta",
+    "related"
+  ]
+}
