@@ -1,0 +1,433 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumb": {
+      "type": "sp-pdp-breadcrumb",
+      "settings": {
+        "aria_label": "Breadcrumb",
+        "separator": "›",
+        "crumb_1_label": "SHOP",
+        "crumb_1_url": "/",
+        "crumb_2_label": "",
+        "crumb_2_url": "",
+        "current_label": "Manual Manipulators"
+      }
+    },
+    "product_area": {
+      "type": "sp-product-area",
+      "settings": {
+        "column_gap": 24,
+        "inspection_label": "OPTICAL INSPECTION · 100 TPI MICROMETER STAGE",
+        "fig_label": "FIG 1.0 · SUB-MICRON RESOLUTION",
+        "zoom_badge": "INSPECTION 3X ENLARGEMENT",
+        "zoom_badge_touch": "PRESS & HOLD TO INSPECT · 3X",
+        "image_order": "2,1,3,4,5,6,7,8,9",
+        "zoom_factor": 3,
+        "autorotate": true,
+        "rotate_seconds": 3,
+        "prev_label": "Previous images",
+        "next_label": "Next images",
+        "thumb_label": "Show image [n]",
+        "trace_1": "NIST-Traceable Calibrated Vernier Drums",
+        "trace_2": "Zero-Backlash Preloaded Bearings",
+        "trace_3": "MIL-STD-883 Compliant",
+        "eyebrow": "MANUAL MANIPULATORS",
+        "chip": "[count] CONFIGURATIONS",
+        "title_override": "Manual Manipulators",
+        "subtitle": "X, Y and Z probe positioning for probe systems — analytical, production and bench.",
+        "price_suffix": "USD MSRP",
+        "stock_label": "Ready to Assemble",
+        "ships_label": "Ships in 2-3 Weeks",
+        "sold_out_label": "SOLD OUT",
+        "model_label": "Model Series",
+        "base_label": "Mounting Base",
+        "arm_label": "Probe Arm Assembly",
+        "other_label": "Other Configurations",
+        "summary_title": "SELECTED CONFIGURATION",
+        "summary_res_label": "Feature Resolution:",
+        "summary_travel_label": "Travel (X,Y,Z):",
+        "summary_base_label": "Base:",
+        "summary_arm_label": "Probe Arm:",
+        "part_label": "PART NUMBER:",
+        "cart_label": "ADD TO CART",
+        "quote_label": "DOWNLOAD THE SPECIFICATION PDF",
+        "quote_url": "",
+        "update_url": true,
+        "bullet_1": "Complete assembly — body, base, faceplate and probe arm included",
+        "bullet_2": "5% academic, non-profit & government institution discount available",
+        "bullet_3": "Net 30 Purchase Orders (PO) accepted upon credit clearance",
+        "contact_line": "<p>Questions about configuration or want to receive your discount? <a href=\"/#product-inquiry\">Fill out our quote form</a> or call us directly at <a href=\"tel:+18028607000\">(802) 860-7000</a>.</p>",
+        "variant_map": "A-MAN-MA-8005-M-C-S | MA-8005 | MAG | CS\nA-MAN-MA-8005-V-C-S | MA-8005 | VAC | CS\nA-MAN-MA-8005-M-T-S | MA-8005 | MAG | TS\nA-MAN-MA-8005-V-T-S | MA-8005 | VAC | TS\nA-MAN-MA-9000-80-M-C-L | MA-9000 | MAG | CL\nA-MAN-MA-9000-80-V-C-L | MA-9000 | VAC | CL\nA-MAN-MA-9000-80-M-T-L | MA-9000 | MAG | TL\nA-MAN-MA-9000-80-V-T-L | MA-9000 | VAC | TL\nA-MAN-MA-9000-80-M-HFWE | MA-9000 | MAG | WE\nA-MAN-MA-9000-80-M-HFNS | MA-9000 | MAG | NS\nA-MAN-MA-9100-M-C-L | MA-9100 | MAG | CL\nA-MAN-MA-9100-V-C-L | MA-9100 | VAC | CL\nA-MAN-MA-9100-M-T-L | MA-9100 | MAG | TL\nA-MAN-MA-9100-V-T-L | MA-9100 | VAC | TL\nA-MAN-MA-9100-M-HFWE | MA-9100 | MAG | WE\nA-MAN-MA-9100-M-HFNS | MA-9100 | MAG | NS\nA-MAN-MA-8500-MB-HF-WE | MA-8500 | MAG | WE\nA-MAN-MA-8500-MB-HF-NS | MA-8500 | MAG | NS\nA-MAN-MA-8500-BD-HF-WE | MA-8500 | BLT | WE\nA-MAN-MA-8500-BD-HF-NS | MA-8500 | BLT | NS\nA-MAN-MA8500-EMWE-BD-0001 | MA-8500 | FEM | WE",
+        "model_table": "MA-8005 | MA-8005 (40 TPI, 5.0 µm resolution, 10mm Travel) | general-purpose 40 TPI | 40 TPI | 5 µm | 10 x 10 x 10 mm\nMA-9000 | MA-9000 (80 TPI, 1.0 µm resolution, 13mm Travel) | high resolution 80 TPI | 80 TPI | 1 µm | 13 x 13 x 13 mm\nMA-9100 | MA-9100 (100 TPI, 0.35 µm resolution, 13mm Travel) | ultra-high resolution 100 TPI | 100 TPI | 0.35 µm | 13 x 13 x 13 mm\nMA-8500 | MA-8500 (80 TPI, High-Frequency / Bolt-down) | high-frequency RF platform | 80 TPI | 1 µm | 13 x 13 x 13 mm",
+        "base_table": "MAG | Magnetic (High-field toggle switch) | ferromagnetic platen clamp\nVAC | Vacuum (Direct laboratory house suction) | house vacuum hold-down\nBLT | Bolt-down (MA-8500 only) | fixed mechanical mount\nFEM | Bolt-down with Frequency Extender Module (MA-8500 only) | extended-frequency bolt-down",
+        "arm_table": "CS | Coaxial – Short (MA-8005 only) | coaxial short-reach\nCL | Coaxial – Long | coaxial long-reach\nTS | Triaxial – Short (MA-8005 only) | low-noise 3-lug triax\nTL | Triaxial – Long | low-noise 3-lug triax\nWE | HF – West/East (Magnetic base only) | high-frequency west/east\nNS | HF – North/South (Magnetic base only) | high-frequency north/south"
+      }
+    },
+    "overview": {
+      "type": "sp-pdp-overview",
+      "settings": {
+        "eyebrow": "PRODUCT FAMILY",
+        "heading": "Overview",
+        "body": "<p>SemiProbe manual manipulators provide precise X, Y, and Z positioning of probe arms and probe tips on analytical, production, and benchtop probing systems. Designed for wafer-level probing, device characterization, and failure analysis, each manipulator delivers smooth, backlash-free movement across its entire travel range.</p><p>The family spans four distinct model series — from the compact MA-8005 for general probing down to 5 µm features, through the ultra-high-resolution MA-9100 offering 100 TPI and sub-micron positioning, to the specialized MA-8500 engineered specifically for high-frequency and millimeter-wave applications.</p>",
+        "spec_1_label": "Kinematic Structure",
+        "spec_1_value": "Cross-Roller Bearing Rails",
+        "spec_2_label": "Drift Stability",
+        "spec_2_value": "< 0.1 µm / hour @ 21°C",
+        "spec_3_label": "Faceplate Interface",
+        "spec_3_value": "Quick-Swap Dovetail Joint"
+      }
+    },
+    "compare": {
+      "type": "sp-compare-models",
+      "settings": {
+        "eyebrow": "SYSTEM SELECTION MATRIX",
+        "heading": "Compare Models",
+        "description": "Four model series, each suited to a different combination of feature size, travel range and probe arm type.",
+        "table_caption": "Specifications compared across the four manual manipulator model series",
+        "spec_heading": "SPECIFICATION",
+        "columns": "MA-8005 | MA-9000 | MA-9100 | MA-8500",
+        "highlight_column": 3,
+        "badge_label": "POPULAR",
+        "accent_row": "Feature Resolution",
+        "rows": "TPI | 40 | 80 | 100 | 80\nFeature Resolution | 5 µm | 1 µm | 0.35 µm | 1 µm\nTravel (X, Y, Z) | 10 x 10 x 10 mm | 13 x 13 x 13 mm | 13 x 13 x 13 mm | 13 x 13 x 13 mm\nProbe Arms | Coaxial short, Triaxial short | Coaxial long, Triaxial long, HF | Coaxial long, Triaxial long, HF | HF West/East, HF North/South\nBases | Magnetic, Vacuum | Magnetic, Vacuum | Magnetic, Vacuum | **Magnetic, Bolt-down, Bolt-down + Frequency Extender Module**\nConfigurations | 4 | 6 | 6 | 5\nTypically Used For | General analytical probing & test pads | Precision characterization & failure analysis | Sub-micron semiconductor probing | RF, microwave & mm-wave testing",
+        "show_actions": true,
+        "action_label": "Action",
+        "select_label": "SELECT",
+        "selected_label": "SELECTED"
+      }
+    },
+    "specs": {
+      "type": "sp-specifications",
+      "settings": {
+        "eyebrow": "ENGINEERING DATA",
+        "heading": "Specifications",
+        "headline": "Showing: [model] · [base] Base · [arm]",
+        "note": "Specs update live with the model, base and probe arm selected in the configurator.",
+        "change_label": "Change configuration ↑",
+        "group_1_title": "MANIPULATOR",
+        "group_1_icon": "tune",
+        "group_1_rows": "Model: | [model] | bold\nType: | Manual micromanipulator\nTPI: | [tpi] | bold\nFeature resolution: | [resolution] | bold\nTravel range (X, Y, Z): | [travel]\nBase type: | [base] mounting platform",
+        "group_2_title": "PROBE ARM FITTED",
+        "group_2_icon": "cable",
+        "group_2_rows": "Arm type: | [arm] | bold\nLength: | Long (210 mm)\nBody diameter: | 12.7 mm\nMount: | Precision dovetail faceplate\nDrop: | Adjustable 0–15 mm\nCable: | Low-noise triaxial cable\nConnector: | Standard triaxial (3-lug)",
+        "group_3_title": "ORDERING",
+        "group_3_icon": "inventory",
+        "group_3_rows": "SKU: | [sku] | bold\nConfiguration name: | [config]\nLead time: | 2–3 weeks ARO\nCalibration standard: | NIST Standard Class A\nCountry of Origin: | USA (Burlington, VT)\nHarmonized Tariff (HTS): | 9031.90.5900"
+      }
+    },
+    "included": {
+      "type": "sp-whats-included",
+      "settings": {
+        "eyebrow": "PACKAGE CONTENTS",
+        "heading": "What's Included",
+        "note": "Probe tips are ordered separately.",
+        "note_link_label": "VIEW COMPATIBLE TIPS →",
+        "note_link_url": "#tips-callout"
+      },
+      "blocks": {
+        "included_1": {
+          "type": "card",
+          "settings": {
+            "title": "Manipulator body",
+            "description": "Precision CNC-machined body with micrometer drives and zero-backlash preloaded spring mechanism.",
+            "caption": "Chassis core"
+          }
+        },
+        "included_2": {
+          "type": "card",
+          "settings": {
+            "title": "Base",
+            "description": "Selected magnetic, vacuum, or bolt-down mounting base with integrated clamping lever.",
+            "caption": "Platen interface"
+          }
+        },
+        "included_3": {
+          "type": "card",
+          "settings": {
+            "title": "Adjustable faceplate",
+            "description": "Dovetail mounting faceplate allowing vertical height adjustment and probe tip planarization.",
+            "caption": "Z-drop align"
+          }
+        },
+        "included_4": {
+          "type": "card",
+          "settings": {
+            "title": "Probe arm",
+            "description": "Selected coaxial, triaxial, or high-frequency probe arm assembly with integrated cabling and connector.",
+            "caption": "Signal conduit"
+          }
+        }
+      },
+      "block_order": [
+        "included_1",
+        "included_2",
+        "included_3",
+        "included_4"
+      ]
+    },
+    "compat": {
+      "type": "sp-arm-compatibility",
+      "settings": {
+        "eyebrow": "INTERFACING STANDARDS",
+        "heading": "Probe Arm Compatibility",
+        "description": "Verify compatibility between manipulator bodies and probe arm types. Ensure adequate clearance and mount stability for high-frequency setups.",
+        "table_caption": "Probe arm types supported by each manipulator model",
+        "row_heading": "ARM TYPE",
+        "columns": "MA-8005 | MA-9000 | MA-9100 | MA-8500",
+        "highlight_column": 3,
+        "yes_mark": "✓",
+        "no_mark": "—",
+        "rows": "Coaxial — short | ✓ | — | — | —\nCoaxial — long | — | ✓ | ✓ | —\nTriaxial — short | ✓ | — | — | —\nTriaxial — long | — | ✓ | ✓ | —\nKelvin (quasi / true) | — | ✓ | ✓ | —\nHF — West/East | — | ✓ (Mag only) | ✓ (Mag only) | ✓\nHF — North/South | — | ✓ (Mag only) | ✓ (Mag only) | ✓\nFiber optic | — | ✓ | ✓ | —"
+      }
+    },
+    "choosing": {
+      "type": "sp-choosing",
+      "settings": {
+        "eyebrow": "SELECTION ARCHITECTURE",
+        "heading": "Choosing a Configuration",
+        "bar_text": "Probing at sub-micron feature sizes, or unsure which model fits your application?",
+        "bar_call_label": "Call (802) 860-7000",
+        "bar_call_url": "tel:+18028607000",
+        "bar_cta_label": "REQUEST REVIEW",
+        "bar_cta_url": "/#product-inquiry"
+      },
+      "blocks": {
+        "choosing_1": {
+          "type": "guide",
+          "settings": {
+            "tag": "GEOMETRY",
+            "title": "START WITH FEATURE SIZE",
+            "description": "Determine the smallest pad or trace geometry you need to probe. For features ≥5 µm, the MA-8005 provides rugged, cost-effective performance. For 1 µm to 5 µm, select the MA-9000. For sub-micron structures (<1 µm), the 100 TPI resolution of the MA-9100 is essential."
+          }
+        },
+        "choosing_2": {
+          "type": "guide",
+          "settings": {
+            "tag": "ENVELOPE",
+            "title": "CHECK YOUR TRAVEL REQUIREMENT",
+            "description": "Evaluate the necessary repositioning envelope across your wafer or die. The MA-8005 provides 10 mm travel on all three axes; the MA-9000, MA-9100, and MA-8500 offer an expanded 13 mm X, Y, and Z envelope."
+          }
+        },
+        "choosing_3": {
+          "type": "guide",
+          "settings": {
+            "tag": "FIXATION",
+            "title": "MATCH THE BASE TO YOUR SETUP",
+            "description": "Magnetic bases offer quick, secure positioning on ferromagnetic platens. Vacuum bases are ideal for non-magnetic surfaces with available house vacuum. Bolt-down configurations are recommended for high-frequency installations where ultimate mechanical rigidity is critical."
+          }
+        }
+      },
+      "block_order": [
+        "choosing_1",
+        "choosing_2",
+        "choosing_3"
+      ]
+    },
+    "docs": {
+      "type": "sp-documentation",
+      "settings": {
+        "eyebrow": "TECHNICAL ARCHIVE",
+        "heading": "Documentation",
+        "selected_label": "Selected",
+        "download_label": "Download Now"
+      },
+      "blocks": {
+        "docs_1": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-8005 Data Sheet — general purpose DC",
+            "meta": "PDF · 196 KB",
+            "icon": "pdf",
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-8005-Data-Sheet.pdf?v=1791973957"
+          }
+        },
+        "docs_2": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-9000 Data Sheet — multi-purpose DC, HF and opto",
+            "meta": "PDF · 130 KB",
+            "icon": "pdf",
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-9000-Data-Sheet-0117.pdf?v=1791973957"
+          }
+        },
+        "docs_3": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-9100 Data Sheet — submicron DC and HF",
+            "meta": "PDF · 104 KB",
+            "icon": "pdf",
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-9100-Data-Sheet-0117.pdf?v=1791973957"
+          }
+        },
+        "docs_4": {
+          "type": "doc",
+          "settings": {
+            "title": "MA-8500 Data Sheet — heavy-duty high frequency",
+            "meta": "PDF · 373 KB",
+            "icon": "pdf",
+            "url": "https://cdn.shopify.com/s/files/1/0639/0723/3910/files/MA-8500-Data-Sheet-0317.pdf?v=1791973957"
+          }
+        }
+      },
+      "block_order": [
+        "docs_1",
+        "docs_2",
+        "docs_3",
+        "docs_4"
+      ]
+    },
+    "faq": {
+      "type": "sp-pdp-faq",
+      "settings": {
+        "eyebrow": "COMMON INQUIRIES",
+        "heading": "Questions About Manual Manipulators"
+      },
+      "blocks": {
+        "faq_1": {
+          "type": "qa",
+          "settings": {
+            "question": "Can I upgrade the probe arm on my manipulator later?",
+            "answer": "<p>Yes. The probe arm mounts to a dovetail faceplate, so it can be swapped without replacing the manipulator body. Check the compatibility table above first: each model supports a different set of arm types, and the high-frequency arms require a magnetic base on the MA-9000 and MA-9100.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "qa",
+          "settings": {
+            "question": "What is the difference between 80 TPI and 100 TPI lead screws?",
+            "answer": "<p>Threads per inch sets how far the stage moves per turn of the drum, and so how finely you can place a probe. The 80 TPI MA-9000 resolves to 1 µm; the 100 TPI MA-9100 resolves to 0.35 µm. Choose 100 TPI for sub-micron structures and 80 TPI where 1 µm is sufficient.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "qa",
+          "settings": {
+            "question": "Are SemiProbe manipulators compatible with non-SemiProbe probe stations?",
+            "answer": "<p>In most cases, yes. Magnetic bases hold on any ferromagnetic platen, vacuum bases need house vacuum at the station, and bolt-down bases need a matching hole pattern. Send us your platen details and we will confirm fit before you order.</p>"
+          }
+        },
+        "faq_4": {
+          "type": "qa",
+          "settings": {
+            "question": "What mounting base should I choose for high-frequency measurements?",
+            "answer": "<p>Bolt-down, wherever the station allows it: a rigid mechanical mount gives the best stability for RF, microwave and millimetre-wave work, and the MA-8500 is built around it. Where bolt-down is not an option, a magnetic base is the next best choice; the West/East and North/South high-frequency arms are supported on magnetic bases on the MA-9000 and MA-9100.</p>"
+          }
+        },
+        "faq_5": {
+          "type": "qa",
+          "settings": {
+            "question": "Do manipulators come calibrated?",
+            "answer": "<p>Yes. Every unit ships with NIST-traceable calibrated vernier drums to NIST Standard Class A, and the lead time is 2 to 3 weeks after receipt of order.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5"
+      ]
+    },
+    "cta": {
+      "type": "sp-cta-band",
+      "settings": {
+        "eyebrow": "BESPOKE LABORATORY INTEGRATION",
+        "heading": "Need a Configuration That Isn't Listed?",
+        "body": "SemiProbe engineers custom faceplates, extended-reach probe arms, specialized vacuum footprints, and high-density multi-manipulator setups for proprietary test environments.",
+        "primary_label": "REQUEST A QUOTE",
+        "primary_url": "/#product-inquiry",
+        "secondary_label": "CALL (802) 860-7000",
+        "secondary_url": "tel:+18028607000"
+      }
+    },
+    "related": {
+      "type": "sp-frequently-ordered",
+      "settings": {
+        "eyebrow": "SYSTEM ACCESSORIES",
+        "heading": "Frequently Ordered With",
+        "anchor_id": "tips-callout"
+      },
+      "blocks": {
+        "related_1": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/product-pic-2-1.webp",
+            "title": "Probe Tips",
+            "description": "Tungsten & BeCu precision tips for DC, RF and low-current wafer probing.",
+            "price": "From $200.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/probe-tips",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_2": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/StandardWaferChuck.jpg",
+            "title": "Wafer Chucks",
+            "description": "Vacuum and thermal chucks engineered for 100 mm to 300 mm wafer hold-down.",
+            "price": "From $1,840.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/wafer-chucks",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_3": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/Vacuum_Pump_-_115_V.png",
+            "title": "Vacuum Pumps",
+            "description": "Quiet, oil-free diaphragm vacuum pumps for stable platen base fixation.",
+            "price": "From $740.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/vacuum-pumps",
+            "featured": false,
+            "badge": ""
+          }
+        },
+        "related_4": {
+          "type": "accessory",
+          "settings": {
+            "image": "shopify://shop_images/3_coaxarm.jpg",
+            "title": "Probe Arms",
+            "description": "Individual coaxial, triaxial, Kelvin, and HF probe arms with precision mounts.",
+            "price": "From $500.00",
+            "cta_label": "VIEW PRODUCT",
+            "url": "/products/probe-arms",
+            "featured": false,
+            "badge": ""
+          }
+        }
+      },
+      "block_order": [
+        "related_1",
+        "related_2",
+        "related_3",
+        "related_4"
+      ]
+    }
+  },
+  "order": [
+    "breadcrumb",
+    "product_area",
+    "overview",
+    "compare",
+    "specs",
+    "included",
+    "compat",
+    "choosing",
+    "docs",
+    "faq",
+    "cta",
+    "related"
+  ]
+}

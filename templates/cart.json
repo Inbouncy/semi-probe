@@ -1,0 +1,56 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "cart": {
+      "type": "sp-cart",
+      "settings": {
+        "eyebrow": "YOUR ORDER",
+        "heading": "Cart",
+        "count_one": "1 ITEM",
+        "count_many": "[count] ITEMS",
+        "sku_label": "Part no.",
+        "each_label": "each",
+        "quantity_label": "Quantity",
+        "decrease_label": "Reduce quantity by one",
+        "increase_label": "Increase quantity by one",
+        "remove_label": "Remove",
+        "update_label": "Update cart",
+        "summary_title": "ORDER SUMMARY",
+        "subtotal_label": "Subtotal",
+        "total_label": "Estimated total",
+        "tax_note": "Taxes and shipping are calculated at checkout.",
+        "checkout_label": "CHECK OUT",
+        "show_wallets": true,
+        "continue_label": "Continue shopping",
+        "continue_url": "",
+        "bullets": "Quotes and purchase orders accepted on request\n5% academic, non-profit and government discount available\nShipped from Winooski, Vermont",
+        "empty_title": "Your cart is empty",
+        "empty_body": "Browse the product families to configure a manipulator, probe arm or accessory."
+      }
+    },
+    "cta": {
+      "type": "sp-cta-band",
+      "settings": {
+        "eyebrow": "BESPOKE LABORATORY INTEGRATION",
+        "heading": "Need a Configuration That Isn't Listed?",
+        "body": "SemiProbe engineers custom faceplates, extended-reach probe arms, specialized vacuum footprints, and high-density multi-manipulator setups for proprietary test environments.",
+        "primary_label": "REQUEST A QUOTE",
+        "primary_url": "/#product-inquiry",
+        "secondary_label": "CALL (802) 860-7000",
+        "secondary_url": "tel:+18028607000"
+      }
+    }
+  },
+  "order": [
+    "cart",
+    "cta"
+  ]
+}

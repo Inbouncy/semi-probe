@@ -1,0 +1,349 @@
+{%- doc -%}
+  One product family card — Figma 68:3047.
+
+  Purpose-built rather than assembled from group/text/image/button blocks for
+  two reasons. Shopify allows 50 blocks per section, and eight cards built that
+  way came to 59. And it reads better in the Theme Editor: one card with five
+  fields, rather than six nested blocks to open.
+
+  The wrapper below is the card. A block whose schema sets `tag: null` gets no
+  wrapper from Shopify, so — as Horizon's own group, text and image blocks do —
+  it renders its own and carries `shopify_attributes` for the editor.
+{%- enddoc -%}
+
+{%- liquid
+  assign img = block.settings.image
+  assign label = block.settings.button_label | default: 'View Product'
+-%}
+
+<div
+  class="sp-family{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  <div class="sp-family__media">
+    {%- if img -%}
+      {{
+        img
+        | image_url: width: 838
+        | image_tag:
+          widths: '269, 306, 419, 538, 612, 838',
+          sizes: '(min-width: 1300px) 269px, (min-width: 750px) 419px, calc(100vw - 84px)',
+          class: 'sp-family__image',
+          alt: block.settings.title
+      }}
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'sp-family__image placeholder-svg' }}
+    {%- endif -%}
+  </div>
+
+  {%- if block.settings.title != blank -%}
+    <p class="sp-family__title">
+      {%- if block.settings.link != blank -%}
+        <a class="sp-family__title-link" href="{{ block.settings.link }}">{{ block.settings.title }}</a>
+      {%- else -%}
+        {{- block.settings.title -}}
+      {%- endif -%}
+    </p>
+  {%- endif -%}
+
+  {%- if block.settings.configurations != blank -%}
+    <p class="sp-family__count">{{ block.settings.configurations }}</p>
+  {%- endif -%}
+
+  {%- if block.settings.description != blank -%}
+    <p class="sp-family__desc">{{ block.settings.description }}</p>
+  {%- endif -%}
+
+  <span class="sp-family__rule" aria-hidden="true"></span>
+
+  <a
+    class="button-secondary sp-family__cta"
+    {% if block.settings.link == blank %}
+      role="link"
+      aria-disabled="true"
+    {% else %}
+      href="{{ block.settings.link }}"
+    {% endif %}
+  >
+    {{- label -}}
+  </a>
+</div>
+
+{% stylesheet %}
+  /* Figma 68:3047 — white card, 1px #ccc hairline, 8px radius, 18px padding,
+     14px rhythm.
+
+     Every card in the design is the same height — 420 on mobile, 410 at
+     tablet, 450 at desktop — whether its description runs to two lines or
+     four, and the content stays top-aligned, so the slack falls below the
+     button rather than stretching the gaps. Held as a min-height, not a
+     height, so a longer description the client types grows the card instead
+     of spilling out of it. */
+  .sp-family {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    min-height: 420px;
+    /* 17px against the design's 18: a Figma stroke does not consume layout,
+       so its 18px inset leaves 269px of content inside a 305px card. With a
+       1px CSS border inside the box, 17px of padding gives both — the same
+       18px visual inset and the same 269px for the text to wrap in. */
+    padding: 17px;
+    transition: box-shadow 200ms ease, transform 200ms ease;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-background);
+  }
+
+  /* The card lifts onto a soft shadow. The edge is deliberately left alone:
+     a heavier border here read badly against the grid. Focus-within draws
+     the same state so a keyboard reaches it too. */
+  .sp-family:hover,
+  .sp-family:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 10%);
+  }
+
+  /* No border or ground of its own: the photograph sits on the card as the
+     design draws it. The radius and the clip are only here so the zoom
+     below has an edge to grow behind. */
+  .sp-family__media {
+    border-radius: 4px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .sp-family__image {
+    display: block;
+    transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+    width: 100%;
+    /* The design's box is 306x145 here, 419x145 at tablet and 269x150 at
+       desktop. Held as a ratio rather than a height so the box grows with the
+       card instead of getting ever wider and cropping harder — which is what
+       went wrong on a large monitor. */
+    aspect-ratio: 306 / 145;
+    border-radius: 4px;
+    object-fit: contain;
+  }
+
+  /* Hovering anywhere on the card eases the photograph, so the lift and the
+     zoom read as one movement rather than two separate hit areas. */
+  .sp-family:hover .sp-family__image,
+  .sp-family:focus-within .sp-family__image { transform: scale(1.06); }
+
+  .sp-family__title,
+  .sp-family__count,
+  .sp-family__desc {
+    margin: 0;
+  }
+
+  /* As on the PDP's accessory cards: the name carries the link and answers
+     on its own, while the card stays put. The hover colour is the theme's
+     own link hover rather than a hardcoded maroon, so it follows the scheme. */
+  .sp-family__title-link {
+    transition: color 160ms ease;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Three classes deep on purpose. The theme carries
+       :is(p:not(.h1, ...) a:where(:not(.button, ...)), .rte ...):hover
+       { text-decoration-color: transparent }
+     for its own reveal-on-hover underline, which is (0,2,2) and matches
+     here because the name is an <a> inside a <p>. A plain
+     .sp-family__title-link:hover is only (0,2,0), so the line was being
+     painted in nothing - computed style said "underline" throughout, and
+     only the decoration colour gave it away. This selector is (0,4,0).
+     The PDP's accessory name needs none of this: it sits in an <h3>, so
+     the theme's p-scoped rule never reaches it. */
+  .sp-family .sp-family__title .sp-family__title-link:hover,
+  .sp-family .sp-family__title .sp-family__title-link:focus-visible {
+    color: var(--color-primary-hover);
+    text-decoration-line: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* The design lays the title out as a 20px-tall box while its line height is
+     30: the 30px line box starts at the top of that box and overhangs it by
+     10px at the bottom, and the count, description, rule and button are then
+     placed off the 20px. So the overhang is taken off the bottom only — a
+     margin split over both edges would sit the glyphs 5px high, which is what
+     the rendered titles showed against the design. */
+  .sp-family__title {
+    margin-block-end: -10px;
+    color: var(--color-foreground-heading);
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .sp-family__count {
+    color: #b0afaf;
+    font-family: var(--font-accent--family);
+    font-weight: var(--font-accent--weight);
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .sp-family__desc {
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-weight: var(--font-body--weight);
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  /* The design's divider is a zero-height line, so the button sits 14px below
+     where the rule is drawn, not 14px below a 1px box. The hairline has to
+     occupy a real pixel to be painted, so that pixel is taken back out of the
+     flow and the button lands on the design's baseline. */
+  .sp-family__rule {
+    width: 100%;
+    height: 1px;
+    margin-block-end: -1px;
+    background-color: var(--color-border);
+  }
+
+  /* Figma 218:387 — a 12px chevron 8px after the label. Horizon's button is a
+     grid with no icon slot, so the arrow is a masked pseudo-element; it paints
+     with currentColor and so follows the label through hover. */
+  .sp-family__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sp-family__cta::after {
+    content: "";
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2013%2013%27%3E%3Cpath%20d%3D%27M1%205.6672H10.3344M5.6672%201L10.3344%205.6672L5.6672%2010.3344%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  }
+
+  /* Figma 219:465 drops the arrow on mobile: the button is 154px there
+     against 174 at the wider frames, which is exactly the arrow and its gap. */
+  @media screen and (width < 750px) {
+    .sp-family__cta::after {
+      display: none;
+    }
+  }
+
+  @media screen and (width >= 750px) {
+    .sp-family {
+      min-height: 410px;
+    }
+
+    .sp-family__image {
+      aspect-ratio: 419 / 145;
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-family {
+      min-height: 450px;
+    }
+
+    .sp-family__image {
+      aspect-ratio: 269 / 150;
+    }
+
+    /* At this frame the design gives all eight descriptions the same 107px
+       region, so the rule and button sit at one height across the row however
+       long the copy is. A floor rather than a fixed height, so a description
+       the client lengthens still grows the card. */
+    .sp-family__desc {
+      min-height: 107px;
+    }
+
+    /* Every title on one line, which is what the design draws and what keeps
+       the row at 450. Only this frame needs it: the card holds 269px here
+       against 419 at tablet and 306 on mobile, where 22px already fits the
+       longest name. At 20px that name measures 268.5 — half a pixel of room,
+       too fine to trust across browsers — so a hair of negative tracking buys
+       5px of headroom at 0.2px per character, which is not perceptible. The
+       line box stays 30px, so nothing below the title moves. */
+    .sp-family__title {
+      font-size: 20px;
+      letter-spacing: -0.01em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-family,
+    .sp-family__image,
+    .sp-family__title-link { transition: none; }
+
+    /* The shadow still answers; only the movement goes. */
+    .sp-family:hover,
+    .sp-family:focus-within { transform: none; }
+
+    .sp-family:hover .sp-family__image,
+    .sp-family:focus-within .sp-family__image { transform: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product family",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photo"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Family name",
+      "default": "Product family"
+    },
+    {
+      "type": "text",
+      "id": "configurations",
+      "label": "Configuration count",
+      "info": "Shown under the name, e.g. \"21 configurations\"."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "View Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product family"
+    }
+  ]
+}
+{% endschema %}

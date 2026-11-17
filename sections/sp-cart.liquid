@@ -1,0 +1,948 @@
+{%- doc -%}
+  Cart — built to match the homepage and the Manual Manipulators page rather
+  than Horizon's default, which carried none of their language.
+
+  The mechanics are Shopify's own, deliberately. Quantities post as the
+  updates[] array in line order, the remove control is a plain link to
+  cart/change, and checkout is a submit named "checkout" inside a form
+  posting to the cart route - so the whole page works with no JavaScript at
+  all. The script only saves a click: it moves the steppers' work to the
+  server by submitting the form they already belong to.
+
+  Nothing here writes to a product or a variant; it reads the cart Shopify
+  already holds.
+
+  The class namespace is sp-bag, not sp-cart: the header's cart icon in
+  snippets/cart-icon-component.liquid already owns .sp-cart, and a second
+  .sp-cart rule here put this section's grey ground and 64px of padding on
+  that icon on every page of the site. The file keeps its name, so the
+  template's section type does not move.
+{%- enddoc -%}
+
+{%- liquid
+  assign item_count = cart.item_count
+  assign has_items = false
+  if item_count > 0
+    assign has_items = true
+  endif
+-%}
+
+<section class="sp-bag">
+  <div class="sp-bag__inner">
+    <div class="sp-bag__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="sp-bag__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <div class="sp-bag__headline">
+        {%- if section.settings.heading != blank -%}
+          <h1 class="sp-bag__heading">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+        {%- if has_items -%}
+          <span class="sp-bag__count">
+            {%- if item_count == 1 -%}
+              {{ section.settings.count_one }}
+            {%- else -%}
+              {{- section.settings.count_many | replace: '[count]', item_count -}}
+            {%- endif -%}
+          </span>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if has_items -%}
+      <form action="{{ routes.cart_url }}" method="post" novalidate class="sp-bag__form" data-sp-bag-form>
+        <div class="sp-bag__grid">
+          <div class="sp-bag__lines">
+            {%- for item in cart.items -%}
+              <article class="sp-bag__line">
+                <div class="sp-bag__media">
+                  {%- if item.image -%}
+                    <a href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                      <img
+                        src="{{ item.image | image_url: width: 320 }}"
+                        srcset="{{ item.image | image_url: width: 160 }} 160w, {{ item.image | image_url: width: 320 }} 320w"
+                        sizes="80px"
+                        width="{{ item.image.width }}"
+                        height="{{ item.image.height }}"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      >
+                    </a>
+                  {%- endif -%}
+                </div>
+
+                <div class="sp-bag__detail">
+                  <h2 class="sp-bag__title">
+                    <a class="sp-bag__title-link" href="{{ item.url }}">{{ item.product.title }}</a>
+                  </h2>
+
+                  {%- unless item.product.has_only_default_variant -%}
+                    <p class="sp-bag__variant">{{ item.variant.title }}</p>
+                  {%- endunless -%}
+
+                  {%- if item.sku != blank -%}
+                    <p class="sp-bag__sku">
+                      <span class="sp-bag__sku-label">{{ section.settings.sku_label }}</span>
+                      <span class="sp-bag__sku-value">{{ item.sku }}</span>
+                    </p>
+                  {%- endif -%}
+
+                  {%- if item.properties != blank -%}
+                    {%- for property in item.properties -%}
+                      {%- unless property.last == blank or property.first.first == '_' -%}
+                        <p class="sp-bag__property">{{ property.first }}: {{ property.last }}</p>
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endif -%}
+
+                  <p class="sp-bag__unit">
+                    {{- item.original_price | money -}}
+                    <span class="sp-bag__unit-note">{{ section.settings.each_label }}</span>
+                  </p>
+                </div>
+
+                <div class="sp-bag__controls">
+                  {%- comment -%}
+                    The steps are links to cart/change, not submit buttons.
+                    A button carrying name="updates[]" would post a value on
+                    top of the field's own, and updates[] is read by position
+                    - an extra entry shifts every line's quantity onto its
+                    neighbour. As links they need no JavaScript either.
+                  {%- endcomment -%}
+                  <div class="sp-bag__qty">
+                    {%- if item.quantity > 1 -%}
+                      <a
+                        class="sp-bag__step"
+                        href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}"
+                        aria-label="{{ section.settings.decrease_label | escape }}"
+                      >&minus;</a>
+                    {%- else -%}
+                      <span class="sp-bag__step sp-bag__step--off" aria-hidden="true">&minus;</span>
+                    {%- endif -%}
+
+                    <label class="sp-sr-only" for="sp-qty-{{ forloop.index }}">
+                      {{- section.settings.quantity_label -}}
+                    </label>
+                    <input
+                      class="sp-bag__qty-input"
+                      id="sp-qty-{{ forloop.index }}"
+                      type="number"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                      inputmode="numeric"
+                      data-sp-qty
+                    >
+
+                    <a
+                      class="sp-bag__step"
+                      href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}"
+                      aria-label="{{ section.settings.increase_label | escape }}"
+                    >+</a>
+                  </div>
+
+                  <a
+                    class="sp-bag__remove"
+                    href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0"
+                    aria-label="{{ section.settings.remove_label | escape }}: {{ item.product.title | strip_html }}"
+                  >{{ section.settings.remove_label }}</a>
+                </div>
+
+                <p class="sp-bag__line-total">
+                  {{- item.original_line_price | money -}}
+                  {%- if item.original_line_price != item.final_line_price -%}
+                    <span class="sp-bag__line-was">{{ item.final_line_price | money }}</span>
+                  {%- endif -%}
+                </p>
+              </article>
+            {%- endfor -%}
+
+            {%- comment -%}
+              The only control a no-script visitor needs that the steppers do
+              not already give: it commits a typed quantity.
+            {%- endcomment -%}
+            {%- comment -%}
+              Commits a typed quantity. The steps and Remove are links and
+              need nothing, but a number typed into the field has to be
+              posted, so this stays visible rather than hidden behind
+              noscript.
+            {%- endcomment -%}
+            <button class="sp-bag__update" type="submit" name="update">
+              {{ section.settings.update_label }}
+            </button>
+          </div>
+
+          <aside class="sp-bag__summary">
+            <h2 class="sp-bag__summary-title">{{ section.settings.summary_title }}</h2>
+
+            <dl class="sp-bag__totals">
+              <div class="sp-bag__total-row">
+                <dt>{{ section.settings.subtotal_label }}</dt>
+                <dd>{{ cart.items_subtotal_price | money_with_currency }}</dd>
+              </div>
+
+              {%- if cart.cart_level_discount_applications.size > 0 -%}
+                {%- for discount in cart.cart_level_discount_applications -%}
+                  <div class="sp-bag__total-row sp-bag__total-row--discount">
+                    <dt>{{ discount.title }}</dt>
+                    <dd>&minus;{{ discount.total_allocated_amount | money }}</dd>
+                  </div>
+                {%- endfor -%}
+              {%- endif -%}
+
+              <div class="sp-bag__total-row sp-bag__total-row--grand">
+                <dt>{{ section.settings.total_label }}</dt>
+                <dd>{{ cart.total_price | money_with_currency }}</dd>
+              </div>
+            </dl>
+
+            {%- if section.settings.tax_note != blank -%}
+              <p class="sp-bag__note">{{ section.settings.tax_note }}</p>
+            {%- endif -%}
+
+            <button class="sp-btn sp-btn--checkout" type="submit" name="checkout">
+              {{ section.settings.checkout_label }}
+            </button>
+
+            {%- if additional_checkout_buttons and section.settings.show_wallets -%}
+              <div class="sp-bag__wallets">{{ content_for_additional_checkout_buttons }}</div>
+            {%- endif -%}
+
+            {%- if section.settings.continue_label != blank -%}
+              <a class="sp-bag__continue" href="{{ section.settings.continue_url | default: routes.root_url }}">
+                {{ section.settings.continue_label }}
+              </a>
+            {%- endif -%}
+
+            {%- assign bullets = section.settings.bullets | newline_to_br | split: '<br />' -%}
+            {%- if bullets.size > 0 -%}
+              <ul class="sp-bag__assurance" role="list">
+                {%- for bullet in bullets -%}
+                  {%- assign line = bullet | strip -%}
+                  {%- if line != blank -%}
+                    <li>
+                      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                        <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                      </svg>
+                      <span>{{ line }}</span>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </aside>
+        </div>
+      </form>
+    {%- else -%}
+      <div class="sp-bag__empty">
+        <svg class="sp-bag__empty-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2M1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2"/>
+        </svg>
+        {%- if section.settings.empty_title != blank -%}
+          <p class="sp-bag__empty-title">{{ section.settings.empty_title }}</p>
+        {%- endif -%}
+        {%- if section.settings.empty_body != blank -%}
+          <p class="sp-bag__empty-body">{{ section.settings.empty_body }}</p>
+        {%- endif -%}
+        {%- if section.settings.continue_label != blank -%}
+          <a class="sp-btn sp-btn--checkout sp-bag__empty-cta" href="{{ section.settings.continue_url | default: routes.root_url }}">
+            {{ section.settings.continue_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ────────────────────────────────────────────────────────────────────
+     Cart — the page's own language, taken from the PDP: grey canvas, white
+     cards on a 1px #ccc hairline, the amber pill for the one action that
+     matters and an outlined one for everything else.
+     ──────────────────────────────────────────────────────────────────── */
+  .sp-bag {
+    --sp-surface: #ffffff;
+    --sp-canvas: #efefef;
+    --sp-border: #cccccc;
+    --sp-hairline: #e8e8e8;
+    --sp-ink: #23252c;
+    --sp-ink-soft: #55585d;
+    --sp-ink-faint: #a09f9f;
+    --sp-maroon: #661320;
+    --sp-amber: #e59a2a;
+    --sp-amber-dark: #de8b24;
+    --sp-low: #f2f3f9;
+
+    background: var(--sp-canvas);
+    padding-block: 64px;
+  }
+
+  .sp-bag__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-inline: auto;
+    max-width: 1440px;
+    padding-inline: 24px;
+  }
+
+  .sp-bag .sp-sr-only {
+    position: absolute;
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* ── Heading ─────────────────────────────────────────────────────── */
+  .sp-bag__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sp-bag__eyebrow {
+    margin: 0;
+    color: var(--sp-amber-dark);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  .sp-bag__headline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .sp-bag__heading {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-heading--family);
+    font-size: 30px;
+    font-weight: 200;
+    line-height: 38px;
+    letter-spacing: -0.36px;
+  }
+
+  .sp-bag__count {
+    border: 1px solid var(--sp-border);
+    border-radius: 2px;
+    background: var(--sp-surface);
+    padding: 2px 8px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-accent--family);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 0.88px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Layout ──────────────────────────────────────────────────────── */
+  .sp-bag__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .sp-bag__lines {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--sp-border);
+    border-radius: 4px;
+    background: var(--sp-surface);
+    overflow: hidden;
+  }
+
+  /* ── One line ────────────────────────────────────────────────────── */
+  .sp-bag__line {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 8px 16px;
+    padding: 16px;
+  }
+
+  .sp-bag__line + .sp-bag__line { border-top: 1px solid var(--sp-border); }
+
+  /* The same tile the accessory cards use: white ground, hairline edge, so
+     a photograph shot on white does not letterbox against grey. */
+  .sp-bag__media {
+    display: flex;
+    grid-row: span 2;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--sp-hairline);
+    border-radius: 3px;
+    background: var(--sp-surface);
+    padding: 6px;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+  .sp-bag__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .sp-bag__detail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .sp-bag__title {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 22px;
+  }
+
+  .sp-bag__title-link {
+    transition: color 160ms ease;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Stated explicitly: the theme paints link underlines in transparent for
+     its own reveal effect, and a shorthand does not outrank that. */
+  .sp-bag__title-link:hover,
+  .sp-bag__title-link:focus-visible {
+    color: var(--sp-maroon);
+    text-decoration: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .sp-bag__variant,
+  .sp-bag__property {
+    margin: 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 19px;
+  }
+
+  .sp-bag__sku {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 0;
+  }
+
+  .sp-bag__sku-label {
+    color: var(--sp-ink-faint);
+    font-family: var(--font-accent--family);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .sp-bag__sku-value {
+    border-radius: 2px;
+    background: var(--sp-low);
+    padding: 1px 6px;
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 0.44px;
+  }
+
+  .sp-bag__unit {
+    margin: 6px 0 0;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-accent--family);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 17px;
+  }
+
+  .sp-bag__unit-note {
+    margin-inline-start: 4px;
+    color: var(--sp-ink-faint);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 10px;
+  }
+
+  /* ── Quantity and remove ─────────────────────────────────────────── */
+  .sp-bag__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    grid-column: 2;
+  }
+
+  .sp-bag__qty {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--sp-border);
+    border-radius: 24px;
+    background: var(--sp-surface);
+    overflow: hidden;
+  }
+
+  .sp-bag__step {
+    display: grid;
+    place-items: center;
+    transition: background-color 160ms ease, color 160ms ease;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 16px;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  /* At one, stepping down would remove the line; Remove says that plainly,
+     so the step is shown spent rather than doing it by surprise. */
+  .sp-bag__step--off {
+    cursor: default;
+    color: var(--sp-border);
+  }
+
+  .sp-bag__step--off:hover { background: none; color: var(--sp-border); }
+
+  .sp-bag__step:hover,
+  .sp-bag__step:focus-visible {
+    background: var(--sp-low);
+    color: var(--sp-maroon);
+  }
+
+  .sp-bag__qty-input {
+    appearance: textfield;
+    border: 0;
+    border-inline: 1px solid var(--sp-border);
+    background: none;
+    padding: 0;
+    width: 44px;
+    height: 32px;
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .sp-bag__qty-input::-webkit-outer-spin-button,
+  .sp-bag__qty-input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  .sp-bag__remove {
+    transition: color 160ms ease;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .sp-bag__remove:hover,
+  .sp-bag__remove:focus-visible {
+    color: var(--sp-maroon);
+    text-decoration: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .sp-bag__line-total {
+    grid-column: 2;
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 21px;
+  }
+
+  .sp-bag__line-was {
+    margin-inline-start: 6px;
+    color: var(--sp-ink-faint);
+    font-weight: 400;
+    text-decoration: line-through;
+  }
+
+  .sp-bag__update {
+    margin: 0 16px 16px;
+    border: 1px solid var(--sp-border);
+    border-radius: 24px;
+    background: var(--sp-surface);
+    cursor: pointer;
+    padding: 8px 16px;
+    color: var(--sp-maroon);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.55px;
+    text-transform: uppercase;
+  }
+
+  /* ── Summary ─────────────────────────────────────────────────────── */
+  .sp-bag__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border: 1px solid var(--sp-border);
+    border-radius: 4px;
+    background: var(--sp-surface);
+    padding: 20px;
+  }
+
+  .sp-bag__summary-title {
+    margin: 0;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-accent--family);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 0.88px;
+    text-transform: uppercase;
+  }
+
+  .sp-bag__totals {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .sp-bag__total-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .sp-bag__total-row dt {
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 19px;
+  }
+
+  .sp-bag__total-row dd {
+    margin: 0;
+    color: var(--sp-ink);
+    font-family: var(--font-accent--family);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 19px;
+  }
+
+  .sp-bag__total-row--discount dd { color: var(--sp-maroon); }
+
+  .sp-bag__total-row--grand {
+    margin-block-start: 4px;
+    border-top: 1px solid var(--sp-border);
+    padding-block-start: 12px;
+  }
+
+  .sp-bag__total-row--grand dt {
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .sp-bag__total-row--grand dd {
+    font-family: var(--font-heading--family);
+    font-size: 24px;
+    font-weight: 200;
+    line-height: 30px;
+    letter-spacing: -0.24px;
+  }
+
+  .sp-bag__note {
+    margin: 0;
+    color: var(--sp-ink-faint);
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 17px;
+  }
+
+  /* ── Buttons ─────────────────────────────────────────────────────── */
+  .sp-bag .sp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    border-radius: 24px;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    font-family: var(--font-subheading--family);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .sp-bag .sp-btn--checkout {
+    box-shadow: 0 1px 1px rgb(0 0 0 / 10%), 0 1px 1.5px rgb(0 0 0 / 10%);
+    border: 0;
+    background: var(--sp-amber);
+    cursor: pointer;
+    padding: 12px 16px;
+    color: var(--sp-surface);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.28px;
+  }
+
+  .sp-bag .sp-btn--checkout:hover,
+  .sp-bag .sp-btn--checkout:focus-visible { background: var(--sp-amber-dark); }
+
+  /* Shopify injects the wallet buttons' own markup; this only gives them
+     room and keeps their corners with ours. */
+  /* Shopify injects the express buttons as a list, so the markers have to
+     go: left alone they showed as three empty bullets under checkout. */
+  .sp-bag__wallets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sp-bag__wallets ul,
+  .sp-bag__wallets ol {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sp-bag__wallets li { list-style: none; }
+
+  .sp-bag__wallets [role="button"],
+  .sp-bag__wallets button { border-radius: 24px; }
+
+  .sp-bag__continue {
+    transition: color 160ms ease;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-subheading--family);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.55px;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .sp-bag__continue:hover,
+  .sp-bag__continue:focus-visible {
+    color: var(--sp-maroon);
+    text-decoration: underline;
+    text-decoration-color: currentcolor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .sp-bag__assurance {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    border-top: 1px solid var(--sp-border);
+    padding: 16px 0 0;
+    list-style: none;
+  }
+
+  .sp-bag__assurance li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 18px;
+  }
+
+  .sp-bag__assurance svg {
+    flex: none;
+    margin-block-start: 2px;
+    width: 14px;
+    height: 14px;
+    color: var(--sp-maroon);
+  }
+
+  /* ── Empty ───────────────────────────────────────────────────────── */
+  .sp-bag__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--sp-border);
+    border-radius: 4px;
+    background: var(--sp-surface);
+    padding: 56px 24px;
+    text-align: center;
+  }
+
+  .sp-bag__empty-icon {
+    width: 32px;
+    height: 32px;
+    color: var(--sp-ink-faint);
+  }
+
+  .sp-bag__empty-title {
+    margin: 8px 0 0;
+    color: var(--sp-ink);
+    font-family: var(--font-subheading--family);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  .sp-bag__empty-body {
+    margin: 0;
+    max-width: 440px;
+    color: var(--sp-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 21px;
+  }
+
+  .sp-bag__empty-cta {
+    margin-block-start: 8px;
+    width: auto;
+    min-width: 220px;
+  }
+
+  /* ── Wider ───────────────────────────────────────────────────────── */
+  @media screen and (width >= 750px) {
+    .sp-bag { padding-block: 70px; }
+
+    .sp-bag__inner { padding-inline: 48px; }
+
+    .sp-bag__heading {
+      font-size: 36px;
+      line-height: 44px;
+    }
+
+    /* Four children, so four tracks: with three the line total wrapped onto
+       a second row and sat under the photograph instead of beside it. */
+    .sp-bag__line {
+      grid-template-columns: 96px minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 16px 20px;
+      padding: 20px;
+    }
+
+    .sp-bag__media { grid-row: span 1; }
+
+    .sp-bag__controls {
+      grid-column: auto;
+      justify-content: flex-end;
+    }
+
+    .sp-bag__line-total {
+      grid-column: auto;
+      min-width: 110px;
+      text-align: right;
+    }
+  }
+
+  @media screen and (width >= 1000px) {
+    .sp-bag__grid { grid-template-columns: minmax(0, 1fr) 360px; }
+
+    /* The summary follows the list on a long cart rather than scrolling off
+       the top of it. */
+    .sp-bag__summary {
+      position: sticky;
+      top: calc(var(--sp-header-offset, 134px) + 24px);
+    }
+  }
+
+  @media screen and (width >= 1300px) {
+    .sp-bag__inner { padding-inline: 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-bag .sp-btn,
+    .sp-bag__step,
+    .sp-bag__remove,
+    .sp-bag__continue,
+    .sp-bag__title-link { transition: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Cart",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "YOUR ORDER" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Cart" },
+    { "type": "text", "id": "count_one", "label": "Count, one item", "default": "1 ITEM" },
+    { "type": "text", "id": "count_many", "label": "Count, several items", "info": "Use [count] where the number should go.", "default": "[count] ITEMS" },
+
+    { "type": "header", "content": "Line items" },
+    { "type": "text", "id": "sku_label", "label": "SKU label", "default": "Part no." },
+    { "type": "text", "id": "each_label", "label": "Unit price suffix", "default": "each" },
+    { "type": "text", "id": "quantity_label", "label": "Quantity field name (for screen readers)", "default": "Quantity" },
+    { "type": "text", "id": "decrease_label", "label": "Decrease button name (for screen readers)", "default": "Reduce quantity by one" },
+    { "type": "text", "id": "increase_label", "label": "Increase button name (for screen readers)", "default": "Increase quantity by one" },
+    { "type": "text", "id": "remove_label", "label": "Remove link", "default": "Remove" },
+    { "type": "text", "id": "update_label", "label": "Update button", "info": "Commits a quantity typed into the field.", "default": "Update cart" },
+
+    { "type": "header", "content": "Summary" },
+    { "type": "text", "id": "summary_title", "label": "Summary title", "default": "ORDER SUMMARY" },
+    { "type": "text", "id": "subtotal_label", "label": "Subtotal label", "default": "Subtotal" },
+    { "type": "text", "id": "total_label", "label": "Total label", "default": "Estimated total" },
+    { "type": "text", "id": "tax_note", "label": "Note under the total", "default": "Taxes and shipping are calculated at checkout." },
+    { "type": "text", "id": "checkout_label", "label": "Checkout button", "default": "CHECK OUT" },
+    { "type": "checkbox", "id": "show_wallets", "label": "Show the express payment buttons", "default": true },
+    { "type": "text", "id": "continue_label", "label": "Continue shopping link", "default": "Continue shopping" },
+    { "type": "url", "id": "continue_url", "label": "Continue shopping link destination", "info": "Leave blank for the home page." },
+    {
+      "type": "textarea",
+      "id": "bullets",
+      "label": "Assurances",
+      "info": "One per line.",
+      "default": "Quotes and purchase orders accepted on request\n5% academic, non-profit and government discount available\nShipped from Winooski, Vermont"
+    },
+
+    { "type": "header", "content": "Empty cart" },
+    { "type": "text", "id": "empty_title", "label": "Empty title", "default": "Your cart is empty" },
+    { "type": "textarea", "id": "empty_body", "label": "Empty message", "default": "Browse the product families to configure a manipulator, probe arm or accessory." }
+  ],
+  "presets": [{ "name": "Cart" }]
+}
+{% endschema %}
