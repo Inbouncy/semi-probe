@@ -491,7 +491,13 @@
               {%- endif -%}
             </div>
 
-            {%- comment -%} Configuration summary — Figma 22:97 {%- endcomment -%}
+            {%- comment -%}
+              Configuration summary — Figma 22:97. Only meaningful when the
+              variant map drives the three axes; on a single-axis product the
+              catch-all dropdown carries the variants and these four cells have
+              nothing to show, so the panel is skipped rather than rendered empty.
+            {%- endcomment -%}
+            {%- if mapped_count > 0 -%}
             <div class="sp-summary">
               <div class="sp-summary__header">
                 <span class="sp-summary__title">{{ section.settings.summary_title }}</span>
@@ -520,12 +526,21 @@
                 </div>
               </div>
             </div>
+            {%- endif -%}
 
-            {%- comment -%} Part number — Figma 22:116 {%- endcomment -%}
+            {%- comment -%}
+              Part number — Figma 22:116. Some products carry their part number
+              in the variant title rather than the SKU field, so the row is
+              skipped rather than rendered with an empty value beside the label.
+            {%- endcomment -%}
+            {%- assign any_sku = '' -%}
+            {%- for v in p.variants -%}{%- if v.sku != blank -%}{%- assign any_sku = 'yes' -%}{%- break -%}{%- endif -%}{%- endfor -%}
+            {%- if any_sku == 'yes' -%}
             <div class="sp-buy__part">
               <span class="sp-buy__part-label">{{ section.settings.part_label }}</span>
               <span class="sp-buy__sku" data-sp-sku>{{ current.sku }}</span>
             </div>
+            {%- endif -%}
 
             {%- comment -%} Actions — Figma 22:120 {%- endcomment -%}
             <div class="sp-buy__actions">
